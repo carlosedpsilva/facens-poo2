@@ -20,8 +20,14 @@ public class EventService {
 
   public MessageResponse save(EventInsertRequest eventInsertRequest) {
     Event eventToSave = eventMapper.toModel(eventInsertRequest);
-    eventRepository.save(eventToSave);
-    return MessageResponse.builder().message("Saved Event with ID 1").build();
+    Event savedEvent = eventRepository.save(eventToSave);
+    return createMessageResponse(savedEvent.getId(), "Saved Event with ID ");
   }
-  
+
+  private MessageResponse createMessageResponse(Long id, String message) {
+    return MessageResponse.builder()
+        .message(message + id)
+        .build();
+  }
+
 }
