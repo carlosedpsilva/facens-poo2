@@ -11,7 +11,7 @@ import br.facens.poo2.ac1project.entity.Event;
 @Repository
 public interface EventRepository extends JpaRepository<Event, Long> {
 
-  @Query("SELECT e FROM Event")
+  @Query("SELECT e FROM Event e")
   public Page<Event> pageAll(Pageable pageRequest);
 
 }
