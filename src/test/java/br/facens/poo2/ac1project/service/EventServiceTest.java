@@ -1,14 +1,17 @@
 package br.facens.poo2.ac1project.service;
 
 import static br.facens.poo2.ac1project.utils.EventUtils.createFakeEntity;
+import static br.facens.poo2.ac1project.utils.EventUtils.createFakeFindResponse;
 import static br.facens.poo2.ac1project.utils.EventUtils.createFakeInsertRequest;
 import static br.facens.poo2.ac1project.utils.EventUtils.createFakePageableResponse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -25,9 +28,11 @@ import org.springframework.data.domain.Pageable;
 
 import br.facens.poo2.ac1project.dto.mapper.EventMapper;
 import br.facens.poo2.ac1project.dto.request.EventInsertRequest;
+import br.facens.poo2.ac1project.dto.response.EventFindResponse;
 import br.facens.poo2.ac1project.dto.response.EventPageableResponse;
 import br.facens.poo2.ac1project.dto.response.MessageResponse;
 import br.facens.poo2.ac1project.entity.Event;
+import br.facens.poo2.ac1project.execption.EventNotFoundException;
 import br.facens.poo2.ac1project.repository.EventRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -70,6 +75,28 @@ public class EventServiceTest {
     Page<EventPageableResponse> pagedEventsResponse = eventService.findAll(pageRequest);
 
     assertEquals(expectedPagedEventsResponse, pagedEventsResponse);
+  }
+  
+  @Test
+  void testGivenValidEventIdThenReturnThisEvent() throws EventNotFoundException {
+    var validEventId = 1L;
+    Event expectedSavedEvent = createFakeEntity();
+    EventFindResponse expectedSavedEventResponse = createFakeFindResponse();
+
+    when(eventRepository.findById(validEventId)).thenReturn(Optional.of(expectedSavedEvent));
+
+    EventFindResponse savedEventResponse = eventService.findById(validEventId);
+
+    assertEquals(expectedSavedEventResponse, savedEventResponse);
+  }
+
+  @Test
+  void testGivenInvalidEventIdThenThrowException() {
+    var invalidEventId = 1L;
+
+    when(eventRepository.findById(invalidEventId)).thenReturn(Optional.ofNullable(any(Event.class)));
+
+    assertThrows(EventNotFoundException.class, () -> eventService.findById(invalidEventId));
   }
 
   private MessageResponse createMessageResponse(Long id, String message) {

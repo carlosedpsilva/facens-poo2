@@ -7,9 +7,11 @@ import org.springframework.stereotype.Service;
 
 import br.facens.poo2.ac1project.dto.mapper.EventMapper;
 import br.facens.poo2.ac1project.dto.request.EventInsertRequest;
+import br.facens.poo2.ac1project.dto.response.EventFindResponse;
 import br.facens.poo2.ac1project.dto.response.EventPageableResponse;
 import br.facens.poo2.ac1project.dto.response.MessageResponse;
 import br.facens.poo2.ac1project.entity.Event;
+import br.facens.poo2.ac1project.execption.EventNotFoundException;
 import br.facens.poo2.ac1project.repository.EventRepository;
 import lombok.AllArgsConstructor;
 
@@ -30,6 +32,15 @@ public class EventService {
   public Page<EventPageableResponse> findAll(PageRequest pageRequest) {
     Page<Event> pagedEvents = eventRepository.pageAll(pageRequest);
     return pagedEvents.map(eventMapper::toEventPageableResponse);
+  }
+  
+  public EventFindResponse findById(Long id) throws EventNotFoundException {
+    Event savedEvent = verifyIfExists(id);
+    return eventMapper.toEventFindResponse(savedEvent);
+  }
+
+  private Event verifyIfExists(Long id) throws EventNotFoundException {
+    return eventRepository.findById(id).orElseThrow(() -> new EventNotFoundException(id));
   }
 
   private MessageResponse createMessageResponse(Long id, String message) {
