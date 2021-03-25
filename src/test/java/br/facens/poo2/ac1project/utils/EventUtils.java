@@ -3,6 +3,10 @@ package br.facens.poo2.ac1project.utils;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+
 import br.facens.poo2.ac1project.dto.request.EventInsertRequest;
 import br.facens.poo2.ac1project.dto.request.EventUpdateRequest;
 import br.facens.poo2.ac1project.dto.response.EventFindResponse;
@@ -84,6 +88,18 @@ public class EventUtils {
         .startDate("25/03/2022")
         .startTime("14:00")
         .build();
+  }
+
+  public static <T> String asJsonString(T responseObject) {
+    try {
+      ObjectMapper objectMapper = new ObjectMapper();
+      objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+      objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+      
+      return objectMapper.writeValueAsString(responseObject);
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 
 }
