@@ -33,6 +33,7 @@ import br.facens.poo2.ac1project.dto.response.EventPageableResponse;
 import br.facens.poo2.ac1project.dto.response.MessageResponse;
 import br.facens.poo2.ac1project.entity.Event;
 import br.facens.poo2.ac1project.execption.EventNotFoundException;
+import br.facens.poo2.ac1project.execption.IllegalDateScheduleException;
 import br.facens.poo2.ac1project.repository.EventRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -48,7 +49,7 @@ public class EventServiceTest {
   private EventMapper eventMapper = Mappers.getMapper(EventMapper.class);
 
   @Test
-  void testGivenInsertRequestThenReturnSavedMessage() {
+  void testGivenInsertRequestThenReturnSavedMessage() throws IllegalDateScheduleException {
     Event expectedSavedEvent = createFakeEntity();
     EventInsertRequest eventInsertRequest = createFakeInsertRequest();
     MessageResponse expectedSavedMessageResponse = createMessageResponse(expectedSavedEvent.getId(), "Saved Event with ID ");
@@ -58,6 +59,16 @@ public class EventServiceTest {
     MessageResponse savedMessageResponse = eventService.save(eventInsertRequest);
 
     Assertions.assertEquals(expectedSavedMessageResponse, savedMessageResponse);
+  }
+
+  @Test
+  void testGivenInsertRequestWithInvalidDateScheduleThenThrowException() {
+    EventInsertRequest eventInsertRequest = createFakeInsertRequest();
+    var startDate = eventInsertRequest.getStartDate();
+    eventInsertRequest.setStartDate(eventInsertRequest.getEndDate());
+    eventInsertRequest.setEndDate(startDate);
+
+    assertThrows(IllegalDateScheduleException.class, () -> eventService.save(eventInsertRequest));
   }
 
   @Test

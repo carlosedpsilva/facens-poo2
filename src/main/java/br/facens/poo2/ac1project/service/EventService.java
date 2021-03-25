@@ -12,6 +12,7 @@ import br.facens.poo2.ac1project.dto.response.EventPageableResponse;
 import br.facens.poo2.ac1project.dto.response.MessageResponse;
 import br.facens.poo2.ac1project.entity.Event;
 import br.facens.poo2.ac1project.execption.EventNotFoundException;
+import br.facens.poo2.ac1project.execption.IllegalDateScheduleException;
 import br.facens.poo2.ac1project.repository.EventRepository;
 import lombok.AllArgsConstructor;
 
@@ -23,8 +24,10 @@ public class EventService {
 
   private EventMapper eventMapper;
 
-  public MessageResponse save(EventInsertRequest eventInsertRequest) {
+  public MessageResponse save(EventInsertRequest eventInsertRequest) throws IllegalDateScheduleException {
     Event eventToSave = eventMapper.toModel(eventInsertRequest);
+    if (!isValidDate(eventToSave)) throw new IllegalDateScheduleException();
+    
     Event savedEvent = eventRepository.save(eventToSave);
     return createMessageResponse(savedEvent.getId(), "Saved Event with ID ");
   }
@@ -47,6 +50,12 @@ public class EventService {
     return MessageResponse.builder()
         .message(message + id)
         .build();
+  }
+
+  private boolean isValidDate(Event event) {
+    return event.getStartDate().isBefore(event.getEndDate())
+        || event.getStartDate().isEqual(event.getEndDate())
+        && event.getStartTime().isBefore(event.getEndTime());
   }
 
 }

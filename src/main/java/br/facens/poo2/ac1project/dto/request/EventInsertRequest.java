@@ -1,7 +1,6 @@
 package br.facens.poo2.ac1project.dto.request;
 
 import javax.validation.constraints.Email;
-import javax.validation.constraints.Future;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
@@ -30,12 +29,10 @@ public class EventInsertRequest {
   private String place;
   
   @NotEmpty(message = "Event start date cannot be empty")
-  @Future(message = "Event end date must be in the future")
   @DateTimeFormat(pattern = "dd/MM/yyyy")
   private String startDate;
   
   @NotEmpty(message = "Event end date cannot be empty")
-  @Future(message = "Event end date must be in the future")
   @DateTimeFormat(pattern = "dd/MM/yyyy")
   private String endDate;
   
