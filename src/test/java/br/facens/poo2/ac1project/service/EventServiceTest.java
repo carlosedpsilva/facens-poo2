@@ -32,8 +32,10 @@ import br.facens.poo2.ac1project.dto.response.EventFindResponse;
 import br.facens.poo2.ac1project.dto.response.EventPageableResponse;
 import br.facens.poo2.ac1project.dto.response.MessageResponse;
 import br.facens.poo2.ac1project.entity.Event;
-import br.facens.poo2.ac1project.execption.EventNotFoundException;
-import br.facens.poo2.ac1project.execption.IllegalDateScheduleException;
+import br.facens.poo2.ac1project.exception.EventAlreadyRegisteredException;
+import br.facens.poo2.ac1project.exception.EventNotFoundException;
+import br.facens.poo2.ac1project.exception.IllegalDateScheduleException;
+import br.facens.poo2.ac1project.exception.IllegalEventDateTimeFormat;
 import br.facens.poo2.ac1project.repository.EventRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -49,7 +51,7 @@ public class EventServiceTest {
   private EventMapper eventMapper = Mappers.getMapper(EventMapper.class);
 
   @Test
-  void testGivenInsertRequestThenReturnSavedMessage() throws IllegalDateScheduleException {
+  void testGivenInsertRequestThenReturnSavedMessage() throws IllegalDateScheduleException, IllegalEventDateTimeFormat, EventAlreadyRegisteredException {
     Event expectedSavedEvent = createFakeEntity();
     EventInsertRequest eventInsertRequest = createFakeInsertRequest();
     MessageResponse expectedSavedMessageResponse = createMessageResponse(expectedSavedEvent.getId(), "Saved Event with ID ");

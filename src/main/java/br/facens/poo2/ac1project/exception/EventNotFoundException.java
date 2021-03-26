@@ -1,4 +1,4 @@
-package br.facens.poo2.ac1project.execption;
+package br.facens.poo2.ac1project.exception;
 
 public class EventNotFoundException extends Exception {
   

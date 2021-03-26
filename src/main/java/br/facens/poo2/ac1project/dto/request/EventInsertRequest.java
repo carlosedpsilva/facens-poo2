@@ -4,8 +4,6 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
-import org.springframework.format.annotation.DateTimeFormat;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,19 +27,15 @@ public class EventInsertRequest {
   private String place;
   
   @NotEmpty(message = "Event start date cannot be empty")
-  @DateTimeFormat(pattern = "dd/MM/yyyy")
   private String startDate;
   
   @NotEmpty(message = "Event end date cannot be empty")
-  @DateTimeFormat(pattern = "dd/MM/yyyy")
   private String endDate;
   
   @NotEmpty(message = "Event start time cannot be empty")
-  @DateTimeFormat(pattern = "HH:mm")
   private String startTime;
   
   @NotEmpty(message = "Event end time cannot be empty")
-  @DateTimeFormat(pattern = "HH:mm")
   private String endTime;
   
   @Email(message = "Email must be valid")
