@@ -1,6 +1,7 @@
 package br.facens.poo2.ac1project.service;
 
 import java.time.format.DateTimeParseException;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,7 +17,7 @@ import br.facens.poo2.ac1project.entity.Event;
 import br.facens.poo2.ac1project.exception.EventAlreadyRegisteredException;
 import br.facens.poo2.ac1project.exception.EventNotFoundException;
 import br.facens.poo2.ac1project.exception.IllegalDateScheduleException;
-import br.facens.poo2.ac1project.exception.IllegalEventDateTimeFormat;
+import br.facens.poo2.ac1project.exception.IllegalDateTimeFormat;
 import br.facens.poo2.ac1project.repository.EventRepository;
 import lombok.AllArgsConstructor;
 
@@ -28,7 +29,7 @@ public class EventService {
 
   private EventMapper eventMapper;
 
-  public MessageResponse save(EventInsertRequest eventInsertRequest) throws IllegalDateScheduleException, IllegalEventDateTimeFormat, EventAlreadyRegisteredException {
+  public MessageResponse save(EventInsertRequest eventInsertRequest) throws IllegalDateScheduleException, IllegalDateTimeFormat, EventAlreadyRegisteredException {
     try {
       Event eventToSave = eventMapper.toModel(eventInsertRequest);
       isValidDateSchedule(eventToSave);
@@ -37,7 +38,7 @@ public class EventService {
       Event savedEvent = eventRepository.save(eventToSave);
       return createMessageResponse(savedEvent.getId(), "Saved Event with ID ");
     } catch (DateTimeParseException e) {
-      throw new IllegalEventDateTimeFormat(e);
+      throw new IllegalDateTimeFormat(e);
     }
   }
   
@@ -56,15 +57,16 @@ public class EventService {
   }
 
   private void verifyIfIsAlreadyRegistered(Event eventToSave) throws EventAlreadyRegisteredException {
-    if (eventRepository.findEvent(eventToSave).isPresent())
-      throw new EventAlreadyRegisteredException(eventToSave.getName());
+    Optional<Event> savedEvent = eventRepository.findEvent(eventToSave);
+    if (savedEvent.isPresent())
+      throw new EventAlreadyRegisteredException(savedEvent.get());
   }
 
   private void isValidDateSchedule(Event event) throws IllegalDateScheduleException {
     if (event.getStartDate().isAfter(event.getEndDate()))
-      throw new IllegalDateScheduleException("Could not register event. Event start date is after end date.");
+      throw new IllegalDateScheduleException("Could not register event. Specified start date cannot be after end date.");
     if (event.getStartDate().isEqual(event.getEndDate()) && event.getStartTime().isAfter(event.getEndTime())) 
-      throw new IllegalDateScheduleException("Could not register event. Event start time is after end time");
+      throw new IllegalDateScheduleException("Could not register event. Specified start time cannot be after end time");
   }
 
   private MessageResponse createMessageResponse(Long id, String message) {

@@ -35,7 +35,7 @@ import br.facens.poo2.ac1project.entity.Event;
 import br.facens.poo2.ac1project.exception.EventAlreadyRegisteredException;
 import br.facens.poo2.ac1project.exception.EventNotFoundException;
 import br.facens.poo2.ac1project.exception.IllegalDateScheduleException;
-import br.facens.poo2.ac1project.exception.IllegalEventDateTimeFormat;
+import br.facens.poo2.ac1project.exception.IllegalDateTimeFormat;
 import br.facens.poo2.ac1project.repository.EventRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -50,8 +50,10 @@ public class EventServiceTest {
   @Spy
   private EventMapper eventMapper = Mappers.getMapper(EventMapper.class);
 
+  // POST
+
   @Test
-  void testGivenInsertRequestThenReturnSavedMessage() throws IllegalDateScheduleException, IllegalEventDateTimeFormat, EventAlreadyRegisteredException {
+  void testGivenInsertRequestThenReturnSavedMessage() throws IllegalDateScheduleException, IllegalDateTimeFormat, EventAlreadyRegisteredException {
     Event expectedSavedEvent = createFakeEntity();
     EventInsertRequest eventInsertRequest = createFakeInsertRequest();
     MessageResponse expectedSavedMessageResponse = createMessageResponse(expectedSavedEvent.getId(), "Saved Event with ID ");
@@ -64,6 +66,16 @@ public class EventServiceTest {
   }
 
   @Test
+  void testGivenAlreadyRegisteredInsertRequestThenThrowException() {
+    Event expectedSavedEvent = createFakeEntity();
+    EventInsertRequest eventInsertRequest = createFakeInsertRequest();
+    
+    when(eventRepository.findEvent(any(Event.class))).thenReturn(Optional.of(expectedSavedEvent));
+    
+    assertThrows(EventAlreadyRegisteredException.class, () -> eventService.save(eventInsertRequest));
+  }
+  
+  @Test
   void testGivenInsertRequestWithInvalidDateScheduleThenThrowException() {
     EventInsertRequest eventInsertRequest = createFakeInsertRequest();
     var startDate = eventInsertRequest.getStartDate();
@@ -72,6 +84,17 @@ public class EventServiceTest {
 
     assertThrows(IllegalDateScheduleException.class, () -> eventService.save(eventInsertRequest));
   }
+
+  @Test
+  void testGivenInsertRequestWithInvalidDateTimeFormatThenThrowException() {
+    EventInsertRequest eventInsertRequest = createFakeInsertRequest();
+
+    eventInsertRequest.setStartDate("Invalid date");
+        
+    assertThrows(IllegalDateTimeFormat.class, () -> eventService.save(eventInsertRequest));    
+  }
+
+  // GET
 
   @Test
   void testGivenNoDataThenReturnAllEventsPaged() {
