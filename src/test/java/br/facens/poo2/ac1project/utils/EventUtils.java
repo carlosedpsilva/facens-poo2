@@ -19,10 +19,14 @@ public class EventUtils {
   private static String NAME = "Fake name";
   private static String DESCRIPTION = "Fake description";
   private static String PLACE = "Fake place";
-  private static LocalDate START_DATE = LocalDate.of(2022, 03, 25);
-  private static LocalDate END_DATE = LocalDate.of(2022, 03, 31);
-  private static LocalTime START_TIME = LocalTime.of(14, 00);
-  private static LocalTime END_TIME = LocalTime.of(18, 00);
+  private static LocalDate ENTITY_START_DATE = LocalDate.of(2022, 03, 11);
+  private static LocalDate ENTITY_END_DATE = LocalDate.of(2022, 03, 15);
+  private static LocalTime ENTITY_START_TIME = LocalTime.of(11, 00);
+  private static LocalTime ENTITY_END_TIME = LocalTime.of(15, 00);
+  private static String STRING_START_DATE = "11/03/2022";
+  private static String STRING_END_DATE = "15/03/2022";
+  private static String STRING_START_TIME = "11:00";
+  private static String STRING_END_TIME = "15:00";
   private static String EMAIL = "example@email.com";
 
   public static Event createFakeEntity() {
@@ -31,10 +35,10 @@ public class EventUtils {
         .name(NAME)
         .description(DESCRIPTION)
         .place(PLACE)
-        .startDate(START_DATE)
-        .endDate(END_DATE)
-        .startTime(START_TIME)
-        .endTime(END_TIME)
+        .startDate(ENTITY_START_DATE)
+        .endDate(ENTITY_END_DATE)
+        .startTime(ENTITY_START_TIME)
+        .endTime(ENTITY_END_TIME)
         .email(EMAIL)
         .build();
   }
@@ -46,10 +50,10 @@ public class EventUtils {
         .name(NAME)
         .description(DESCRIPTION)
         .place(PLACE)
-        .startDate("25/03/2022")
-        .endDate("31/03/2022")
-        .startTime("14:00")
-        .endTime("18:00")
+        .startDate(STRING_START_DATE)
+        .endDate(STRING_END_DATE)
+        .startTime(STRING_START_TIME)
+        .endTime(STRING_END_TIME)
         .email(EMAIL)
         .build();
   }
@@ -72,10 +76,10 @@ public class EventUtils {
         .name(NAME)
         .description(DESCRIPTION)
         .place(PLACE)
-        .startDate("25/03/2022")
-        .endDate("31/03/2022")
-        .startTime("14:00")
-        .endTime("18:00")
+        .startDate(STRING_START_DATE)
+        .endDate(STRING_END_DATE)
+        .startTime(STRING_START_TIME)
+        .endTime(STRING_END_TIME)
         .email(EMAIL)
         .build();
   }
@@ -85,8 +89,8 @@ public class EventUtils {
         .id(EVENT_ID)
         .name(NAME)
         .place(PLACE)
-        .startDate("25/03/2022")
-        .startTime("14:00")
+        .startDate(STRING_START_DATE)
+        .startTime(STRING_START_TIME)
         .build();
   }
 

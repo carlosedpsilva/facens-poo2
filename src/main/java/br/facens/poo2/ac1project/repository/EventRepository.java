@@ -18,13 +18,13 @@ public interface EventRepository extends JpaRepository<Event, Long> {
   public Page<Event> pageAll(Pageable pageRequest);
 
   @Query("SELECT e FROM Event e WHERE "
-      + "e.name = :#{#req.name} "
-      + "AND ( e.startDate < :#{#req.startDate} AND   e.endDate > :#{#req.startDate} ) "
-      + "OR  ( e.startDate > :#{#req.startDate} AND e.startDate < :#{#req.endDate} ) "
-      + "OR  ( e.startDate = :#{#req.startDate} AND e.startDate = :#{#req.endDate} "
-          + "AND (( e.startTime < :#{#req.startTime} AND   e.endTime > :#{#req.startTime} ) "
-          + "OR   ( e.startTime > :#{#req.startTime} AND e.startTime < :#{#req.endTime}   )"
-          + "OR   ( e.startTime = :#{#req.startTime} AND   e.endTime = :#{#req.endTime}   )))")
+      + "( e.name = :#{#req.name} ) AND ( e.place = :#{#req.place} ) "
+      + "AND ( :#{#req.startDate} < e.startDate  AND :#{#req.endDate} > e.startDate ) "
+      + "OR  ( :#{#req.startDate} >= e.startDate AND :#{#req.startDate} < e.endDate ) "
+      + "OR  ( :#{#req.startDate} = e.startDate  AND :#{#req.startDate} = e.endDate   "
+          + "AND (( :#{#req.startTime} <  e.startTime AND :#{#req.endTime} > e.startTime )  "
+          + "OR   ( :#{#req.startTime} >= e.startTime AND :#{#req.startTime} < e.endTime )  "
+          + "OR   ( :#{#req.startTime} =  e.startTime AND :#{#req.startTime} = e.endTime )))")
   public Optional<Event> findEvent(@Param("req") Event event);
 
 }

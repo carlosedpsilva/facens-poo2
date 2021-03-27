@@ -1,10 +1,10 @@
 package br.facens.poo2.ac1project.exception;
 
-public class IllegalEventDateTimeFormat extends Exception {
+public class IllegalDateTimeFormat extends Exception {
 
   private static final long serialVersionUID = 1L;
 
-  public IllegalEventDateTimeFormat(Throwable e) {
+  public IllegalDateTimeFormat(Throwable e) {
     super(e.getLocalizedMessage());
   }
   

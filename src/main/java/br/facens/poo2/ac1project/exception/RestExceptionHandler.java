@@ -1,7 +1,9 @@
 package br.facens.poo2.ac1project.exception;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -32,41 +34,45 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
   @Override
   protected ResponseEntity<Object> handleMethodArgumentNotValid(
       MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-    HashMap<String, ArrayList<ApiError>> apiErrors = new HashMap<>();
+    HashMap<String, ArrayList<RequestFieldError>> fieldErrors = new HashMap<>();
 
     ex.getBindingResult().getAllErrors().forEach((error) -> {
       String field = ((FieldError) error).getField();
       String code = ((FieldError) error).getCode();
 
-      ApiError apiError = new ApiError(
-          status,
+      RequestFieldError fieldError = new RequestFieldError(
           error.getDefaultMessage(),
-          "Invalid field '" + field + "': " + code);
+          "Constraint: " + code);
 
-      if (!apiErrors.containsKey(field))
-        apiErrors.put(field, new ArrayList<ApiError>());
+      if (!fieldErrors.containsKey(field))
+        fieldErrors.put(field, new ArrayList<RequestFieldError>());
 
-      apiErrors.get(field).add(apiError);
+      fieldErrors.get(field).add(fieldError);
     });
 
-    return new ResponseEntity<Object>(apiErrors, headers, status);
+    InvalidRequestError wow = new InvalidRequestError(
+        HttpStatus.BAD_REQUEST,
+        "Missing required fields or wrong field range value.",
+        fieldErrors);
+
+    return new ResponseEntity<Object>(wow, headers, status);
   }
 
-  @ExceptionHandler(IllegalEventDateTimeFormat.class)
-  public ResponseEntity<Object> processValidationError(IllegalEventDateTimeFormat ex) {
-    ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), "Event date-time format not valid. Date format: 'dd/MM/yyyy', Time format: 'HH:mm'.");
+  @ExceptionHandler(IllegalDateTimeFormat.class)
+  public ResponseEntity<Object> processValidationError(IllegalDateTimeFormat ex) {
+    ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), "Event date-time format not valid. Date format: 'dd/MM/yyyy', Time format: 'HH:mm'");
     return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus()); 
   }
 
   @ExceptionHandler(IllegalDateScheduleException.class)
   public ResponseEntity<Object> processValidationError(IllegalDateScheduleException ex) {
-    ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), "The specified event date-time schedule is invalid (Start date-time must be before end date-time).");
+    ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), "The specified event date-time schedule is invalid (Start date-time must be before end date-time)");
     return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus()); 
   }
 
   @ExceptionHandler(EventAlreadyRegisteredException.class)
   public ResponseEntity<Object> processValidationError(EventAlreadyRegisteredException ex) {
-    ApiError apiError = new ApiError(HttpStatus.CONFLICT, ex.getLocalizedMessage(), "The specified date-time is already reserved for the specified event.");
+    ApiError apiError = new ApiError(HttpStatus.CONFLICT, ex.getLocalizedMessage(), "The specified date-time conflicted with an already scheduled date-time for the specified Event name and place");
     return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus()); 
   }
 
@@ -83,5 +89,29 @@ final class ApiError {
 
   private HttpStatus status;
   private String message;
+  private List<String> errors;
+
+  public ApiError(HttpStatus status, String message, String error) {
+    this.status = status;
+    this.message = message;
+    this.errors = Arrays.asList(error);
+  }
+}
+
+@Getter
+@AllArgsConstructor
+final class InvalidRequestError {
+
+  private HttpStatus status;
+  private String message;
+  private HashMap<String, ArrayList<RequestFieldError>> errors;
+
+}
+@Getter
+@AllArgsConstructor
+final class RequestFieldError {
+
+  private String message;
   private String error;
+
 }

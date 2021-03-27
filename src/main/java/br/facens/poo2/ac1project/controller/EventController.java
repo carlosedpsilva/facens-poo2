@@ -14,7 +14,7 @@ import br.facens.poo2.ac1project.dto.request.EventInsertRequest;
 import br.facens.poo2.ac1project.dto.response.MessageResponse;
 import br.facens.poo2.ac1project.exception.EventAlreadyRegisteredException;
 import br.facens.poo2.ac1project.exception.IllegalDateScheduleException;
-import br.facens.poo2.ac1project.exception.IllegalEventDateTimeFormat;
+import br.facens.poo2.ac1project.exception.IllegalDateTimeFormat;
 import br.facens.poo2.ac1project.service.EventService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -38,7 +38,7 @@ public class EventController {
   })
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public MessageResponse save(@RequestBody @Valid EventInsertRequest eventInsertRequest) throws IllegalDateScheduleException, IllegalEventDateTimeFormat, EventAlreadyRegisteredException {
+  public MessageResponse save(@RequestBody @Valid EventInsertRequest eventInsertRequest) throws IllegalDateScheduleException, IllegalDateTimeFormat, EventAlreadyRegisteredException {
     return eventService.save(eventInsertRequest);
   }
 }
