@@ -43,6 +43,7 @@ import br.facens.poo2.ac1project.dto.request.EventUpdateRequest;
 import br.facens.poo2.ac1project.dto.response.EventFindResponse;
 import br.facens.poo2.ac1project.dto.response.EventPageableResponse;
 import br.facens.poo2.ac1project.dto.response.MessageResponse;
+import br.facens.poo2.ac1project.exception.EmptyRequestException;
 import br.facens.poo2.ac1project.exception.EventNotFoundException;
 import br.facens.poo2.ac1project.exception.EventScheduleNotAvailableException;
 import br.facens.poo2.ac1project.exception.IllegalScheduleException;
@@ -213,7 +214,7 @@ public class EventControllerTest {
 
   // PUT
 
-  @Test
+  @Test // update registered event with valid id
   void testWhenPUTIsCalledWithValidUpdateRequestThenReturnOkStatus() throws Exception {
     // given
     var expectedValidId = 1L;
@@ -230,7 +231,23 @@ public class EventControllerTest {
         .andExpect(status().isOk());
   }
 
-  @Test
+  @Test // update registered event with valid id by empty update request
+  void testWhenPUTIsCalledWithEmptyUpdateRequestThenReturnOkStatus() throws Exception {
+    // given
+    var expectedValidId = 1L;
+    EventUpdateRequest invalidEventUpdateRequest = createFakeUpdateRequest();
+
+    // when
+    when(eventService.updateById(expectedValidId, invalidEventUpdateRequest)).thenThrow(EmptyRequestException.class);
+
+    // then
+    mockMvc.perform(put(EVENT_API_URL_PATH + "/" + expectedValidId)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(asJsonString(invalidEventUpdateRequest)))
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test // update registered event with invalid id
   void testWhenPUTIsCalledWithInvalidUpdateRequestThenReturnNotFoundStatus() throws Exception {
     // given
     var expectedInvalidId = 1L;

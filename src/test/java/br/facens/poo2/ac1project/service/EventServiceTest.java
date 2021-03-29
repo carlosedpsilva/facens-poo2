@@ -38,6 +38,7 @@ import br.facens.poo2.ac1project.dto.response.EventFindResponse;
 import br.facens.poo2.ac1project.dto.response.EventPageableResponse;
 import br.facens.poo2.ac1project.dto.response.MessageResponse;
 import br.facens.poo2.ac1project.entity.Event;
+import br.facens.poo2.ac1project.exception.EmptyRequestException;
 import br.facens.poo2.ac1project.exception.EventNotFoundException;
 import br.facens.poo2.ac1project.exception.EventScheduleNotAvailableException;
 import br.facens.poo2.ac1project.exception.IllegalDateTimeFormatException;
@@ -194,7 +195,7 @@ public class EventServiceTest {
   // PUT OPERATIONS
 
   @Test // update event with valid id
-  void testGivenUpdateRequestWithValidIdThenReturnUpdatedMessageResponse() throws EventNotFoundException {
+  void testGivenValidUpdateRequestWithValidIdThenReturnUpdatedMessageResponse() throws EventNotFoundException, EmptyRequestException {
     // given
     var expectedValidId = 1L;
     Event expectedSavedEvent = createFakeEntity();
@@ -208,6 +209,25 @@ public class EventServiceTest {
     MessageResponse updatedMessageResponse = eventService.updateById(expectedValidId, eventUpdateRequest);
     assertEquals(expectedUpdatedMessageResponse, updatedMessageResponse);
   }
+
+  @Test // updated event with valid id and empty body
+  void testGivenEmptyUpdateRequestWithValidIdThenThrowException() {
+    // given
+    var expectedValidId = 1L;
+    Event expectedSavedEvent = createFakeEntity();
+    EventUpdateRequest invalidEventUpdateRequest = EventUpdateRequest.builder()
+        .name("")
+        .description("")
+        .place("")
+        .email("")
+        .build();
+
+    // when
+    when(eventRepository.findById(expectedValidId)).thenReturn(Optional.of(expectedSavedEvent));
+
+    // then
+    assertThrows(EmptyRequestException.class, () -> eventService.updateById(expectedValidId, invalidEventUpdateRequest));
+  } 
 
   @Test // update event with invalid id
   void testGivenUpdateRequestWithInvalidIdThenThrowException() {
