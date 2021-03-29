@@ -97,7 +97,7 @@ public class EventServiceTest {
   // GET
 
   @Test
-  void testGivenNoDataThenReturnAllEventsPaged() {
+  void testGivenNoDataThenReturnAllEventsPaged() throws IllegalDateTimeFormat {
     PageRequest pageRequest = PageRequest.of(0, 8);
 
     List<Event> savedEvents = Collections.singletonList(createFakeEntity());
@@ -106,9 +106,9 @@ public class EventServiceTest {
     Page<Event> expectedPagedEvents = new PageImpl<>(savedEvents, pageRequest, savedEvents.size());
     Page<EventPageableResponse> expectedPagedEventsResponse = new PageImpl<>(pageableEventsResponse, pageRequest, pageableEventsResponse.size());
 
-    when(eventRepository.pageAll(any(Pageable.class))).thenReturn(expectedPagedEvents);
+    when(eventRepository.pageAll(any(Pageable.class), any(Event.class))).thenReturn(expectedPagedEvents);
 
-    Page<EventPageableResponse> pagedEventsResponse = eventService.findAll(pageRequest);
+    Page<EventPageableResponse> pagedEventsResponse = eventService.findAll(pageRequest, "", "", "", "");
 
     assertEquals(expectedPagedEventsResponse, pagedEventsResponse);
   }

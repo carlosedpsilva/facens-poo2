@@ -1,11 +1,13 @@
 package br.facens.poo2.ac1project.service;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import br.facens.poo2.ac1project.dto.mapper.EventMapper;
@@ -42,8 +44,26 @@ public class EventService {
     }
   }
   
-  public Page<EventPageableResponse> findAll(PageRequest pageRequest) {
-    Page<Event> pagedEvents = eventRepository.pageAll(pageRequest);
+  public Page<EventPageableResponse> findAll(Pageable pageRequest,
+      String name, String place, String description, String startDate) throws IllegalDateTimeFormat {
+
+    LocalDate startDateFilter = null;
+
+    if (!startDate.isBlank())
+      try {
+        startDateFilter = LocalDate.parse(startDate, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+      } catch (DateTimeParseException e) {
+        // do nothing
+      }
+
+    Event entityFilter = Event.builder()
+        .name(               name.isBlank() ? null : name )
+        .place(             place.isBlank() ? null : place )
+        .description( description.isBlank() ? null : description )
+        .startDate( startDateFilter )
+        .build();
+
+    Page<Event> pagedEvents = eventRepository.pageAll(pageRequest, entityFilter);
     return pagedEvents.map(eventMapper::toEventPageableResponse);
   }
   

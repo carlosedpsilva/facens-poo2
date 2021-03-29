@@ -14,8 +14,13 @@ import br.facens.poo2.ac1project.entity.Event;
 @Repository
 public interface EventRepository extends JpaRepository<Event, Long> {
 
-  @Query("SELECT e FROM Event e")
-  public Page<Event> pageAll(Pageable pageRequest);
+  @Query("SELECT e FROM Event e WHERE "
+      + "    (LOWER(e.name)        LIKE LOWER(CONCAT('%',        :#{#req.name}, '%')) OR :#{#req.name}        IS NULL) "
+      + "AND (LOWER(e.place)       LIKE LOWER(CONCAT('%',       :#{#req.place}, '%')) OR :#{#req.place}       IS NULL) "
+      + "AND (LOWER(e.description) LIKE LOWER(CONCAT('%', :#{#req.description}, '%')) OR :#{#req.description} IS NULL) "
+      + "AND ((e.startDate >= :#{#req.startDate}) OR :#{#req.startDate} IS NULL) "
+      )
+  public Page<Event> pageAll(Pageable pageRequest, @Param("req") Event event);
 
   @Query("SELECT e FROM Event e WHERE "
       + "( e.name = :#{#req.name} ) AND ( e.place = :#{#req.place} ) "
