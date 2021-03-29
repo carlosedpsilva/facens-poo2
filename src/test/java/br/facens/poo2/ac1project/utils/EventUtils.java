@@ -60,7 +60,6 @@ public class EventUtils {
     
   public static EventUpdateRequest createFakeUpdateRequest() {
     return EventUpdateRequest.builder()
-        .id(EVENT_ID)
         .name(NAME)
         .description(DESCRIPTION)
         .place(PLACE)

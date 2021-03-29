@@ -14,8 +14,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class EventUpdateRequest {
   
-  private Long id;
-  
   @Size(min = 2, max = 200, message = "Event name must be between 2 and 200 characters")
   private String name;
   
