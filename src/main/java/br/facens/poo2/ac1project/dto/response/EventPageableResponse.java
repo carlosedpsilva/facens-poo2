@@ -13,6 +13,7 @@ public class EventPageableResponse {
   
   private Long id;
   private String name;
+  private String description;
   private String place;
   private String startDate;
   private String startTime;

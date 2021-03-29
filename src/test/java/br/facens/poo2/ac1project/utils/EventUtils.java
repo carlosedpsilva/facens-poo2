@@ -88,6 +88,7 @@ public class EventUtils {
     return EventPageableResponse.builder()
         .id(EVENT_ID)
         .name(NAME)
+        .description(DESCRIPTION)
         .place(PLACE)
         .startDate(STRING_START_DATE)
         .startTime(STRING_START_TIME)
