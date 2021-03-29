@@ -55,10 +55,9 @@ public class EventController {
     return eventService.save(eventInsertRequest);
   }
 
-
   @ApiOperation(value = "List all scheduled events")
   @ApiResponses(value = {
-    @ApiResponse(code = 200, message = "Successfully listed all scheduled events")
+      @ApiResponse(code = 200, message = "Successfully listed all scheduled events")
   })
   @GetMapping
   @ResponseStatus(HttpStatus.OK)
@@ -76,6 +75,11 @@ public class EventController {
     return eventService.findAll(pageRequest, name, description, place, startDate);
   }
 
+  @ApiOperation(value = "Return an scheduled event found by a given id")
+  @ApiResponses(value = {
+      @ApiResponse(code = 200, message = "Successfully found event in the system"),
+      @ApiResponse(code = 404, message = "Event with given id not found")
+  })
   @GetMapping("/{id}")
   @ResponseStatus(HttpStatus.OK)
   public EventFindResponse findById(@PathVariable Long id) throws EventNotFoundException {
