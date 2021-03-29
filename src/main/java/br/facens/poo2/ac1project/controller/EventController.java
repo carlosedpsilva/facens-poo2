@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,10 +21,10 @@ import br.facens.poo2.ac1project.dto.request.EventInsertRequest;
 import br.facens.poo2.ac1project.dto.response.EventFindResponse;
 import br.facens.poo2.ac1project.dto.response.EventPageableResponse;
 import br.facens.poo2.ac1project.dto.response.MessageResponse;
-import br.facens.poo2.ac1project.exception.EventScheduleNotAvailableException;
 import br.facens.poo2.ac1project.exception.EventNotFoundException;
-import br.facens.poo2.ac1project.exception.IllegalScheduleException;
+import br.facens.poo2.ac1project.exception.EventScheduleNotAvailableException;
 import br.facens.poo2.ac1project.exception.IllegalDateTimeFormatException;
+import br.facens.poo2.ac1project.exception.IllegalScheduleException;
 import br.facens.poo2.ac1project.service.EventService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -76,5 +77,11 @@ public class EventController {
   @ResponseStatus(HttpStatus.OK)
   public EventFindResponse findById(@PathVariable Long id) throws EventNotFoundException {
     return eventService.findById(id);
+  }
+
+  @DeleteMapping("/{id}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public MessageResponse deleteById(@PathVariable Long id) throws EventNotFoundException {
+    return eventService.deleteById(id);
   }
 }

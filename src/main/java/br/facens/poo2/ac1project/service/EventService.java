@@ -49,7 +49,7 @@ public class EventService {
   // GET
   
   public Page<EventPageableResponse> findAll(Pageable pageRequest,
-      String name, String place, String description, String startDate) throws IllegalDateTimeFormatException {
+      String name, String place, String description, String startDate) {
 
     LocalDate startDateFilter = null;
 
@@ -74,6 +74,14 @@ public class EventService {
   public EventFindResponse findById(Long id) throws EventNotFoundException {
     Event savedEvent = verifyIfExists(id);
     return eventMapper.toEventFindResponse(savedEvent);
+  }
+
+  // DELETE
+
+  public MessageResponse deleteById(Long id) throws EventNotFoundException {
+    verifyIfExists(id);
+    eventRepository.deleteById(id);
+    return createMessageResponse(id, "Deleted Event with ID ");
   }
 
   private Event verifyIfExists(Long id) throws EventNotFoundException {
