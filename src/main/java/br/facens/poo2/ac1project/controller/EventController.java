@@ -97,6 +97,11 @@ public class EventController {
     return eventService.deleteById(id);
   }
 
+  @ApiOperation(value = "Update a scheduled event info by a given id")
+  @ApiResponses(value = {
+      @ApiResponse(code = 200, message = "Successfully updated event in the system"),
+      @ApiResponse(code = 404, message = "Event with given id not found")
+  })
   @PutMapping("/{id}")
   @ResponseStatus(HttpStatus.OK)
   public MessageResponse updateById(@PathVariable Long id, @RequestBody EventUpdateRequest eventUpdateRequest)
