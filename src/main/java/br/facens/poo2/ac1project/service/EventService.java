@@ -16,10 +16,10 @@ import br.facens.poo2.ac1project.dto.response.EventFindResponse;
 import br.facens.poo2.ac1project.dto.response.EventPageableResponse;
 import br.facens.poo2.ac1project.dto.response.MessageResponse;
 import br.facens.poo2.ac1project.entity.Event;
-import br.facens.poo2.ac1project.exception.EventAlreadyRegisteredException;
+import br.facens.poo2.ac1project.exception.EventScheduleNotAvailableException;
 import br.facens.poo2.ac1project.exception.EventNotFoundException;
-import br.facens.poo2.ac1project.exception.IllegalDateScheduleException;
-import br.facens.poo2.ac1project.exception.IllegalDateTimeFormat;
+import br.facens.poo2.ac1project.exception.IllegalScheduleException;
+import br.facens.poo2.ac1project.exception.IllegalDateTimeFormatException;
 import br.facens.poo2.ac1project.repository.EventRepository;
 import lombok.AllArgsConstructor;
 
@@ -31,7 +31,9 @@ public class EventService {
 
   private EventMapper eventMapper;
 
-  public MessageResponse save(EventInsertRequest eventInsertRequest) throws IllegalDateScheduleException, IllegalDateTimeFormat, EventAlreadyRegisteredException {
+  // POST 
+
+  public MessageResponse save(EventInsertRequest eventInsertRequest) throws IllegalScheduleException, IllegalDateTimeFormatException, EventScheduleNotAvailableException {
     try {
       Event eventToSave = eventMapper.toModel(eventInsertRequest);
       verifyIfIsValidScheduleDate(eventToSave);
@@ -40,12 +42,14 @@ public class EventService {
       Event savedEvent = eventRepository.save(eventToSave);
       return createMessageResponse(savedEvent.getId(), "Saved Event with ID ");
     } catch (DateTimeParseException e) {
-      throw new IllegalDateTimeFormat(e);
+      throw new IllegalDateTimeFormatException(e);
     }
   }
   
+  // GET
+  
   public Page<EventPageableResponse> findAll(Pageable pageRequest,
-      String name, String place, String description, String startDate) throws IllegalDateTimeFormat {
+      String name, String place, String description, String startDate) throws IllegalDateTimeFormatException {
 
     LocalDate startDateFilter = null;
 
@@ -76,17 +80,17 @@ public class EventService {
     return eventRepository.findById(id).orElseThrow(() -> new EventNotFoundException(id));
   }
 
-  private void verifyIfScheduleIsAvailable(Event eventToSave) throws EventAlreadyRegisteredException {
+  private void verifyIfScheduleIsAvailable(Event eventToSave) throws EventScheduleNotAvailableException {
     List<Event> savedEvents = eventRepository.findEventsBySchedule(eventToSave);
     if (!savedEvents.isEmpty())
-      throw new EventAlreadyRegisteredException(savedEvents.get(0));
+      throw new EventScheduleNotAvailableException(savedEvents.get(0));
   }
 
-  private void verifyIfIsValidScheduleDate(Event event) throws IllegalDateScheduleException {
+  private void verifyIfIsValidScheduleDate(Event event) throws IllegalScheduleException {
     if (event.getStartDate().isAfter(event.getEndDate()))
-      throw new IllegalDateScheduleException("Could not register event. Specified start date cannot be after end date.");
+      throw new IllegalScheduleException("Could not register event. Specified start date cannot be after end date.");
     if (event.getStartDate().isEqual(event.getEndDate()) && event.getStartTime().isAfter(event.getEndTime())) 
-      throw new IllegalDateScheduleException("Could not register event. Specified start time cannot be after end time");
+      throw new IllegalScheduleException("Could not register event. Specified start time cannot be after end time");
   }
 
   private MessageResponse createMessageResponse(Long id, String message) {

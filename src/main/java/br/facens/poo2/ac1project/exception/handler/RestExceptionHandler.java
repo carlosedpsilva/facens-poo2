@@ -1,4 +1,4 @@
-package br.facens.poo2.ac1project.exception;
+package br.facens.poo2.ac1project.exception.handler;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,6 +16,10 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import br.facens.poo2.ac1project.exception.EventNotFoundException;
+import br.facens.poo2.ac1project.exception.EventScheduleNotAvailableException;
+import br.facens.poo2.ac1project.exception.IllegalScheduleException;
+import br.facens.poo2.ac1project.exception.IllegalDateTimeFormatException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -27,7 +31,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
       NoHandlerFoundException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
     String error = "No handler found for " + ex.getHttpMethod() + " " + ex.getRequestURL();
 
-    ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, ex.getLocalizedMessage(), error);
+    ApiError apiError = new ApiError(status, ex.getLocalizedMessage(), error);
     return new ResponseEntity<Object>(apiError, headers, apiError.getStatus());
   }
 
@@ -51,34 +55,34 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     });
 
     InvalidRequestError wow = new InvalidRequestError(
-        HttpStatus.BAD_REQUEST,
+        status,
         "Missing required fields or wrong field range value.",
         fieldErrors);
 
     return new ResponseEntity<Object>(wow, headers, status);
   }
 
-  @ExceptionHandler(IllegalDateTimeFormat.class)
-  public ResponseEntity<Object> processValidationError(IllegalDateTimeFormat ex) {
-    ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), "Event date-time format not valid. Date format: 'dd/MM/yyyy', Time format: 'HH:mm'");
+  @ExceptionHandler(IllegalDateTimeFormatException.class)
+  public ResponseEntity<Object> processValidationError(IllegalDateTimeFormatException ex) {
+    ApiError apiError = new ApiError(ex.status(), ex.getLocalizedMessage(), "Event date-time format not valid. Date format: 'dd/MM/yyyy', Time format: 'HH:mm'");
     return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus()); 
   }
 
-  @ExceptionHandler(IllegalDateScheduleException.class)
-  public ResponseEntity<Object> processValidationError(IllegalDateScheduleException ex) {
-    ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), "The specified event date-time schedule is invalid (Start date-time must be before end date-time)");
+  @ExceptionHandler(IllegalScheduleException.class)
+  public ResponseEntity<Object> processValidationError(IllegalScheduleException ex) {
+    ApiError apiError = new ApiError(ex.status(), ex.getLocalizedMessage(), "The specified event date-time schedule is invalid (Start date-time must be before end date-time)");
     return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus()); 
   }
 
-  @ExceptionHandler(EventAlreadyRegisteredException.class)
-  public ResponseEntity<Object> processValidationError(EventAlreadyRegisteredException ex) {
-    ApiError apiError = new ApiError(HttpStatus.CONFLICT, ex.getLocalizedMessage(), "The specified date-time conflicted with an already scheduled date-time for the specified Event name and place");
+  @ExceptionHandler(EventScheduleNotAvailableException.class)
+  public ResponseEntity<Object> processValidationError(EventScheduleNotAvailableException ex) {
+    ApiError apiError = new ApiError(ex.status(), ex.getLocalizedMessage(), "The specified date-time conflicted with an already scheduled date-time for the specified Event name and place");
     return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus()); 
   }
 
   @ExceptionHandler(EventNotFoundException.class)
   public ResponseEntity<Object> processValidationError(EventNotFoundException ex) {
-    ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, ex.getLocalizedMessage(), "The specified event does not exist.");
+    ApiError apiError = new ApiError(ex.status(), ex.getLocalizedMessage(), "The specified event does not exist.");
     return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus()); 
   }
 }

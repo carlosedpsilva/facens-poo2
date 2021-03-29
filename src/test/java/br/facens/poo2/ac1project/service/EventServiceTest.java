@@ -32,10 +32,10 @@ import br.facens.poo2.ac1project.dto.response.EventFindResponse;
 import br.facens.poo2.ac1project.dto.response.EventPageableResponse;
 import br.facens.poo2.ac1project.dto.response.MessageResponse;
 import br.facens.poo2.ac1project.entity.Event;
-import br.facens.poo2.ac1project.exception.EventAlreadyRegisteredException;
+import br.facens.poo2.ac1project.exception.EventScheduleNotAvailableException;
 import br.facens.poo2.ac1project.exception.EventNotFoundException;
-import br.facens.poo2.ac1project.exception.IllegalDateScheduleException;
-import br.facens.poo2.ac1project.exception.IllegalDateTimeFormat;
+import br.facens.poo2.ac1project.exception.IllegalScheduleException;
+import br.facens.poo2.ac1project.exception.IllegalDateTimeFormatException;
 import br.facens.poo2.ac1project.repository.EventRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -53,7 +53,7 @@ public class EventServiceTest {
   // POST
 
   @Test
-  void testGivenInsertRequestThenReturnSavedMessage() throws IllegalDateScheduleException, IllegalDateTimeFormat, EventAlreadyRegisteredException {
+  void testGivenInsertRequestThenReturnSavedMessage() throws IllegalScheduleException, IllegalDateTimeFormatException, EventScheduleNotAvailableException {
     Event expectedSavedEvent = createFakeEntity();
     EventInsertRequest eventInsertRequest = createFakeInsertRequest();
     MessageResponse expectedSavedMessageResponse = createMessageResponse(expectedSavedEvent.getId(), "Saved Event with ID ");
@@ -72,7 +72,7 @@ public class EventServiceTest {
     
     when(eventRepository.findEventsBySchedule(any(Event.class))).thenReturn(List.of(expectedSavedEvent));
     
-    assertThrows(EventAlreadyRegisteredException.class, () -> eventService.save(eventInsertRequest));
+    assertThrows(EventScheduleNotAvailableException.class, () -> eventService.save(eventInsertRequest));
   }
   
   @Test
@@ -82,7 +82,7 @@ public class EventServiceTest {
     eventInsertRequest.setStartDate(eventInsertRequest.getEndDate());
     eventInsertRequest.setEndDate(startDate);
 
-    assertThrows(IllegalDateScheduleException.class, () -> eventService.save(eventInsertRequest));
+    assertThrows(IllegalScheduleException.class, () -> eventService.save(eventInsertRequest));
   }
 
   @Test
@@ -91,13 +91,13 @@ public class EventServiceTest {
 
     eventInsertRequest.setStartDate("Invalid date");
         
-    assertThrows(IllegalDateTimeFormat.class, () -> eventService.save(eventInsertRequest));    
+    assertThrows(IllegalDateTimeFormatException.class, () -> eventService.save(eventInsertRequest));    
   }
 
   // GET
 
   @Test
-  void testGivenNoDataThenReturnAllEventsPaged() throws IllegalDateTimeFormat {
+  void testGivenNoDataThenReturnAllEventsPaged() throws IllegalDateTimeFormatException {
     PageRequest pageRequest = PageRequest.of(0, 8);
 
     List<Event> savedEvents = Collections.singletonList(createFakeEntity());

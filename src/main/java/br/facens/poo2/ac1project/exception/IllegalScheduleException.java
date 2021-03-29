@@ -3,17 +3,17 @@ package br.facens.poo2.ac1project.exception;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(HttpStatus.NOT_FOUND)
-public class EventNotFoundException extends Exception {
+@ResponseStatus(HttpStatus.BAD_REQUEST)
+public class IllegalScheduleException extends Exception {
 
   private static final long serialVersionUID = 1L;
 
-  public EventNotFoundException(Long id) {
-    super("Event not found with id " + id);
+  public IllegalScheduleException(String message) {
+    super(message);
   }
 
   public HttpStatus status() {
-    return HttpStatus.NOT_FOUND;
+    return HttpStatus.BAD_REQUEST;
   }
 
 }
