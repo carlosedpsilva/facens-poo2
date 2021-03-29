@@ -6,10 +6,13 @@ import static br.facens.poo2.ac1project.utils.EventUtils.createFakeInsertRequest
 import static br.facens.poo2.ac1project.utils.EventUtils.createFakePageableResponse;
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -38,6 +41,8 @@ import br.facens.poo2.ac1project.dto.response.EventFindResponse;
 import br.facens.poo2.ac1project.dto.response.EventPageableResponse;
 import br.facens.poo2.ac1project.dto.response.MessageResponse;
 import br.facens.poo2.ac1project.exception.EventNotFoundException;
+import br.facens.poo2.ac1project.exception.EventScheduleNotAvailableException;
+import br.facens.poo2.ac1project.exception.IllegalScheduleException;
 import br.facens.poo2.ac1project.service.EventService;
 
 @ExtendWith(MockitoExtension.class)
@@ -61,15 +66,18 @@ public class EventControllerTest {
         .build();
   }
 
-  // POST
+  // POST OPERATIONS 
   
-  @Test
-  void testWhenPOSTIsCalledThenAnEventShouldBeCreated() throws Exception {
+  @Test // post given valid insert request
+  void testWhenPOSTIsCalledThenAnEventScheduleShouldBeSavedWithCreatedStatus() throws Exception {
+    // given
     EventInsertRequest eventInsertRequest = createFakeInsertRequest();
     MessageResponse expectedMessageResponse = createMessageResponse(1L, "Saved Event with ID ");
 
+    // when
     when(eventService.save(eventInsertRequest)).thenReturn(expectedMessageResponse);
 
+    // then
     mockMvc.perform(post(EVENT_API_URL_PATH)
         .contentType(MediaType.APPLICATION_JSON)
         .content(asJsonString(eventInsertRequest)))
@@ -77,18 +85,55 @@ public class EventControllerTest {
         .andExpect(jsonPath("$.message", is(expectedMessageResponse.getMessage())));
   }
 
-  // GET
+  @Test // post given valid insert request - but schedule is already registered 
+  void testWhenPOSTIsCalledWithAnAlreadyScheduledInsertRequestThenReturnConflictStatus() throws Exception {
+    // given
+    EventInsertRequest invalidInsertRequest = createFakeInsertRequest();
 
-  @Test
-  void testWhenGETIsCalledThenAllSavedEventsShouldBeReturned() throws Exception {
+    // when
+    when(eventService.save(invalidInsertRequest)).thenThrow(EventScheduleNotAvailableException.class);
+
+    // then
+    assertThrows(EventScheduleNotAvailableException.class, () -> eventService.save(invalidInsertRequest));
+
+    mockMvc.perform(post(EVENT_API_URL_PATH)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(asJsonString(invalidInsertRequest)))
+        .andExpect(status().isConflict());
+  }
+
+  @Test // post given valid insert request - but schedule is already registered 
+  void testWhenPOSTIsCalledWithInvalidOrMissingFieldsThenReturnBadRequestStatus() throws Exception {
+    // given
+    EventInsertRequest invalidInsertRequest = createFakeInsertRequest();
+
+    // when
+    when(eventService.save(invalidInsertRequest)).thenThrow(IllegalScheduleException.class);
+
+    // then
+    assertThrows(IllegalScheduleException.class, () -> eventService.save(invalidInsertRequest));
+
+    mockMvc.perform(post(EVENT_API_URL_PATH)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(asJsonString(invalidInsertRequest)))
+        .andExpect(status().isBadRequest());
+  }
+
+  // GET OPERATIONS
+
+  @Test // get all registered events paged
+  void testWhenGETIsCalledThenReturnAllSavedEventsPagedWithOkStatus() throws Exception {
+    // given
     PageRequest pageRequest = PageRequest.of(0, 8);
     List<EventPageableResponse> pageableEventsResponse = Collections.singletonList(createFakePageableResponse());
     Page<EventPageableResponse> expectedPagedEventsResponse = new PageImpl<>(pageableEventsResponse, pageRequest, pageableEventsResponse.size());
 
+    // when
     when(eventService.findAll(any(Pageable.class), eq(""), eq(""), eq(""), eq(""))).thenReturn(expectedPagedEventsResponse);
 
     Page<EventPageableResponse> pagedEventsResponse = eventService.findAll(pageRequest, "", "", "", "");
 
+    // then
     assertTrue(pagedEventsResponse.getNumberOfElements() == 1);
     assertEquals(expectedPagedEventsResponse, pagedEventsResponse);
 
@@ -98,26 +143,64 @@ public class EventControllerTest {
         .andExpect(jsonPath("$.content[0].id", is(1)));
   }
 
-  @Test
-  void testWhenGETIsCalledWithValidEventIdThenThisEventShouldBeReturned() throws Exception {
+  @Test // get registered event with id 
+  void testWhenGETIsCalledWithValidEventIdThenCorrespondingEventWithOkStatus() throws Exception {
+    // given
     var expectedValidId = 1L;
     EventFindResponse expectedEventFindResponse = createFakeFindResponse();
     
+    // whem
     when(eventService.findById(expectedValidId)).thenReturn(expectedEventFindResponse);
 
+    // then
     mockMvc.perform(get(EVENT_API_URL_PATH + "/" + expectedValidId)
         .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.id", is(1)));
   }
 
-  @Test
-  void testWhenGETIsCalledWithInvalidEventIdThenAnErrorMessageShouldBeReturned() throws Exception {
+  @Test // get registered event with invalid id
+  void testWhenGETIsCalledWithInvalidEventIdThenNotFoundStatus() throws Exception {
+    // given
     var expectedInvalidId = 1L;
 
+    // when
     when(eventService.findById(expectedInvalidId)).thenThrow(EventNotFoundException.class);
 
+    // then
     mockMvc.perform(get(EVENT_API_URL_PATH + "/" + expectedInvalidId)
+        .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isNotFound());
+  }
+
+  // DELETE OPERATIONS
+
+  @Test // delete registered event with valid id
+  void testWhenDELETEIsCalledWithValidEventIdThenReturnNoContentStatus() throws Exception {
+    // given
+    var expectedValidId = 1L;
+    MessageResponse expectedMessageResponse = createMessageResponse(expectedValidId, "Deleted Event with ID ");
+
+    // when
+    when(eventService.deleteById(expectedValidId)).thenReturn(expectedMessageResponse);
+
+    // then
+    mockMvc.perform(delete(EVENT_API_URL_PATH + "/" + expectedValidId)
+        .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isNoContent())
+        .andExpect(jsonPath("$.message", is(expectedMessageResponse.getMessage())));
+  }
+  
+  @Test // delete registered event with invalid id
+  void testWhenDELETEIsCalledWithInvalidEventIdThenReturnNotFoundStatus() throws Exception {
+    // given
+    var expectedInvalidId = 1L;
+
+    // when
+    doThrow(EventNotFoundException.class).when(eventService).deleteById(expectedInvalidId);
+    
+    // then
+    mockMvc.perform(delete(EVENT_API_URL_PATH + "/" + expectedInvalidId)
         .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound());
   }

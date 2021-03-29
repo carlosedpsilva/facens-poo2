@@ -6,7 +6,11 @@ import static br.facens.poo2.ac1project.utils.EventUtils.createFakeInsertRequest
 import static br.facens.poo2.ac1project.utils.EventUtils.createFakePageableResponse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Collections;
@@ -32,14 +36,17 @@ import br.facens.poo2.ac1project.dto.response.EventFindResponse;
 import br.facens.poo2.ac1project.dto.response.EventPageableResponse;
 import br.facens.poo2.ac1project.dto.response.MessageResponse;
 import br.facens.poo2.ac1project.entity.Event;
-import br.facens.poo2.ac1project.exception.EventScheduleNotAvailableException;
 import br.facens.poo2.ac1project.exception.EventNotFoundException;
-import br.facens.poo2.ac1project.exception.IllegalScheduleException;
+import br.facens.poo2.ac1project.exception.EventScheduleNotAvailableException;
 import br.facens.poo2.ac1project.exception.IllegalDateTimeFormatException;
+import br.facens.poo2.ac1project.exception.IllegalScheduleException;
 import br.facens.poo2.ac1project.repository.EventRepository;
 
 @ExtendWith(MockitoExtension.class)
 public class EventServiceTest {
+
+  private static final String SAVED_MESSAGE = "Saved Event with ID ";
+  private static final String DELETED_MESSAGE = "Deleted Event with ID ";
   
   @InjectMocks
   private EventService eventService;
@@ -50,54 +57,68 @@ public class EventServiceTest {
   @Spy
   private EventMapper eventMapper = Mappers.getMapper(EventMapper.class);
 
-  // POST
+  // POST OPERATIONS
 
-  @Test
-  void testGivenInsertRequestThenReturnSavedMessage() throws IllegalScheduleException, IllegalDateTimeFormatException, EventScheduleNotAvailableException {
-    Event expectedSavedEvent = createFakeEntity();
+  @Test // post given valid insert request
+  void testGivenInsertRequestThenReturnSavedMessageResponse() throws IllegalScheduleException, IllegalDateTimeFormatException, EventScheduleNotAvailableException {
+    // given
     EventInsertRequest eventInsertRequest = createFakeInsertRequest();
-    MessageResponse expectedSavedMessageResponse = createMessageResponse(expectedSavedEvent.getId(), "Saved Event with ID ");
+    Event eventSearchFilter = eventMapper.toModel(eventInsertRequest);
+    Event expectedSavedEvent = createFakeEntity();
 
+    MessageResponse expectedSavedMessageResponse = createMessageResponse(expectedSavedEvent.getId(), SAVED_MESSAGE);
+
+    // when
+    when(eventRepository.findEventsBySchedule(eventSearchFilter)).thenReturn(Collections.emptyList());
     when(eventRepository.save(any(Event.class))).thenReturn(expectedSavedEvent);
 
+    // then
     MessageResponse savedMessageResponse = eventService.save(eventInsertRequest);
 
     Assertions.assertEquals(expectedSavedMessageResponse, savedMessageResponse);
   }
 
-  @Test
-  void testGivenAlreadyRegisteredInsertRequestThenThrowException() {
-    Event expectedSavedEvent = createFakeEntity();
+  @Test // post given valid insert request - but schedule is already registered 
+  void testGivenAnAlreadyScheduledInsertRequestThenThrowException() {
+    // given
     EventInsertRequest eventInsertRequest = createFakeInsertRequest();
+    Event expectedSavedEvent = createFakeEntity();
     
+    // when
     when(eventRepository.findEventsBySchedule(any(Event.class))).thenReturn(List.of(expectedSavedEvent));
     
+    // then
     assertThrows(EventScheduleNotAvailableException.class, () -> eventService.save(eventInsertRequest));
   }
   
-  @Test
-  void testGivenInsertRequestWithInvalidDateScheduleThenThrowException() {
+  @Test // post given invalid insert request - invalid schedule
+  void testGivenInsertRequestWithInvalidScheduleThenThrowException() {
+    // given
     EventInsertRequest eventInsertRequest = createFakeInsertRequest();
     var startDate = eventInsertRequest.getStartDate();
+
     eventInsertRequest.setStartDate(eventInsertRequest.getEndDate());
     eventInsertRequest.setEndDate(startDate);
 
+    // then
     assertThrows(IllegalScheduleException.class, () -> eventService.save(eventInsertRequest));
   }
 
-  @Test
+  @Test // post given invalid insert request - invalid date time foramt
   void testGivenInsertRequestWithInvalidDateTimeFormatThenThrowException() {
+    // given
     EventInsertRequest eventInsertRequest = createFakeInsertRequest();
-
-    eventInsertRequest.setStartDate("Invalid date");
+    eventInsertRequest.setStartDate("Invalid date format");
         
+    // then
     assertThrows(IllegalDateTimeFormatException.class, () -> eventService.save(eventInsertRequest));    
   }
 
-  // GET
+  // GET OPERATIONS
 
-  @Test
-  void testGivenNoDataThenReturnAllEventsPaged() throws IllegalDateTimeFormatException {
+  @Test // get all registered events paged - with content
+  void testGivenNoDataThenReturnAllRegisteredEventsPagedResponse() throws IllegalDateTimeFormatException {
+    // given
     PageRequest pageRequest = PageRequest.of(0, 8);
 
     List<Event> savedEvents = Collections.singletonList(createFakeEntity());
@@ -106,33 +127,76 @@ public class EventServiceTest {
     Page<Event> expectedPagedEvents = new PageImpl<>(savedEvents, pageRequest, savedEvents.size());
     Page<EventPageableResponse> expectedPagedEventsResponse = new PageImpl<>(pageableEventsResponse, pageRequest, pageableEventsResponse.size());
 
+    // when
     when(eventRepository.pageAll(any(Pageable.class), any(Event.class))).thenReturn(expectedPagedEvents);
 
+    // then
     Page<EventPageableResponse> pagedEventsResponse = eventService.findAll(pageRequest, "", "", "", "");
 
     assertEquals(expectedPagedEventsResponse, pagedEventsResponse);
   }
+
+  @Test // get all registered events paged - with no content
+  void testGivenNoDataThenReturnAnEmptyPageOfEventsAsResponse() {
+    // given
+    PageRequest pageRequest = PageRequest.of(0, 8);
+    List<Event> emptyListOfEvents = Collections.emptyList();
+    Page<Event> expectedPagedEvents = new PageImpl<>(emptyListOfEvents, pageRequest, 0);
+
+    // when
+    when(eventRepository.pageAll(any(Pageable.class), any(Event.class))).thenReturn(expectedPagedEvents);
+
+    // then
+    Page<EventPageableResponse> pagedEvents = eventService.findAll(pageRequest, "", "", "", "");
+    assertTrue(pagedEvents.getNumberOfElements() == 0);
+  }
   
-  @Test
-  void testGivenValidEventIdThenReturnThisEvent() throws EventNotFoundException {
-    var validEventId = 1L;
+  @Test // get registered event by id
+  void testGivenValidEventIdThenReturnThisEventAsResponse() throws EventNotFoundException {
+    // given 
+    var expectedValidId = 1L;
     Event expectedSavedEvent = createFakeEntity();
     EventFindResponse expectedSavedEventResponse = createFakeFindResponse();
 
-    when(eventRepository.findById(validEventId)).thenReturn(Optional.of(expectedSavedEvent));
-
-    EventFindResponse savedEventResponse = eventService.findById(validEventId);
-
+    // when
+    when(eventRepository.findById(expectedValidId)).thenReturn(Optional.of(expectedSavedEvent));
+    
+    // then
+    EventFindResponse savedEventResponse = eventService.findById(expectedValidId);
+    
     assertEquals(expectedSavedEventResponse, savedEventResponse);
   }
 
-  @Test
+  // DELETE OPERATIONS
+  
+  @Test // delete registered event by id
+  void testGivenValidEventIdThenReturnDeletedMessageResponse() throws EventNotFoundException {
+    // given
+    var expectedValidId = 1L;
+    Event expectedSavedEvent = createFakeEntity();
+    MessageResponse expectedDeletedEventResponse = createMessageResponse(expectedValidId, DELETED_MESSAGE);
+    
+    // when
+    when(eventRepository.findById(expectedValidId)).thenReturn(Optional.of(expectedSavedEvent));
+    doNothing().when(eventRepository).deleteById(expectedValidId);
+    
+    // then
+    MessageResponse deletedEventResponse = eventService.deleteById(expectedValidId);
+
+    verify(eventRepository, times(1)).findById(expectedValidId);
+    verify(eventRepository, times(1)).deleteById(expectedValidId);
+    assertEquals(expectedDeletedEventResponse, deletedEventResponse);
+  }
+
+  // COMMON METHODS
+
+  @Test // verify if event exists by id
   void testGivenInvalidEventIdThenThrowException() {
-    var invalidEventId = 1L;
+    var expectedInvalidId = 1L;
 
-    when(eventRepository.findById(invalidEventId)).thenReturn(Optional.ofNullable(any(Event.class)));
+    when(eventRepository.findById(expectedInvalidId)).thenReturn(Optional.ofNullable(any(Event.class)));
 
-    assertThrows(EventNotFoundException.class, () -> eventService.findById(invalidEventId));
+    assertThrows(EventNotFoundException.class, () -> eventService.findById(expectedInvalidId));
   }
 
   private MessageResponse createMessageResponse(Long id, String message) {
