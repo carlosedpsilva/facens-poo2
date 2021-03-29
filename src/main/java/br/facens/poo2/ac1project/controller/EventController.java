@@ -86,6 +86,11 @@ public class EventController {
     return eventService.findById(id);
   }
 
+  @ApiOperation(value = "Delete a scheduled event by a given id")
+  @ApiResponses(value = {
+      @ApiResponse(code = 200, message = "Successfully deleted event in the system"),
+      @ApiResponse(code = 404, message = "Event with given id not found")
+  })
   @DeleteMapping("/{id}")
   @ResponseStatus(HttpStatus.OK)
   public MessageResponse deleteById(@PathVariable Long id) throws EventNotFoundException {
