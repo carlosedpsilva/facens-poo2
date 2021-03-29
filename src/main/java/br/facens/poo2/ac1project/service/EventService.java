@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import br.facens.poo2.ac1project.dto.mapper.EventMapper;
 import br.facens.poo2.ac1project.dto.request.EventInsertRequest;
+import br.facens.poo2.ac1project.dto.request.EventUpdateRequest;
 import br.facens.poo2.ac1project.dto.response.EventFindResponse;
 import br.facens.poo2.ac1project.dto.response.EventPageableResponse;
 import br.facens.poo2.ac1project.dto.response.MessageResponse;
@@ -27,6 +28,10 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor(onConstructor = @__(@Autowired))
 public class EventService {
 
+  private static final String SAVED_MESSAGE = "Saved Event with ID ";
+  private static final String DELETED_MESSAGE = "Deleted Event with ID ";
+  private static final String UPDATED_MESSAGE = "Updated Event with ID ";
+
   private EventRepository eventRepository;
 
   private EventMapper eventMapper;
@@ -40,7 +45,7 @@ public class EventService {
       verifyIfScheduleIsAvailable(eventToSave);
 
       Event savedEvent = eventRepository.save(eventToSave);
-      return createMessageResponse(savedEvent.getId(), "Saved Event with ID ");
+      return createMessageResponse(savedEvent.getId(), SAVED_MESSAGE);
     } catch (DateTimeParseException e) {
       throw new IllegalDateTimeFormatException(e);
     }
@@ -81,8 +86,20 @@ public class EventService {
   public MessageResponse deleteById(Long id) throws EventNotFoundException {
     verifyIfExists(id);
     eventRepository.deleteById(id);
-    return createMessageResponse(id, "Deleted Event with ID ");
+    return createMessageResponse(id, DELETED_MESSAGE);
   }
+
+  // PUT
+
+  public MessageResponse updateById(Long id, EventUpdateRequest eventUpdateRequest) throws EventNotFoundException {
+    verifyIfExists(id);
+    Event eventToUpdate = eventMapper.toModel(eventUpdateRequest);
+    eventToUpdate.setId(id);
+    eventRepository.save(eventToUpdate);
+    return createMessageResponse(eventToUpdate.getId(), UPDATED_MESSAGE);
+  }
+
+  // METHODS
 
   private Event verifyIfExists(Long id) throws EventNotFoundException {
     return eventRepository.findById(id).orElseThrow(() -> new EventNotFoundException(id));

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.facens.poo2.ac1project.dto.request.EventInsertRequest;
+import br.facens.poo2.ac1project.dto.request.EventUpdateRequest;
 import br.facens.poo2.ac1project.dto.response.EventFindResponse;
 import br.facens.poo2.ac1project.dto.response.EventPageableResponse;
 import br.facens.poo2.ac1project.dto.response.MessageResponse;
@@ -48,7 +50,8 @@ public class EventController {
   })
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public MessageResponse save(@RequestBody @Valid EventInsertRequest eventInsertRequest) throws IllegalScheduleException, IllegalDateTimeFormatException, EventScheduleNotAvailableException {
+  public MessageResponse save(@RequestBody @Valid EventInsertRequest eventInsertRequest)
+      throws IllegalScheduleException, IllegalDateTimeFormatException, EventScheduleNotAvailableException {
     return eventService.save(eventInsertRequest);
   }
 
@@ -80,8 +83,15 @@ public class EventController {
   }
 
   @DeleteMapping("/{id}")
-  @ResponseStatus(HttpStatus.NO_CONTENT)
+  @ResponseStatus(HttpStatus.OK)
   public MessageResponse deleteById(@PathVariable Long id) throws EventNotFoundException {
     return eventService.deleteById(id);
+  }
+
+  @PutMapping("/{id}")
+  @ResponseStatus(HttpStatus.OK)
+  public MessageResponse updateById(@PathVariable Long id, @RequestBody EventUpdateRequest eventUpdateRequest)
+      throws EventNotFoundException {
+    return eventService.updateById(id, eventUpdateRequest);
   }
 }
