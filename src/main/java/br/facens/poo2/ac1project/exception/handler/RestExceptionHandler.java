@@ -16,10 +16,11 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import br.facens.poo2.ac1project.exception.EmptyRequestException;
 import br.facens.poo2.ac1project.exception.EventNotFoundException;
 import br.facens.poo2.ac1project.exception.EventScheduleNotAvailableException;
-import br.facens.poo2.ac1project.exception.IllegalScheduleException;
 import br.facens.poo2.ac1project.exception.IllegalDateTimeFormatException;
+import br.facens.poo2.ac1project.exception.IllegalScheduleException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -83,6 +84,12 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
   @ExceptionHandler(EventNotFoundException.class)
   public ResponseEntity<Object> processValidationError(EventNotFoundException ex) {
     ApiError apiError = new ApiError(ex.status(), ex.getLocalizedMessage(), "The specified event does not exist.");
+    return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus()); 
+  }
+
+  @ExceptionHandler(EmptyRequestException.class)
+  public ResponseEntity<Object> processValidationError(EmptyRequestException ex) {
+    ApiError apiError = new ApiError(ex.status(), ex.getLocalizedMessage(), "Request body must not be empty.");
     return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus()); 
   }
 }

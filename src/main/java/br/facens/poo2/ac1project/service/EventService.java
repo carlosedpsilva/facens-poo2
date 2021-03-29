@@ -17,10 +17,11 @@ import br.facens.poo2.ac1project.dto.response.EventFindResponse;
 import br.facens.poo2.ac1project.dto.response.EventPageableResponse;
 import br.facens.poo2.ac1project.dto.response.MessageResponse;
 import br.facens.poo2.ac1project.entity.Event;
-import br.facens.poo2.ac1project.exception.EventScheduleNotAvailableException;
+import br.facens.poo2.ac1project.exception.EmptyRequestException;
 import br.facens.poo2.ac1project.exception.EventNotFoundException;
-import br.facens.poo2.ac1project.exception.IllegalScheduleException;
+import br.facens.poo2.ac1project.exception.EventScheduleNotAvailableException;
 import br.facens.poo2.ac1project.exception.IllegalDateTimeFormatException;
+import br.facens.poo2.ac1project.exception.IllegalScheduleException;
 import br.facens.poo2.ac1project.repository.EventRepository;
 import lombok.AllArgsConstructor;
 
@@ -91,10 +92,20 @@ public class EventService {
 
   // PUT
 
-  public MessageResponse updateById(Long id, EventUpdateRequest eventUpdateRequest) throws EventNotFoundException {
-    verifyIfExists(id);
-    Event eventToUpdate = eventMapper.toModel(eventUpdateRequest);
-    eventToUpdate.setId(id);
+  public MessageResponse updateById(Long id, EventUpdateRequest eventUpdateRequest) throws EventNotFoundException, EmptyRequestException {
+    Event eventToUpdate = verifyIfExists(id);
+
+    if (eventUpdateRequest.getName().isEmpty()
+        && eventUpdateRequest.getDescription().isEmpty()
+        && eventUpdateRequest.getPlace().isEmpty()
+        && eventUpdateRequest.getEmail().isEmpty())
+          throw new EmptyRequestException();
+
+    eventToUpdate.setName(eventUpdateRequest.getName().isEmpty() ? eventToUpdate.getName() : eventUpdateRequest.getName());
+    eventToUpdate.setDescription(eventUpdateRequest.getDescription().isEmpty() ? eventToUpdate.getDescription() : eventUpdateRequest.getDescription());
+    eventToUpdate.setPlace(eventUpdateRequest.getPlace().isEmpty() ? eventToUpdate.getPlace() : eventUpdateRequest.getPlace());
+    eventToUpdate.setEmail(eventUpdateRequest.getEmail().isEmpty() ? eventToUpdate.getEmail() : eventUpdateRequest.getEmail());
+
     eventRepository.save(eventToUpdate);
     return createMessageResponse(eventToUpdate.getId(), UPDATED_MESSAGE);
   }

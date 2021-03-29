@@ -23,6 +23,7 @@ import br.facens.poo2.ac1project.dto.request.EventUpdateRequest;
 import br.facens.poo2.ac1project.dto.response.EventFindResponse;
 import br.facens.poo2.ac1project.dto.response.EventPageableResponse;
 import br.facens.poo2.ac1project.dto.response.MessageResponse;
+import br.facens.poo2.ac1project.exception.EmptyRequestException;
 import br.facens.poo2.ac1project.exception.EventNotFoundException;
 import br.facens.poo2.ac1project.exception.EventScheduleNotAvailableException;
 import br.facens.poo2.ac1project.exception.IllegalDateTimeFormatException;
@@ -104,8 +105,8 @@ public class EventController {
   })
   @PutMapping("/{id}")
   @ResponseStatus(HttpStatus.OK)
-  public MessageResponse updateById(@PathVariable Long id, @RequestBody EventUpdateRequest eventUpdateRequest)
-      throws EventNotFoundException {
+  public MessageResponse updateById(@PathVariable Long id, @RequestBody @Valid EventUpdateRequest eventUpdateRequest)
+      throws EventNotFoundException, EmptyRequestException {
     return eventService.updateById(id, eventUpdateRequest);
   }
 }
