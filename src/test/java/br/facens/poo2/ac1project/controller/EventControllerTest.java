@@ -1,6 +1,7 @@
 package br.facens.poo2.ac1project.controller;
 
 import static br.facens.poo2.ac1project.utils.EventUtils.asJsonString;
+import static br.facens.poo2.ac1project.utils.EventUtils.createFakeFindResponse;
 import static br.facens.poo2.ac1project.utils.EventUtils.createFakeInsertRequest;
 import static br.facens.poo2.ac1project.utils.EventUtils.createFakePageableResponse;
 import static org.hamcrest.core.Is.is;
@@ -33,8 +34,10 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
 import br.facens.poo2.ac1project.dto.request.EventInsertRequest;
+import br.facens.poo2.ac1project.dto.response.EventFindResponse;
 import br.facens.poo2.ac1project.dto.response.EventPageableResponse;
 import br.facens.poo2.ac1project.dto.response.MessageResponse;
+import br.facens.poo2.ac1project.exception.EventNotFoundException;
 import br.facens.poo2.ac1project.service.EventService;
 
 @ExtendWith(MockitoExtension.class)
@@ -93,6 +96,30 @@ public class EventControllerTest {
         .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.content[0].id", is(1)));
+  }
+
+  @Test
+  void testWhenGETIsCalledWithValidEventIdThenThisEventShouldBeReturned() throws Exception {
+    var expectedValidId = 1L;
+    EventFindResponse expectedEventFindResponse = createFakeFindResponse();
+    
+    when(eventService.findById(expectedValidId)).thenReturn(expectedEventFindResponse);
+
+    mockMvc.perform(get(EVENT_API_URL_PATH + "/" + expectedValidId)
+        .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id", is(1)));
+  }
+
+  @Test
+  void testWhenGETIsCalledWithInvalidEventIdThenAnErrorMessageShouldBeReturned() throws Exception {
+    var expectedInvalidId = 1L;
+
+    when(eventService.findById(expectedInvalidId)).thenThrow(EventNotFoundException.class);
+
+    mockMvc.perform(get(EVENT_API_URL_PATH + "/" + expectedInvalidId)
+        .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isNotFound());
   }
 
   private MessageResponse createMessageResponse(Long id, String message) {
