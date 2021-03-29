@@ -4,6 +4,7 @@ import static br.facens.poo2.ac1project.utils.EventUtils.asJsonString;
 import static br.facens.poo2.ac1project.utils.EventUtils.createFakeFindResponse;
 import static br.facens.poo2.ac1project.utils.EventUtils.createFakeInsertRequest;
 import static br.facens.poo2.ac1project.utils.EventUtils.createFakePageableResponse;
+import static br.facens.poo2.ac1project.utils.EventUtils.createFakeUpdateRequest;
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -15,6 +16,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -37,6 +39,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
 import br.facens.poo2.ac1project.dto.request.EventInsertRequest;
+import br.facens.poo2.ac1project.dto.request.EventUpdateRequest;
 import br.facens.poo2.ac1project.dto.response.EventFindResponse;
 import br.facens.poo2.ac1project.dto.response.EventPageableResponse;
 import br.facens.poo2.ac1project.dto.response.MessageResponse;
@@ -49,6 +52,9 @@ import br.facens.poo2.ac1project.service.EventService;
 public class EventControllerTest {
   
   private static final String EVENT_API_URL_PATH = "/api/v1/events";
+  private static final String SAVED_MESSAGE = "Saved Event with ID ";
+  private static final String DELETED_MESSAGE = "Deleted Event with ID ";
+  private static final String UPDATED_MESSAGE = "Updated Event with ID ";
 
   private MockMvc mockMvc;
 
@@ -72,7 +78,7 @@ public class EventControllerTest {
   void testWhenPOSTIsCalledThenAnEventScheduleShouldBeSavedWithCreatedStatus() throws Exception {
     // given
     EventInsertRequest eventInsertRequest = createFakeInsertRequest();
-    MessageResponse expectedMessageResponse = createMessageResponse(1L, "Saved Event with ID ");
+    MessageResponse expectedMessageResponse = createMessageResponse(1L, SAVED_MESSAGE);
 
     // when
     when(eventService.save(eventInsertRequest)).thenReturn(expectedMessageResponse);
@@ -176,10 +182,10 @@ public class EventControllerTest {
   // DELETE OPERATIONS
 
   @Test // delete registered event with valid id
-  void testWhenDELETEIsCalledWithValidEventIdThenReturnNoContentStatus() throws Exception {
+  void testWhenDELETEIsCalledWithValidEventIdThenReturnOkStatus() throws Exception {
     // given
     var expectedValidId = 1L;
-    MessageResponse expectedMessageResponse = createMessageResponse(expectedValidId, "Deleted Event with ID ");
+    MessageResponse expectedMessageResponse = createMessageResponse(expectedValidId, DELETED_MESSAGE);
 
     // when
     when(eventService.deleteById(expectedValidId)).thenReturn(expectedMessageResponse);
@@ -187,7 +193,7 @@ public class EventControllerTest {
     // then
     mockMvc.perform(delete(EVENT_API_URL_PATH + "/" + expectedValidId)
         .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isNoContent())
+        .andExpect(status().isOk())
         .andExpect(jsonPath("$.message", is(expectedMessageResponse.getMessage())));
   }
   
@@ -202,6 +208,41 @@ public class EventControllerTest {
     // then
     mockMvc.perform(delete(EVENT_API_URL_PATH + "/" + expectedInvalidId)
         .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isNotFound());
+  }
+
+  // PUT
+
+  @Test
+  void testWhenPUTIsCalledWithValidUpdateRequestThenReturnOkStatus() throws Exception {
+    // given
+    var expectedValidId = 1L;
+    EventUpdateRequest eventUpdateRequest = createFakeUpdateRequest();
+    MessageResponse expectedUpdatedMessageResponse = createMessageResponse(expectedValidId, UPDATED_MESSAGE);
+
+    // when
+    when(eventService.updateById(expectedValidId, eventUpdateRequest)).thenReturn(expectedUpdatedMessageResponse);
+
+    // then
+    mockMvc.perform(put(EVENT_API_URL_PATH + "/" + expectedValidId)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(asJsonString(eventUpdateRequest)))
+        .andExpect(status().isOk());
+  }
+
+  @Test
+  void testWhenPUTIsCalledWithInvalidUpdateRequestThenReturnNotFoundStatus() throws Exception {
+    // given
+    var expectedInvalidId = 1L;
+    EventUpdateRequest eventUpdateRequest = createFakeUpdateRequest();
+
+    // when
+    doThrow(EventNotFoundException.class).when(eventService).updateById(expectedInvalidId, eventUpdateRequest);
+
+    // then
+    mockMvc.perform(put(EVENT_API_URL_PATH + "/" + expectedInvalidId)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(asJsonString(eventUpdateRequest)))
         .andExpect(status().isNotFound());
   }
 

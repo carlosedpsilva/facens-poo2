@@ -4,6 +4,7 @@ import static br.facens.poo2.ac1project.utils.EventUtils.createFakeEntity;
 import static br.facens.poo2.ac1project.utils.EventUtils.createFakeFindResponse;
 import static br.facens.poo2.ac1project.utils.EventUtils.createFakeInsertRequest;
 import static br.facens.poo2.ac1project.utils.EventUtils.createFakePageableResponse;
+import static br.facens.poo2.ac1project.utils.EventUtils.createFakeUpdateRequest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -32,6 +33,7 @@ import org.springframework.data.domain.Pageable;
 
 import br.facens.poo2.ac1project.dto.mapper.EventMapper;
 import br.facens.poo2.ac1project.dto.request.EventInsertRequest;
+import br.facens.poo2.ac1project.dto.request.EventUpdateRequest;
 import br.facens.poo2.ac1project.dto.response.EventFindResponse;
 import br.facens.poo2.ac1project.dto.response.EventPageableResponse;
 import br.facens.poo2.ac1project.dto.response.MessageResponse;
@@ -47,6 +49,7 @@ public class EventServiceTest {
 
   private static final String SAVED_MESSAGE = "Saved Event with ID ";
   private static final String DELETED_MESSAGE = "Deleted Event with ID ";
+  private static final String UPDATED_MESSAGE = "Updated Event with ID ";
   
   @InjectMocks
   private EventService eventService;
@@ -186,6 +189,37 @@ public class EventServiceTest {
     verify(eventRepository, times(1)).findById(expectedValidId);
     verify(eventRepository, times(1)).deleteById(expectedValidId);
     assertEquals(expectedDeletedEventResponse, deletedEventResponse);
+  }
+
+  // PUT OPERATIONS
+
+  @Test // update event with valid id
+  void testGivenUpdateRequestWithValidIdThenReturnUpdatedMessageResponse() throws EventNotFoundException {
+    // given
+    var expectedValidId = 1L;
+    Event expectedSavedEvent = createFakeEntity();
+    EventUpdateRequest eventUpdateRequest = createFakeUpdateRequest();
+    MessageResponse expectedUpdatedMessageResponse = createMessageResponse(expectedValidId, UPDATED_MESSAGE);
+
+    // when
+    when(eventRepository.findById(expectedValidId)).thenReturn(Optional.of(expectedSavedEvent));
+
+    // then
+    MessageResponse updatedMessageResponse = eventService.updateById(expectedValidId, eventUpdateRequest);
+    assertEquals(expectedUpdatedMessageResponse, updatedMessageResponse);
+  }
+
+  @Test // update event with invalid id
+  void testGivenUpdateRequestWithInvalidIdThenThrowException() {
+    // given
+    var expectedInvalidId = 1L;
+    EventUpdateRequest eventUpdateRequest = createFakeUpdateRequest();
+
+    // when
+    when(eventRepository.findById(expectedInvalidId)).thenReturn(Optional.empty());
+
+    // then
+    assertThrows(EventNotFoundException.class, () -> eventService.updateById(expectedInvalidId, eventUpdateRequest));
   }
 
   // COMMON METHODS
