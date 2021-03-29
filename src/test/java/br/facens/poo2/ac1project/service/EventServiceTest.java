@@ -70,7 +70,7 @@ public class EventServiceTest {
     Event expectedSavedEvent = createFakeEntity();
     EventInsertRequest eventInsertRequest = createFakeInsertRequest();
     
-    when(eventRepository.findEvent(any(Event.class))).thenReturn(Optional.of(expectedSavedEvent));
+    when(eventRepository.findEventsBySchedule(any(Event.class))).thenReturn(List.of(expectedSavedEvent));
     
     assertThrows(EventAlreadyRegisteredException.class, () -> eventService.save(eventInsertRequest));
   }

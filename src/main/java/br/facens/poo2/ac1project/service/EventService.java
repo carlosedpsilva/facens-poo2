@@ -3,7 +3,7 @@ package br.facens.poo2.ac1project.service;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.Optional;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -34,8 +34,8 @@ public class EventService {
   public MessageResponse save(EventInsertRequest eventInsertRequest) throws IllegalDateScheduleException, IllegalDateTimeFormat, EventAlreadyRegisteredException {
     try {
       Event eventToSave = eventMapper.toModel(eventInsertRequest);
-      isValidDateSchedule(eventToSave);
-      verifyIfIsAlreadyRegistered(eventToSave);
+      verifyIfIsValidScheduleDate(eventToSave);
+      verifyIfScheduleIsAvailable(eventToSave);
 
       Event savedEvent = eventRepository.save(eventToSave);
       return createMessageResponse(savedEvent.getId(), "Saved Event with ID ");
@@ -76,13 +76,13 @@ public class EventService {
     return eventRepository.findById(id).orElseThrow(() -> new EventNotFoundException(id));
   }
 
-  private void verifyIfIsAlreadyRegistered(Event eventToSave) throws EventAlreadyRegisteredException {
-    Optional<Event> savedEvent = eventRepository.findEvent(eventToSave);
-    if (savedEvent.isPresent())
-      throw new EventAlreadyRegisteredException(savedEvent.get());
+  private void verifyIfScheduleIsAvailable(Event eventToSave) throws EventAlreadyRegisteredException {
+    List<Event> savedEvents = eventRepository.findEventsBySchedule(eventToSave);
+    if (!savedEvents.isEmpty())
+      throw new EventAlreadyRegisteredException(savedEvents.get(0));
   }
 
-  private void isValidDateSchedule(Event event) throws IllegalDateScheduleException {
+  private void verifyIfIsValidScheduleDate(Event event) throws IllegalDateScheduleException {
     if (event.getStartDate().isAfter(event.getEndDate()))
       throw new IllegalDateScheduleException("Could not register event. Specified start date cannot be after end date.");
     if (event.getStartDate().isEqual(event.getEndDate()) && event.getStartTime().isAfter(event.getEndTime())) 
