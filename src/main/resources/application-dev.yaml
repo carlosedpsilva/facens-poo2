@@ -1,0 +1,11 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/poo2-ac1
+    username: postgres
+    password: 1234567
+
+  jpa:
+    hibernate.ddl-auto: create 
+    show-sql: true
+    properties:
+      '[hibernate.format_sql]': true
