@@ -55,7 +55,7 @@ public class EventService {
   // GET
   
   public Page<EventPageableResponse> findAll(Pageable pageRequest,
-      String name, String place, String description, String startDate) {
+      String name, String description, String place, String startDate) {
 
     LocalDate startDateFilter = null;
 
