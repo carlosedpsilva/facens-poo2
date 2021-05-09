@@ -219,7 +219,7 @@ public class EventServiceTest {
         .name("")
         .description("")
         .place("")
-        .email("")
+        .emailContact("")
         .build();
 
     // when

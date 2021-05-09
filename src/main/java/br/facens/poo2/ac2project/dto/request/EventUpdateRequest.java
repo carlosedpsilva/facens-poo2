@@ -24,6 +24,6 @@ public class EventUpdateRequest {
   private String place;
 
   @Email(message = "Email must be valid")
-  private String email;
+  private String emailContact;
 
 }

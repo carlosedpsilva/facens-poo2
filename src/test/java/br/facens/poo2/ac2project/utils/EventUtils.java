@@ -54,7 +54,7 @@ public class EventUtils {
         .endDate(STRING_END_DATE)
         .startTime(STRING_START_TIME)
         .endTime(STRING_END_TIME)
-        .email(EMAIL)
+        .emailContact(EMAIL)
         .build();
   }
     
@@ -63,7 +63,7 @@ public class EventUtils {
         .name(NAME)
         .description(DESCRIPTION)
         .place(PLACE)
-        .email(EMAIL)
+        .emailContact(EMAIL)
         .build();
   }
 

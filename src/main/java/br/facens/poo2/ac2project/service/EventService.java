@@ -98,7 +98,7 @@ public class EventService {
     if (eventUpdateRequest.getName().isEmpty()
         && eventUpdateRequest.getDescription().isEmpty()
         && eventUpdateRequest.getPlace().isEmpty()
-        && eventUpdateRequest.getEmail().isEmpty())
+        && eventUpdateRequest.getEmailContact().isEmpty())
           throw new EmptyRequestException();
 
     eventToUpdate.setName(eventUpdateRequest.getName().isEmpty() ? eventToUpdate.getName() : eventUpdateRequest.getName());

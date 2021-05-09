@@ -39,6 +39,6 @@ public class EventInsertRequest {
   private String endTime;
   
   @Email(message = "Email must be valid")
-  private String email;
+  private String emailContact;
 
 }
