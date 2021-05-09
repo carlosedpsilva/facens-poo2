@@ -10,9 +10,9 @@
 	</parent>
 
 	<groupId>br.facens.poo2</groupId>
-	<artifactId>ac1-project</artifactId>
+	<artifactId>ac2-project</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>ac1-project</name>
+	<name>ac2-project</name>
 	<description>Demo project for Spring Boot</description>
 
 	<properties>
