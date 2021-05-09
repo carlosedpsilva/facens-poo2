@@ -1,0 +1,54 @@
+@startuml architecture_overview
+
+scale 2
+
+class BaseUser {
+  id: Long
+  name: String
+  email: String
+}
+
+class Admin {
+  phoneNumber: String
+}
+
+class Attendee {
+  balance: Double
+}
+
+class Event {
+  id: Long
+  name: String
+  description: String
+  startDate: LocalDate
+  endDate: LocalDate
+  startTime: LocalTime
+  endTime: LocalTime
+  emailContact: String
+  amountFreeTickets: Long
+  amountPayedTickets: Long
+  priceTicket: Double
+}
+
+class Ticket {
+  id: Long
+  type: Enum
+  date: Instant
+  price: Double
+}
+
+class Place {
+  id: Long
+  name: String
+  address: String
+}
+
+BaseUser <|-- Admin
+BaseUser <|-- Attendee
+
+Admin "0..1" -- "0..*" Event
+Attendee o- "0..*" Ticket
+Event o- "0..*" Ticket
+Event "0..*" -- "0..*" Place
+
+@enduml
