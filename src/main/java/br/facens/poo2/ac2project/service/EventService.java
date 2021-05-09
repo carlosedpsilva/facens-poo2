@@ -68,7 +68,7 @@ public class EventService {
 
     Event entityFilter = Event.builder()
         .name(               name.isBlank() ? null : name )
-        .place(             place.isBlank() ? null : place )
+        // .place(             place.isBlank() ? null : place )
         .description( description.isBlank() ? null : description )
         .startDate( startDateFilter )
         .build();
@@ -103,8 +103,8 @@ public class EventService {
 
     eventToUpdate.setName(eventUpdateRequest.getName().isEmpty() ? eventToUpdate.getName() : eventUpdateRequest.getName());
     eventToUpdate.setDescription(eventUpdateRequest.getDescription().isEmpty() ? eventToUpdate.getDescription() : eventUpdateRequest.getDescription());
-    eventToUpdate.setPlace(eventUpdateRequest.getPlace().isEmpty() ? eventToUpdate.getPlace() : eventUpdateRequest.getPlace());
-    eventToUpdate.setEmail(eventUpdateRequest.getEmail().isEmpty() ? eventToUpdate.getEmail() : eventUpdateRequest.getEmail());
+    // eventToUpdate.setPlace(eventUpdateRequest.getPlace().isEmpty() ? eventToUpdate.getPlace() : eventUpdateRequest.getPlace());
+    // eventToUpdate.setEmail(eventUpdateRequest.getEmail().isEmpty() ? eventToUpdate.getEmail() : eventUpdateRequest.getEmail());
 
     eventRepository.save(eventToUpdate);
     return createMessageResponse(eventToUpdate.getId(), UPDATED_MESSAGE);

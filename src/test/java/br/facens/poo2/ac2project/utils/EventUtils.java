@@ -34,12 +34,12 @@ public class EventUtils {
         .id(EVENT_ID)
         .name(NAME)
         .description(DESCRIPTION)
-        .place(PLACE)
+        // .place(PLACE)
         .startDate(ENTITY_START_DATE)
         .endDate(ENTITY_END_DATE)
         .startTime(ENTITY_START_TIME)
         .endTime(ENTITY_END_TIME)
-        .email(EMAIL)
+        // .email(EMAIL)
         .build();
   }
 
