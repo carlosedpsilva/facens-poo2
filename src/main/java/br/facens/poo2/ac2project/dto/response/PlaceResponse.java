@@ -7,9 +7,9 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class PlaceFindResponse {
+@AllArgsConstructor
+public class PlaceResponse {
     private Long id;
     private String name;
     private String address;
