@@ -4,7 +4,7 @@ import org.mapstruct.Mapper;
 
 import br.facens.poo2.ac2project.dto.request.AdminInsertRequest;
 import br.facens.poo2.ac2project.dto.request.AdminUpdateRequest;
-import br.facens.poo2.ac2project.dto.response.AdminFindResponse;
+import br.facens.poo2.ac2project.dto.response.AdminResponse;
 import br.facens.poo2.ac2project.entity.Admin;
 
 @Mapper(componentModel = "spring")
@@ -16,5 +16,5 @@ public interface AdminMapper {
 
     // Responses
 
-    AdminFindResponse toAdminFindResponse(Admin admin);
+    AdminResponse toAdminResponse(Admin admin);
 }

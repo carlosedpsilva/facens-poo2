@@ -13,8 +13,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Entity
+@SuperBuilder
 @Table(name = "tb_admin")
 @PrimaryKeyJoinColumn(name="BASE_USER_ID")
 @Data
@@ -24,7 +26,7 @@ import lombok.NoArgsConstructor;
 public class Admin extends BaseUser{
 
     @OneToMany(mappedBy = "admin")
-    private List<Event> events = new ArrayList<>();
+    private final List<Event> events = new ArrayList<>();
 
     @Column(nullable = true)
     private String phoneNumber;

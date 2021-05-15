@@ -7,9 +7,9 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class AdminFindResponse {
+@AllArgsConstructor
+public class AdminResponse {
     private Long id;
     private String name;
     private String email;
