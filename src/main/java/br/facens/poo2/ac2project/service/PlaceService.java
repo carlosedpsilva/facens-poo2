@@ -41,7 +41,7 @@ public class PlaceService {
     // GET
     
     public Page<PlaceResponse> findAll(Pageable pageRequest,
-        String name, String email, String address) {
+        String name, String address) {
   
       Place entityFilter = Place.builder()
           .name( name.isBlank() ? null : name )
