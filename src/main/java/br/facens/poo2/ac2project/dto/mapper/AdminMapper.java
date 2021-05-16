@@ -8,13 +8,20 @@ import br.facens.poo2.ac2project.dto.response.AdminResponse;
 import br.facens.poo2.ac2project.entity.Admin;
 
 @Mapper(componentModel = "spring")
-public interface AdminMapper { 
-    // Requests
+public interface AdminMapper {
 
-    Admin toModel (AdminInsertRequest adminInsertRequest);
-    Admin toModel(AdminUpdateRequest adminUpdateRequest);
+  /*
+   * Requests
+   */
 
-    // Responses
+  Admin toModel(AdminInsertRequest adminInsertRequest);
 
-    AdminResponse toAdminResponse(Admin admin);
+  Admin toModel(AdminUpdateRequest adminUpdateRequest);
+
+  /*
+   * Responses
+   */
+
+  AdminResponse toAdminResponse(Admin admin);
+
 }

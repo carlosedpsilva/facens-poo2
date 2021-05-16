@@ -14,14 +14,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AdminInsertRequest {
-    
-    @NotEmpty(message = "Name cannot be empty")
-    @Size(min = 2, max = 200, message = "Name must be between 2 and 200 characters")
-    private String name;
-    
-    @Email(message = "Email must be valid")
-    private String email;
 
-    @Size(min = 11, max = 11, message = "Phone number must contain 11 characters")
-    private String phoneNumber;
+  @NotEmpty(message = "Name cannot be empty")
+  @Size(min = 2, max = 200, message = "User name must be between 2 and 200 characters")
+  private String name;
+
+  @Email(message = "Must be a valid e-mail")
+  private String email;
+
+  @Size(min = 11, max = 11, message = "Must be a valid phone number")
+  private String phoneNumber;
+
 }

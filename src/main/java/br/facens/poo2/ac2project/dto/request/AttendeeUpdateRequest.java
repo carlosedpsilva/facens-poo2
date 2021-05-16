@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AttendeeUpdateRequest {
   
-  @PositiveOrZero(message = "Balance must be positive or zero")
+  @PositiveOrZero(message = "Balance cannot be negative")
   private Double balance;
 
 }

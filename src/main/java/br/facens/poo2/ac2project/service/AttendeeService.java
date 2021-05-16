@@ -18,7 +18,7 @@ import lombok.AllArgsConstructor;
 @Service
 @AllArgsConstructor(onConstructor = @__(@Autowired))
 public class AttendeeService {
-  
+
   private static final String SAVED_MESSAGE = "Saved Attendee with ID ";
   private static final String DELETED_MESSAGE = "Deleted Attendee with ID ";
   private static final String UPDATED_MESSAGE = "Updated Attendee with ID ";
@@ -26,7 +26,9 @@ public class AttendeeService {
   private AttendeeRepository attendeeRepository;
   private AttendeeMapper attendeeMapper;
 
-  // POST
+  /*
+   * POST OPERATION
+   */
 
   public MessageResponse save(AttendeeInsertRequest attendeeInsertRequest) {
     var attendeeToSave = attendeeMapper.toModel(attendeeInsertRequest);
@@ -34,18 +36,19 @@ public class AttendeeService {
     return createMessageResponse(savedAttendee.getId(), SAVED_MESSAGE);
   }
 
-  // GET
+  /*
+   * GET OPERATIONS
+   */
 
   public Page<AttendeeResponse> findAll(Pageable pageRequest,
       String name, String email, String balance) {
-
-    Attendee entityFilter = Attendee.builder()
+    var entitySearchFilter = Attendee.builder()
         .name( name.isBlank() ? null : name )
         .email( email.isBlank() ? null : email )
         .balance( balance.isBlank() ? 0 : Double.valueOf(balance) )
         .build();
 
-    Page<Attendee> pagedEvents = attendeeRepository.pageAll(pageRequest, entityFilter);
+    Page<Attendee> pagedEvents = attendeeRepository.pageAll(pageRequest, entitySearchFilter);
     return pagedEvents.map(attendeeMapper::toAttendeeFindResponse);
   }
 
@@ -54,15 +57,19 @@ public class AttendeeService {
     return attendeeMapper.toAttendeeFindResponse(savedAttendee);
   }
 
-  // DELETE
+  /*
+   * DELETE OPERATION
+   */
 
   public MessageResponse deleteById(long id) throws AttendeeNotFoundException {
     verifyIfExists(id);
     attendeeRepository.deleteById(id);
-    return createMessageResponse(id, DELETED_MESSAGE);    
+    return createMessageResponse(id, DELETED_MESSAGE);
   }
 
-  // PUT
+  /*
+   * UPDATE OPERATION
+   */
 
   public MessageResponse updateById(Long id, AttendeeUpdateRequest attendeeUpdateRequest) throws AttendeeNotFoundException {
     var attendeeToUpdate = verifyIfExists(id);
@@ -71,7 +78,9 @@ public class AttendeeService {
     return createMessageResponse(attendeeToUpdate.getId(), UPDATED_MESSAGE);
   }
 
-  // METHODS
+  /*
+   * METHODS
+   */
 
   private Attendee verifyIfExists(long id) throws AttendeeNotFoundException {
     return attendeeRepository.findById(id).orElseThrow(() -> new AttendeeNotFoundException(id));

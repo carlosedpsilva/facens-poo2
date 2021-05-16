@@ -37,52 +37,54 @@ public class EventService {
 
   private EventMapper eventMapper;
 
-  // POST 
+  /*
+   * POST OPERATION
+   */
 
   public MessageResponse save(EventInsertRequest eventInsertRequest) throws IllegalScheduleException, IllegalDateTimeFormatException, EventScheduleNotAvailableException {
     try {
-      Event eventToSave = eventMapper.toModel(eventInsertRequest);
+      var eventToSave = eventMapper.toModel(eventInsertRequest);
       verifyIfIsValidScheduleDate(eventToSave);
       verifyIfScheduleIsAvailable(eventToSave);
 
-      Event savedEvent = eventRepository.save(eventToSave);
+      var savedEvent = eventRepository.save(eventToSave);
       return createMessageResponse(savedEvent.getId(), SAVED_MESSAGE);
     } catch (DateTimeParseException e) {
       throw new IllegalDateTimeFormatException(e);
     }
   }
-  
-  // GET
-  
+
+  /*
+   * GET OPERATIONS
+   */
+
   public Page<EventPageableResponse> findAll(Pageable pageRequest,
       String name, String description, String place, String startDate) {
-
     LocalDate startDateFilter = null;
-
     if (!startDate.isBlank())
       try {
         startDateFilter = LocalDate.parse(startDate, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-      } catch (DateTimeParseException e) {
-        // do nothing
-      }
+      } catch (DateTimeParseException ignore) { /* will not filter by date */ }
 
-    Event entityFilter = Event.builder()
-        .name(               name.isBlank() ? null : name )
-        // .place(             place.isBlank() ? null : place )
-        .description( description.isBlank() ? null : description )
-        .startDate( startDateFilter )
+    var entityFilter = Event.builder()
+        .name(name.isBlank() ? null : name)
+        .place(place.isBlank() ? null : place) // TODO: Change use of string field 'place' to Place entity
+        .description(description.isBlank() ? null : description)
+        .startDate(startDateFilter)
         .build();
 
     Page<Event> pagedEvents = eventRepository.pageAll(pageRequest, entityFilter);
     return pagedEvents.map(eventMapper::toEventPageableResponse);
   }
-  
+
   public EventFindResponse findById(Long id) throws EventNotFoundException {
-    Event savedEvent = verifyIfExists(id);
+    var savedEvent = verifyIfExists(id);
     return eventMapper.toEventFindResponse(savedEvent);
   }
 
-  // DELETE
+  /*
+   * DELETE OPERATION
+   */
 
   public MessageResponse deleteById(Long id) throws EventNotFoundException {
     verifyIfExists(id);
@@ -90,10 +92,12 @@ public class EventService {
     return createMessageResponse(id, DELETED_MESSAGE);
   }
 
-  // PUT
+  /*
+   * PUT OPERATION
+  */
 
   public MessageResponse updateById(Long id, EventUpdateRequest eventUpdateRequest) throws EventNotFoundException, EmptyRequestException {
-    Event eventToUpdate = verifyIfExists(id);
+    var eventToUpdate = verifyIfExists(id);
 
     if (eventUpdateRequest.getName().isEmpty()
         && eventUpdateRequest.getDescription().isEmpty()
@@ -101,16 +105,30 @@ public class EventService {
         && eventUpdateRequest.getEmailContact().isEmpty())
           throw new EmptyRequestException();
 
-    eventToUpdate.setName(eventUpdateRequest.getName().isEmpty() ? eventToUpdate.getName() : eventUpdateRequest.getName());
-    eventToUpdate.setDescription(eventUpdateRequest.getDescription().isEmpty() ? eventToUpdate.getDescription() : eventUpdateRequest.getDescription());
-    // eventToUpdate.setPlace(eventUpdateRequest.getPlace().isEmpty() ? eventToUpdate.getPlace() : eventUpdateRequest.getPlace());
-    // eventToUpdate.setEmail(eventUpdateRequest.getEmail().isEmpty() ? eventToUpdate.getEmail() : eventUpdateRequest.getEmail());
+    eventToUpdate.setName(eventUpdateRequest.getName().isEmpty()
+        ? eventToUpdate.getName()
+        : eventUpdateRequest.getName());
+
+    eventToUpdate.setDescription(eventUpdateRequest.getDescription().isEmpty()
+        ? eventToUpdate.getDescription()
+        : eventUpdateRequest.getDescription());
+
+    // TODO: Change use of string field 'place' to Place entity
+    eventToUpdate.setPlace(eventUpdateRequest.getPlace().isEmpty()
+        ? eventToUpdate.getPlace()
+        : eventUpdateRequest.getPlace());
+
+    eventToUpdate.setEmailContact(eventUpdateRequest.getEmailContact().isEmpty()
+        ? eventToUpdate.getEmailContact()
+        : eventUpdateRequest.getEmailContact());
 
     eventRepository.save(eventToUpdate);
     return createMessageResponse(eventToUpdate.getId(), UPDATED_MESSAGE);
   }
 
-  // METHODS
+  /*
+   * METHODS
+   */
 
   private Event verifyIfExists(Long id) throws EventNotFoundException {
     return eventRepository.findById(id).orElseThrow(() -> new EventNotFoundException(id));
@@ -123,10 +141,15 @@ public class EventService {
   }
 
   private void verifyIfIsValidScheduleDate(Event event) throws IllegalScheduleException {
+    var invalidScheduleMessage = "Could not register event."
+        + " Specified start date cannot be after end date.";
+
     if (event.getStartDate().isAfter(event.getEndDate()))
-      throw new IllegalScheduleException("Could not register event. Specified start date cannot be after end date.");
-    if (event.getStartDate().isEqual(event.getEndDate()) && event.getStartTime().isAfter(event.getEndTime())) 
-      throw new IllegalScheduleException("Could not register event. Specified start time cannot be after end time");
+      throw new IllegalScheduleException(invalidScheduleMessage);
+
+    if (event.getStartDate().isEqual(event.getEndDate())
+        && event.getStartTime().isAfter(event.getEndTime()))
+      throw new IllegalScheduleException(invalidScheduleMessage);
   }
 
   private MessageResponse createMessageResponse(Long id, String message) {

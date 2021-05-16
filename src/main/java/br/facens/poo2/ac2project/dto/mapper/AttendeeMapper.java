@@ -9,14 +9,19 @@ import br.facens.poo2.ac2project.entity.Attendee;
 
 @Mapper(componentModel = "spring")
 public interface AttendeeMapper {
-    
-    // Requests
 
-    Attendee toModel (AttendeeInsertRequest attendeeInsertRequest);
-    Attendee toModel (AttendeeUpdateRequest attendeeUpdateRequest);
+  /*
+   * Requests
+   */
 
-    // Responses
+  Attendee toModel(AttendeeInsertRequest attendeeInsertRequest);
 
-    AttendeeResponse toAttendeeFindResponse(Attendee attendee);
-    
+  Attendee toModel(AttendeeUpdateRequest attendeeUpdateRequest);
+
+  /*
+   * Responses
+   */
+
+  AttendeeResponse toAttendeeFindResponse(Attendee attendee);
+
 }

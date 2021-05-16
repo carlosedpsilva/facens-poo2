@@ -24,13 +24,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "tb_event")
+@Table(name = "TB_EVENT")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class Event implements Serializable {
-  
+
   private static final long serialVersionUID = 1L;
 
   @ManyToOne
@@ -47,7 +47,7 @@ public class Event implements Serializable {
       joinColumns =  @JoinColumn(name="EVENT_ID"),
       inverseJoinColumns = @JoinColumn(name="PLACE_ID"))
   private final List<Place> places = new ArrayList<>();
-  
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -57,22 +57,22 @@ public class Event implements Serializable {
 
   @Column(nullable = false)
   private String name;
-  
+
   @Column(nullable = true)
   private String description;
-  
+
   @Column(nullable = false)
   private LocalDate startDate;
-  
+
   @Column(nullable = false)
   private LocalDate endDate;
-  
+
   @Column(nullable = false)
   private LocalTime startTime;
-  
+
   @Column(nullable = false)
   private LocalTime endTime;
-  
+
   @Column(nullable = true)
   private String emailContact;
 
@@ -84,4 +84,5 @@ public class Event implements Serializable {
 
   @Column(nullable = false)
     private Double priceTicket;
+
 }

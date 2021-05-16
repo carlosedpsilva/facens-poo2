@@ -17,19 +17,20 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 @Entity
-@Table(name = "tb_attendee")
-@PrimaryKeyJoinColumn(name="BASE_USER_ID")
+@Table(name = "TB_ATTENDEE")
+@PrimaryKeyJoinColumn(name = "BASE_USER_ID")
 @Data
 @SuperBuilder
-@EqualsAndHashCode(callSuper=false)
 @AllArgsConstructor
 @NoArgsConstructor
-public class Attendee extends BaseUser{
-    
-    @OneToMany
-    @JoinColumn(name="ATTENDEE_BASE_USER_ID")
-    private final List<Ticket> tickets = new ArrayList<>();
-    
-    @Column(nullable = true)
-    private double balance;
+@EqualsAndHashCode(callSuper = true)
+public class Attendee extends BaseUser {
+
+  @OneToMany
+  @JoinColumn(name = "ATTENDEE_BASE_USER_ID")
+  private final List<Ticket> tickets = new ArrayList<>();
+
+  @Column(nullable = true)
+  private double balance;
+
 }

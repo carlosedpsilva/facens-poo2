@@ -51,17 +51,19 @@ public class EventServiceTest {
   private static final String SAVED_MESSAGE = "Saved Event with ID ";
   private static final String DELETED_MESSAGE = "Deleted Event with ID ";
   private static final String UPDATED_MESSAGE = "Updated Event with ID ";
-  
+
   @InjectMocks
   private EventService eventService;
-  
+
   @Mock
   private EventRepository eventRepository;
-  
+
   @Spy
   private EventMapper eventMapper = Mappers.getMapper(EventMapper.class);
 
-  // POST OPERATIONS
+  /*
+   * POST OPERATION
+   */
 
   @Test // post given valid insert request
   void testGivenInsertRequestThenReturnSavedMessageResponse() throws IllegalScheduleException, IllegalDateTimeFormatException, EventScheduleNotAvailableException {
@@ -82,19 +84,19 @@ public class EventServiceTest {
     Assertions.assertEquals(expectedSavedMessageResponse, savedMessageResponse);
   }
 
-  @Test // post given valid insert request - but schedule is already registered 
+  @Test // post given valid insert request - but schedule is already registered
   void testGivenAnAlreadyScheduledInsertRequestThenThrowException() {
     // given
     EventInsertRequest eventInsertRequest = createFakeInsertRequest();
     Event expectedSavedEvent = createFakeEntity();
-    
+
     // when
     when(eventRepository.findEventsBySchedule(any(Event.class))).thenReturn(List.of(expectedSavedEvent));
-    
+
     // then
     assertThrows(EventScheduleNotAvailableException.class, () -> eventService.save(eventInsertRequest));
   }
-  
+
   @Test // post given invalid insert request - invalid schedule
   void testGivenInsertRequestWithInvalidScheduleThenThrowException() {
     // given
@@ -113,12 +115,14 @@ public class EventServiceTest {
     // given
     EventInsertRequest eventInsertRequest = createFakeInsertRequest();
     eventInsertRequest.setStartDate("Invalid date format");
-        
+
     // then
-    assertThrows(IllegalDateTimeFormatException.class, () -> eventService.save(eventInsertRequest));    
+    assertThrows(IllegalDateTimeFormatException.class, () -> eventService.save(eventInsertRequest));
   }
 
-  // GET OPERATIONS
+  /*
+   * GET OPERATIONS
+   */
 
   @Test // get all registered events paged - with content
   void testGivenNoDataThenReturnAllRegisteredEventsPagedResponse() throws IllegalDateTimeFormatException {
@@ -127,7 +131,7 @@ public class EventServiceTest {
 
     List<Event> savedEvents = Collections.singletonList(createFakeEntity());
     List<EventPageableResponse> pageableEventsResponse = Collections.singletonList(createFakePageableResponse());
-    
+
     Page<Event> expectedPagedEvents = new PageImpl<>(savedEvents, pageRequest, savedEvents.size());
     Page<EventPageableResponse> expectedPagedEventsResponse = new PageImpl<>(pageableEventsResponse, pageRequest, pageableEventsResponse.size());
 
@@ -154,36 +158,38 @@ public class EventServiceTest {
     Page<EventPageableResponse> pagedEvents = eventService.findAll(pageRequest, "", "", "", "");
     assertTrue(pagedEvents.getNumberOfElements() == 0);
   }
-  
+
   @Test // get registered event by id
   void testGivenValidEventIdThenReturnThisEventAsResponse() throws EventNotFoundException {
-    // given 
+    // given
     var expectedValidId = 1L;
     Event expectedSavedEvent = createFakeEntity();
     EventFindResponse expectedSavedEventResponse = createFakeFindResponse();
 
     // when
     when(eventRepository.findById(expectedValidId)).thenReturn(Optional.of(expectedSavedEvent));
-    
+
     // then
     EventFindResponse savedEventResponse = eventService.findById(expectedValidId);
-    
+
     assertEquals(expectedSavedEventResponse, savedEventResponse);
   }
 
-  // DELETE OPERATIONS
-  
+  /*
+   * DELETE OPERATION
+   */
+
   @Test // delete registered event by id
   void testGivenValidEventIdThenReturnDeletedMessageResponse() throws EventNotFoundException {
     // given
     var expectedValidId = 1L;
     Event expectedSavedEvent = createFakeEntity();
     MessageResponse expectedDeletedEventResponse = createMessageResponse(expectedValidId, DELETED_MESSAGE);
-    
+
     // when
     when(eventRepository.findById(expectedValidId)).thenReturn(Optional.of(expectedSavedEvent));
     doNothing().when(eventRepository).deleteById(expectedValidId);
-    
+
     // then
     MessageResponse deletedEventResponse = eventService.deleteById(expectedValidId);
 
@@ -192,7 +198,9 @@ public class EventServiceTest {
     assertEquals(expectedDeletedEventResponse, deletedEventResponse);
   }
 
-  // PUT OPERATIONS
+  /*
+   * PUT OPERATION
+   */
 
   @Test // update event with valid id
   void testGivenValidUpdateRequestWithValidIdThenReturnUpdatedMessageResponse() throws EventNotFoundException, EmptyRequestException {
@@ -227,7 +235,7 @@ public class EventServiceTest {
 
     // then
     assertThrows(EmptyRequestException.class, () -> eventService.updateById(expectedValidId, invalidEventUpdateRequest));
-  } 
+  }
 
   @Test // update event with invalid id
   void testGivenUpdateRequestWithInvalidIdThenThrowException() {
@@ -242,7 +250,9 @@ public class EventServiceTest {
     assertThrows(EventNotFoundException.class, () -> eventService.updateById(expectedInvalidId, eventUpdateRequest));
   }
 
-  // COMMON METHODS
+  /*
+   * COMMON
+   */
 
   @Test // verify if event exists by id
   void testGivenInvalidEventIdThenThrowException() {
@@ -252,6 +262,10 @@ public class EventServiceTest {
 
     assertThrows(EventNotFoundException.class, () -> eventService.findById(expectedInvalidId));
   }
+
+  /*
+   * METHODS
+   */
 
   private MessageResponse createMessageResponse(Long id, String message) {
     return MessageResponse.builder()

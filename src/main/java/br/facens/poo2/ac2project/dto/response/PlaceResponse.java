@@ -10,7 +10,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PlaceResponse {
-    private Long id;
-    private String name;
-    private String address;
+
+  private Long id;
+  private String name;
+  private String address;
+
 }

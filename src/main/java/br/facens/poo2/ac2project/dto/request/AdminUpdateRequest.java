@@ -12,6 +12,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AdminUpdateRequest {
-    @Size(min = 11, max = 11, message = "Phone number must contain 11 characters")
-    private String phoneNumber;
+
+  @Size(min = 11, max = 11, message = "Must be a valid phone number")
+  private String phoneNumber;
+
 }

@@ -8,7 +8,6 @@ import static br.facens.poo2.ac2project.utils.EventUtils.createFakeUpdateRequest
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
@@ -51,7 +50,7 @@ import br.facens.poo2.ac2project.service.EventService;
 
 @ExtendWith(MockitoExtension.class)
 public class EventControllerTest {
-  
+
   private static final String EVENT_API_URL_PATH = "/api/v1/events";
   private static final String SAVED_MESSAGE = "Saved Event with ID ";
   private static final String DELETED_MESSAGE = "Deleted Event with ID ";
@@ -73,8 +72,10 @@ public class EventControllerTest {
         .build();
   }
 
-  // POST OPERATIONS 
-  
+  /*
+   * POST OPERATION
+   */
+
   @Test // post given valid insert request
   void testWhenPOSTIsCalledThenAnEventScheduleShouldBeSavedWithCreatedStatus() throws Exception {
     // given
@@ -92,7 +93,7 @@ public class EventControllerTest {
         .andExpect(jsonPath("$.message", is(expectedMessageResponse.getMessage())));
   }
 
-  @Test // post given valid insert request - but schedule is already registered 
+  @Test // post given valid insert request - but schedule is already registered
   void testWhenPOSTIsCalledWithAnAlreadyScheduledInsertRequestThenReturnConflictStatus() throws Exception {
     // given
     EventInsertRequest invalidInsertRequest = createFakeInsertRequest();
@@ -109,7 +110,7 @@ public class EventControllerTest {
         .andExpect(status().isConflict());
   }
 
-  @Test // post given valid insert request - but schedule is already registered 
+  @Test // post given valid insert request - but schedule is already registered
   void testWhenPOSTIsCalledWithInvalidOrMissingFieldsThenReturnBadRequestStatus() throws Exception {
     // given
     EventInsertRequest invalidInsertRequest = createFakeInsertRequest();
@@ -126,7 +127,9 @@ public class EventControllerTest {
         .andExpect(status().isBadRequest());
   }
 
-  // GET OPERATIONS
+  /*
+   * GET OPERATIONS
+   */
 
   @Test // get all registered events paged
   void testWhenGETIsCalledThenReturnAllSavedEventsPagedWithOkStatus() throws Exception {
@@ -141,7 +144,7 @@ public class EventControllerTest {
     Page<EventPageableResponse> pagedEventsResponse = eventService.findAll(pageRequest, "", "", "", "");
 
     // then
-    assertTrue(pagedEventsResponse.getNumberOfElements() == 1);
+    assertEquals(1, pagedEventsResponse.getNumberOfElements());
     assertEquals(expectedPagedEventsResponse, pagedEventsResponse);
 
     mockMvc.perform(get(EVENT_API_URL_PATH)
@@ -150,12 +153,12 @@ public class EventControllerTest {
         .andExpect(jsonPath("$.content[0].id", is(1)));
   }
 
-  @Test // get registered event with id 
+  @Test // get registered event with id
   void testWhenGETIsCalledWithValidEventIdThenCorrespondingEventWithOkStatus() throws Exception {
     // given
     var expectedValidId = 1L;
     EventFindResponse expectedEventFindResponse = createFakeFindResponse();
-    
+
     // whem
     when(eventService.findById(expectedValidId)).thenReturn(expectedEventFindResponse);
 
@@ -180,7 +183,9 @@ public class EventControllerTest {
         .andExpect(status().isNotFound());
   }
 
-  // DELETE OPERATIONS
+  /*
+   * DELETE OPERATION
+   */
 
   @Test // delete registered event with valid id
   void testWhenDELETEIsCalledWithValidEventIdThenReturnOkStatus() throws Exception {
@@ -197,7 +202,7 @@ public class EventControllerTest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.message", is(expectedMessageResponse.getMessage())));
   }
-  
+
   @Test // delete registered event with invalid id
   void testWhenDELETEIsCalledWithInvalidEventIdThenReturnNotFoundStatus() throws Exception {
     // given
@@ -205,14 +210,16 @@ public class EventControllerTest {
 
     // when
     doThrow(EventNotFoundException.class).when(eventService).deleteById(expectedInvalidId);
-    
+
     // then
     mockMvc.perform(delete(EVENT_API_URL_PATH + "/" + expectedInvalidId)
         .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound());
   }
 
-  // PUT
+  /*
+   * PUT OPERATION
+   */
 
   @Test // update registered event with valid id
   void testWhenPUTIsCalledWithValidUpdateRequestThenReturnOkStatus() throws Exception {
@@ -262,6 +269,10 @@ public class EventControllerTest {
         .content(asJsonString(eventUpdateRequest)))
         .andExpect(status().isNotFound());
   }
+
+  /*
+   * METHODS
+   */
 
   private MessageResponse createMessageResponse(Long id, String message) {
     return MessageResponse.builder()

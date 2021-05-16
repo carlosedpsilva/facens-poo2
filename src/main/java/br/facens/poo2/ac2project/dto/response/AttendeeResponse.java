@@ -10,8 +10,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AttendeeResponse {
-    private Long id;
-    private String name;
-    private String email;
-    private double balance;
+
+  private Long id;
+  private String name;
+  private String email;
+  private double balance;
+
 }

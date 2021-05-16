@@ -16,18 +16,19 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 @Entity
-@SuperBuilder
-@Table(name = "tb_admin")
-@PrimaryKeyJoinColumn(name="BASE_USER_ID")
+@Table(name = "TB_ADMIN")
+@PrimaryKeyJoinColumn(name = "BASE_USER_ID")
 @Data
-@EqualsAndHashCode(callSuper=false)
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Admin extends BaseUser{
+@EqualsAndHashCode(callSuper = true)
+public class Admin extends BaseUser {
 
-    @OneToMany(mappedBy = "admin")
-    private final List<Event> events = new ArrayList<>();
+  @OneToMany(mappedBy = "admin")
+  private final List<Event> events = new ArrayList<>();
 
-    @Column(nullable = true)
-    private String phoneNumber;
+  @Column(nullable = true)
+  private String phoneNumber;
+
 }

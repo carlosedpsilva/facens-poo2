@@ -9,12 +9,19 @@ import br.facens.poo2.ac2project.entity.Place;
 
 @Mapper(componentModel = "spring")
 public interface PlaceMapper {
-    // Requests
 
-    Place toModel (PlaceInsertRequest placeInsertRequest);
-    Place toModel(PlaceUpdateRequest placeUpdateRequest);
+  /*
+   * Requests
+   */
 
-    // Responses
+  Place toModel(PlaceInsertRequest placeInsertRequest);
 
-    PlaceResponse toPlaceResponse(Place place);
+  Place toModel(PlaceUpdateRequest placeUpdateRequest);
+
+  /*
+   * Responses
+   */
+
+  PlaceResponse toPlaceResponse(Place place);
+
 }

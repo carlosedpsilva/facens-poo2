@@ -10,4 +10,7 @@ import br.facens.poo2.ac2project.entity.Place;
 @Repository
 public interface PlaceRepository extends JpaRepository<Place, Long> {
 
-    Page<Place> pageAll(Pageable pageRequest, Place entityFilter); }
+  // TODO: Implement pageAll query
+  Page<Place> pageAll(Pageable pageRequest, Place entityFilter);
+
+}

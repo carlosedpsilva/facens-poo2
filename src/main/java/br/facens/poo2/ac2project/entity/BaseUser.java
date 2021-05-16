@@ -17,23 +17,23 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 @Entity
+@Table(name = "TB_BASE_USER")
+@Inheritance(strategy = InheritanceType.JOINED)
 @Data
 @SuperBuilder
-@Table(name = "TB_BASE_USER")
 @AllArgsConstructor
 @NoArgsConstructor
-@Inheritance(strategy = InheritanceType.JOINED)
-public abstract class BaseUser implements Serializable{
-    
-    private static final long serialVersionUID = 1L;
-  
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-  
-    @Column(nullable = false)
-    private String name;
+public abstract class BaseUser implements Serializable {
 
-    @Column(nullable = false)
-    private String email;
+  private static final long serialVersionUID = 1L;
+
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+
+  @Column(nullable = false)
+  private String name;
+
+  @Column(nullable = false)
+  private String email;
 }

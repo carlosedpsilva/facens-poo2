@@ -11,8 +11,10 @@ import br.facens.poo2.ac2project.entity.Event;
 
 @Mapper(componentModel = "spring")
 public interface EventMapper {
-  
-  // Requests
+
+  /*
+   * Requests
+   */
 
   @Mapping(target = "startDate", source = "startDate", dateFormat = "dd/MM/yyyy")
   @Mapping(target = "endDate", source = "endDate", dateFormat = "dd/MM/yyyy")
@@ -22,16 +24,18 @@ public interface EventMapper {
 
   Event toModel(EventUpdateRequest eventUpdateRequest);
 
-  // Responses
+  /*
+   * Responses
+   */
 
   @Mapping(target = "startDate", source = "startDate", dateFormat = "dd/MM/yyyy")
   @Mapping(target = "endDate", source = "endDate", dateFormat = "dd/MM/yyyy")
   @Mapping(target = "startTime", source = "startTime", dateFormat = "HH:mm")
   @Mapping(target = "endTime", source = "endTime", dateFormat = "HH:mm")
   EventFindResponse toEventFindResponse(Event event);
-  
+
   @Mapping(target = "startDate", source = "startDate", dateFormat = "dd/MM/yyyy")
   @Mapping(target = "startTime", source = "startTime", dateFormat = "HH:mm")
   EventPageableResponse toEventPageableResponse(Event event);
-  
+
 }

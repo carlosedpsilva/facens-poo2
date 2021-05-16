@@ -34,16 +34,18 @@ public class EventUtils {
         .id(EVENT_ID)
         .name(NAME)
         .description(DESCRIPTION)
-        // .place(PLACE)
+        .place(PLACE) // TODO: Change use of string field 'place' to Place entity
         .startDate(ENTITY_START_DATE)
         .endDate(ENTITY_END_DATE)
         .startTime(ENTITY_START_TIME)
         .endTime(ENTITY_END_TIME)
-        // .email(EMAIL)
+        .emailContact(EMAIL)
         .build();
   }
 
-  // Request
+  /*
+   * Request
+   */
 
   public static EventInsertRequest createFakeInsertRequest() {
     return EventInsertRequest.builder()
@@ -57,7 +59,7 @@ public class EventUtils {
         .emailContact(EMAIL)
         .build();
   }
-    
+
   public static EventUpdateRequest createFakeUpdateRequest() {
     return EventUpdateRequest.builder()
         .name(NAME)
@@ -67,7 +69,9 @@ public class EventUtils {
         .build();
   }
 
-  // Response
+  /*
+   * Response
+   */
 
   public static EventFindResponse createFakeFindResponse() {
     return EventFindResponse.builder()
@@ -99,7 +103,7 @@ public class EventUtils {
       ObjectMapper objectMapper = new ObjectMapper();
       objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
       objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-      
+
       return objectMapper.writeValueAsString(responseObject);
     } catch (Exception e) {
       throw new RuntimeException(e);

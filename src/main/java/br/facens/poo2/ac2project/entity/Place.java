@@ -20,7 +20,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "tb_place")
+@Table(name = "TB_PLACE")
 @Data
 @Builder
 @AllArgsConstructor
@@ -28,7 +28,7 @@ import lombok.NoArgsConstructor;
 public class Place implements Serializable{
 
   private static final long serialVersionUID = 1L;
-  
+
   @ManyToMany
   @JoinTable(
       name="TB_EVENT_PLACE",
@@ -42,7 +42,8 @@ public class Place implements Serializable{
 
   @Column(nullable = false)
   private String name;
-  
+
   @Column(nullable = false)
   private String address;
+
 }

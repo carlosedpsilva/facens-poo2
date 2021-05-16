@@ -15,13 +15,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AttendeeInsertRequest {
-    @NotEmpty(message = "Name cannot be empty")
-    @Size(min = 2, max = 200, message = "Name must be between 2 and 200 characters")
-    private String name;
-    
-    @Email(message = "Email must be valid")
-    private String email;
 
-    @PositiveOrZero(message = "Balance must be positive or zero")
-    private double balance;
+  @NotEmpty(message = "Name cannot be empty")
+  @Size(min = 2, max = 200, message = "User name must be between 2 and 200 characters")
+  private String name;
+
+  @Email(message = "Must be a valid e-mail")
+  private String email;
+
+  @PositiveOrZero(message = "Balance cannot be negative")
+  private double balance;
+
 }

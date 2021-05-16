@@ -10,21 +10,22 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import br.facens.poo2.ac2project.enums.TicketType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "tb_ticket")
+@Table(name = "TB_TICKET")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class Ticket implements Serializable{
-    
+
   private static final long serialVersionUID = 1L;
-  
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -34,7 +35,7 @@ public class Ticket implements Serializable{
 
   @Column(nullable = false)
   private Instant date;
-  
+
   @Column(nullable = false)
   private Double price;
 }
