@@ -12,7 +12,6 @@ import br.facens.poo2.ac2project.dto.response.AdminResponse;
 import br.facens.poo2.ac2project.dto.response.MessageResponse;
 import br.facens.poo2.ac2project.entity.Admin;
 import br.facens.poo2.ac2project.exception.AdminNotFoundException;
-import br.facens.poo2.ac2project.exception.EmptyRequestException;
 import br.facens.poo2.ac2project.repository.AdminRepository;
 import lombok.AllArgsConstructor;
 
@@ -74,7 +73,7 @@ public class AdminService {
    */
 
   public MessageResponse updateById(Long id, AdminUpdateRequest adminUpdateRequest)
-      throws AdminNotFoundException, EmptyRequestException {
+      throws AdminNotFoundException {
     var adminToUpdate = verifyIfExists(id);
 
     adminToUpdate.setPhoneNumber(adminUpdateRequest.getPhoneNumber().isEmpty()
