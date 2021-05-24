@@ -75,10 +75,12 @@ public class PlaceService {
   public MessageResponse updateById(Long id, PlaceUpdateRequest placeUpdateRequest) throws PlaceNotFoundException, EmptyRequestException {
     Place placeToUpdate = verifyIfExists(id);
 
-    if (placeUpdateRequest.getName().isEmpty())
+    if (placeUpdateRequest.getName() == null)
           throw new EmptyRequestException();
 
-    placeToUpdate.setName(placeUpdateRequest.getName().isEmpty() ? placeToUpdate.getName() : placeUpdateRequest.getName());
+    placeToUpdate.setName(placeUpdateRequest.getName() == null
+        ? placeToUpdate.getName()
+        : placeUpdateRequest.getName());
 
     placeRepository.save(placeToUpdate);
     return createMessageResponse(placeToUpdate.getId(), UPDATED_MESSAGE);

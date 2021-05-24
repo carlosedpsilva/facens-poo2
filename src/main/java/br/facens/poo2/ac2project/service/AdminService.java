@@ -75,11 +75,7 @@ public class AdminService {
   public MessageResponse updateById(Long id, AdminUpdateRequest adminUpdateRequest)
       throws AdminNotFoundException {
     var adminToUpdate = verifyIfExists(id);
-
-    adminToUpdate.setPhoneNumber(adminUpdateRequest.getPhoneNumber().isEmpty()
-        ? adminToUpdate.getPhoneNumber()
-        : adminUpdateRequest.getPhoneNumber());
-
+    adminToUpdate.setPhoneNumber(adminUpdateRequest.getPhoneNumber());
     adminRepository.save(adminToUpdate);
     return createMessageResponse(adminToUpdate.getId(), UPDATED_MESSAGE);
   }

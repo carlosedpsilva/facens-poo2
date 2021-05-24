@@ -105,26 +105,26 @@ public class EventService {
   public MessageResponse updateById(Long id, EventUpdateRequest eventUpdateRequest) throws EventNotFoundException, EmptyRequestException {
     var eventToUpdate = verifyIfExists(id);
 
-    if (eventUpdateRequest.getName().isEmpty()
-        && eventUpdateRequest.getDescription().isEmpty()
-        && eventUpdateRequest.getPlace().isEmpty()
-        && eventUpdateRequest.getEmailContact().isEmpty())
+    if (eventUpdateRequest.getName() == null
+        && eventUpdateRequest.getDescription() == null
+        && eventUpdateRequest.getPlace() == null
+        && eventUpdateRequest.getEmailContact() == null)
           throw new EmptyRequestException();
 
-    eventToUpdate.setName(eventUpdateRequest.getName().isEmpty()
+    eventToUpdate.setName(eventUpdateRequest.getName() == null
         ? eventToUpdate.getName()
         : eventUpdateRequest.getName());
 
-    eventToUpdate.setDescription(eventUpdateRequest.getDescription().isEmpty()
+    eventToUpdate.setDescription(eventUpdateRequest.getDescription() == null
         ? eventToUpdate.getDescription()
         : eventUpdateRequest.getDescription());
 
     // TODO: Change use of string field 'place' to Place entity
-    eventToUpdate.setPlace(eventUpdateRequest.getPlace().isEmpty()
+    eventToUpdate.setPlace(eventUpdateRequest.getPlace() == null
         ? eventToUpdate.getPlace()
         : eventUpdateRequest.getPlace());
 
-    eventToUpdate.setEmailContact(eventUpdateRequest.getEmailContact().isEmpty()
+    eventToUpdate.setEmailContact(eventUpdateRequest.getEmailContact() == null
         ? eventToUpdate.getEmailContact()
         : eventUpdateRequest.getEmailContact());
 
