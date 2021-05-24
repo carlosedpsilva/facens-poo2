@@ -1,6 +1,6 @@
 package br.facens.poo2.ac2project.dto.request;
 
-import javax.validation.constraints.Size;
+import javax.validation.constraints.Pattern;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,7 +13,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AdminUpdateRequest {
 
-  @Size(min = 11, max = 11, message = "Must be a valid phone number")
+  @Pattern(
+      regexp = "^(\\+?\\d{3}( )?)?((\\(\\d{1,3}\\))|\\d{1,3})[- .]?\\d{5}[- .]?\\d{4}$",
+      message = "Must be a valid phone number")
   private String phoneNumber;
 
 }
