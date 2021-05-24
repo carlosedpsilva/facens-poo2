@@ -41,11 +41,11 @@ public class AttendeeService {
    */
 
   public Page<AttendeeResponse> findAll(Pageable pageRequest,
-      String name, String email, String balance) {
+      String name, String email, Double balance) {
     var entitySearchFilter = Attendee.builder()
-        .name( name.isBlank() ? null : name )
-        .email( email.isBlank() ? null : email )
-        .balance( balance.isBlank() ? 0 : Double.valueOf(balance) )
+        .name(name.isBlank() ? null : name)
+        .email(email.isBlank() ? null : email)
+        .balance(balance == null ? 0 : balance)
         .build();
 
     Page<Attendee> pagedEvents = attendeeRepository.pageAll(pageRequest, entitySearchFilter);

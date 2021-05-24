@@ -32,7 +32,7 @@ import lombok.AllArgsConstructor;
 public class AttendeeController {
 
   private AttendeeService attendeeService;
-  
+
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
   public MessageResponse save(@RequestBody @Valid AttendeeInsertRequest attendeeInsertRequest) {
@@ -48,7 +48,7 @@ public class AttendeeController {
       @RequestParam(value =       "orderBy", defaultValue =  "id")   String orderBy,
       @RequestParam(value =          "name", defaultValue =    "")   String name,
       @RequestParam(value =         "email", defaultValue =    "")   String email,
-      @RequestParam(value =     "startDate", defaultValue =    "")   String balance
+      @RequestParam(value =     "startDate", defaultValue =    "")   Double balance
   ) {
     PageRequest pageRequest = PageRequest.of(0, 8, Direction.valueOf(direction), orderBy);
     return attendeeService.findAll(pageRequest, name, email, balance);
