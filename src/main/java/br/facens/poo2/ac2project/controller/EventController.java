@@ -45,7 +45,7 @@ public class EventController {
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
   public MessageResponse save(@RequestBody @Valid EventInsertRequest eventInsertRequest)
-      throws IllegalScheduleException, IllegalDateTimeFormatException, EventScheduleNotAvailableException {
+      throws IllegalScheduleException, IllegalDateTimeFormatException, EventScheduleNotAvailableException, AdminNotFoundException {
     return eventService.save(eventInsertRequest);
   }
 

@@ -17,11 +17,13 @@ import br.facens.poo2.ac2project.dto.response.EventFindResponse;
 import br.facens.poo2.ac2project.dto.response.EventPageableResponse;
 import br.facens.poo2.ac2project.dto.response.MessageResponse;
 import br.facens.poo2.ac2project.entity.Event;
+import br.facens.poo2.ac2project.exception.AdminNotFoundException;
 import br.facens.poo2.ac2project.exception.EmptyRequestException;
 import br.facens.poo2.ac2project.exception.EventNotFoundException;
 import br.facens.poo2.ac2project.exception.EventScheduleNotAvailableException;
 import br.facens.poo2.ac2project.exception.IllegalDateTimeFormatException;
 import br.facens.poo2.ac2project.exception.IllegalScheduleException;
+import br.facens.poo2.ac2project.repository.AdminRepository;
 import br.facens.poo2.ac2project.repository.EventRepository;
 import lombok.AllArgsConstructor;
 
@@ -35,14 +37,18 @@ public class EventService {
 
   private EventRepository eventRepository;
 
+  private AdminRepository adminRepository;
+
   private EventMapper eventMapper;
 
   /*
    * POST OPERATION
    */
 
-  public MessageResponse save(EventInsertRequest eventInsertRequest) throws IllegalScheduleException, IllegalDateTimeFormatException, EventScheduleNotAvailableException {
+  public MessageResponse save(EventInsertRequest eventInsertRequest) throws IllegalScheduleException, IllegalDateTimeFormatException, EventScheduleNotAvailableException, AdminNotFoundException {
     try {
+      var adminId = eventInsertRequest.getAdminId();
+      adminRepository.findById(adminId).orElseThrow(() -> new AdminNotFoundException(adminId));
       var eventToSave = eventMapper.toModel(eventInsertRequest);
       verifyIfIsValidScheduleDate(eventToSave);
       verifyIfScheduleIsAvailable(eventToSave);

@@ -38,6 +38,7 @@ import br.facens.poo2.ac2project.dto.response.EventFindResponse;
 import br.facens.poo2.ac2project.dto.response.EventPageableResponse;
 import br.facens.poo2.ac2project.dto.response.MessageResponse;
 import br.facens.poo2.ac2project.entity.Event;
+import br.facens.poo2.ac2project.exception.AdminNotFoundException;
 import br.facens.poo2.ac2project.exception.EmptyRequestException;
 import br.facens.poo2.ac2project.exception.EventNotFoundException;
 import br.facens.poo2.ac2project.exception.EventScheduleNotAvailableException;
@@ -66,7 +67,7 @@ public class EventServiceTest {
    */
 
   @Test // post given valid insert request
-  void testGivenInsertRequestThenReturnSavedMessageResponse() throws IllegalScheduleException, IllegalDateTimeFormatException, EventScheduleNotAvailableException {
+  void testGivenInsertRequestThenReturnSavedMessageResponse() throws IllegalScheduleException, IllegalDateTimeFormatException, EventScheduleNotAvailableException, AdminNotFoundException {
     // given
     EventInsertRequest eventInsertRequest = createFakeInsertRequest();
     Event eventSearchFilter = eventMapper.toModel(eventInsertRequest);
