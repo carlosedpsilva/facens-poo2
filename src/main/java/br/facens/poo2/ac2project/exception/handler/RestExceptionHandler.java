@@ -16,11 +16,14 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import br.facens.poo2.ac2project.exception.AdminNotFoundException;
+import br.facens.poo2.ac2project.exception.AttendeeNotFoundException;
 import br.facens.poo2.ac2project.exception.EmptyRequestException;
 import br.facens.poo2.ac2project.exception.EventNotFoundException;
 import br.facens.poo2.ac2project.exception.EventScheduleNotAvailableException;
 import br.facens.poo2.ac2project.exception.IllegalDateTimeFormatException;
 import br.facens.poo2.ac2project.exception.IllegalScheduleException;
+import br.facens.poo2.ac2project.exception.PlaceNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -33,7 +36,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     String error = "No handler found for " + ex.getHttpMethod() + " " + ex.getRequestURL();
 
     ApiError apiError = new ApiError(status, ex.getLocalizedMessage(), error);
-    return new ResponseEntity<Object>(apiError, headers, apiError.getStatus());
+    return new ResponseEntity<>(apiError, headers, apiError.getStatus());
   }
 
   @Override
@@ -60,37 +63,71 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         "Missing required fields or wrong field range value.",
         fieldErrors);
 
-    return new ResponseEntity<Object>(wow, headers, status);
+    return new ResponseEntity<>(wow, headers, status);
   }
 
   @ExceptionHandler(IllegalDateTimeFormatException.class)
   public ResponseEntity<Object> processValidationError(IllegalDateTimeFormatException ex) {
     ApiError apiError = new ApiError(ex.status(), ex.getLocalizedMessage(), "Event date-time format not valid. Date format: 'dd/MM/yyyy', Time format: 'HH:mm'");
-    return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus()); 
+    return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
   }
 
   @ExceptionHandler(IllegalScheduleException.class)
   public ResponseEntity<Object> processValidationError(IllegalScheduleException ex) {
     ApiError apiError = new ApiError(ex.status(), ex.getLocalizedMessage(), "The specified event date-time schedule is invalid (Start date-time must be before end date-time)");
-    return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus()); 
-  }
-
-  @ExceptionHandler(EventScheduleNotAvailableException.class)
-  public ResponseEntity<Object> processValidationError(EventScheduleNotAvailableException ex) {
-    ApiError apiError = new ApiError(ex.status(), ex.getLocalizedMessage(), "The specified date-time conflicted with an already scheduled date-time for the specified Event name and place");
-    return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus()); 
-  }
-
-  @ExceptionHandler(EventNotFoundException.class)
-  public ResponseEntity<Object> processValidationError(EventNotFoundException ex) {
-    ApiError apiError = new ApiError(ex.status(), ex.getLocalizedMessage(), "The specified event does not exist.");
-    return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus()); 
+    return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
   }
 
   @ExceptionHandler(EmptyRequestException.class)
   public ResponseEntity<Object> processValidationError(EmptyRequestException ex) {
     ApiError apiError = new ApiError(ex.status(), ex.getLocalizedMessage(), "Request body must not be empty.");
-    return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus()); 
+    return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
+  }
+
+  /*
+   * Admin Exceptions
+   */
+
+  @ExceptionHandler(AdminNotFoundException.class)
+  public ResponseEntity<Object> processValidationError(AdminNotFoundException ex) {
+    ApiError apiError = new ApiError(ex.status(), ex.getLocalizedMessage(), "The specified admin does not exist.");
+    return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
+  }
+
+  /*
+   * Attendee Exepctions
+   */
+
+  @ExceptionHandler(AttendeeNotFoundException.class)
+  public ResponseEntity<Object> processValidationError(AttendeeNotFoundException ex) {
+    ApiError apiError = new ApiError(ex.status(), ex.getLocalizedMessage(), "The specified attendee does not exist.");
+    return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
+  }
+
+  /*
+   * Event Exceptions
+   */
+
+  @ExceptionHandler(EventScheduleNotAvailableException.class)
+  public ResponseEntity<Object> processValidationError(EventScheduleNotAvailableException ex) {
+    ApiError apiError = new ApiError(ex.status(), ex.getLocalizedMessage(), "The specified date-time conflicted with an already scheduled date-time for the specified Event name and place");
+    return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
+  }
+
+  @ExceptionHandler(EventNotFoundException.class)
+  public ResponseEntity<Object> processValidationError(EventNotFoundException ex) {
+    ApiError apiError = new ApiError(ex.status(), ex.getLocalizedMessage(), "The specified event does not exist.");
+    return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
+  }
+
+  /*
+   * Place Exceptions
+   */
+
+  @ExceptionHandler(PlaceNotFoundException.class)
+  public ResponseEntity<Object> processValidationError(PlaceNotFoundException ex) {
+    ApiError apiError = new ApiError(ex.status(), ex.getLocalizedMessage(), "The specified place does not exist.");
+    return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
   }
 }
 
