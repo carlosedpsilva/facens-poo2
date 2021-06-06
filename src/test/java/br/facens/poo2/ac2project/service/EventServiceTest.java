@@ -38,6 +38,7 @@ import br.facens.poo2.ac2project.dto.response.EventFindResponse;
 import br.facens.poo2.ac2project.dto.response.EventPageableResponse;
 import br.facens.poo2.ac2project.dto.response.MessageResponse;
 import br.facens.poo2.ac2project.entity.Event;
+import br.facens.poo2.ac2project.entity.Place;
 import br.facens.poo2.ac2project.exception.AdminNotFoundException;
 import br.facens.poo2.ac2project.exception.EmptyRequestException;
 import br.facens.poo2.ac2project.exception.EventNotFoundException;
@@ -70,13 +71,11 @@ public class EventServiceTest {
   void testGivenInsertRequestThenReturnSavedMessageResponse() throws IllegalScheduleException, IllegalDateTimeFormatException, EventScheduleNotAvailableException, AdminNotFoundException {
     // given
     EventInsertRequest eventInsertRequest = createFakeInsertRequest();
-    Event eventSearchFilter = eventMapper.toModel(eventInsertRequest);
     Event expectedSavedEvent = createFakeEntity();
 
     MessageResponse expectedSavedMessageResponse = createMessageResponse(expectedSavedEvent.getId(), SAVED_MESSAGE);
 
     // when
-    when(eventRepository.findEventsBySchedule(eventSearchFilter)).thenReturn(Collections.emptyList());
     when(eventRepository.save(any(Event.class))).thenReturn(expectedSavedEvent);
 
     // then
@@ -92,7 +91,7 @@ public class EventServiceTest {
     Event expectedSavedEvent = createFakeEntity();
 
     // when
-    when(eventRepository.findEventsBySchedule(any(Event.class))).thenReturn(List.of(expectedSavedEvent));
+    when(eventRepository.findEventsBySchedule(any(Event.class), any(Place.class))).thenReturn(List.of(expectedSavedEvent));
 
     // then
     assertThrows(EventScheduleNotAvailableException.class, () -> eventService.save(eventInsertRequest));

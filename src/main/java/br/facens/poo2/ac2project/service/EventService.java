@@ -17,12 +17,14 @@ import br.facens.poo2.ac2project.dto.response.EventFindResponse;
 import br.facens.poo2.ac2project.dto.response.EventPageableResponse;
 import br.facens.poo2.ac2project.dto.response.MessageResponse;
 import br.facens.poo2.ac2project.entity.Event;
+import br.facens.poo2.ac2project.entity.Place;
 import br.facens.poo2.ac2project.exception.AdminNotFoundException;
 import br.facens.poo2.ac2project.exception.EmptyRequestException;
 import br.facens.poo2.ac2project.exception.EventNotFoundException;
 import br.facens.poo2.ac2project.exception.EventScheduleNotAvailableException;
 import br.facens.poo2.ac2project.exception.IllegalDateTimeFormatException;
 import br.facens.poo2.ac2project.exception.IllegalScheduleException;
+import br.facens.poo2.ac2project.exception.PlaceNotFoundException;
 import br.facens.poo2.ac2project.repository.AdminRepository;
 import br.facens.poo2.ac2project.repository.EventRepository;
 import lombok.AllArgsConstructor;
@@ -41,6 +43,8 @@ public class EventService {
 
   private EventMapper eventMapper;
 
+  private PlaceService placeService;
+
   /*
    * POST OPERATION
    */
@@ -51,7 +55,6 @@ public class EventService {
       adminRepository.findById(adminId).orElseThrow(() -> new AdminNotFoundException(adminId));
       var eventToSave = eventMapper.toModel(eventInsertRequest);
       verifyIfIsValidScheduleDate(eventToSave);
-      verifyIfScheduleIsAvailable(eventToSave);
 
       var savedEvent = eventRepository.save(eventToSave);
       return createMessageResponse(savedEvent.getId(), SAVED_MESSAGE);
@@ -59,7 +62,16 @@ public class EventService {
       throw new IllegalDateTimeFormatException(e);
     }
   }
-
+  public MessageResponse associatePlaceById(Long eventId, Long placeId) throws EventNotFoundException, PlaceNotFoundException, EventScheduleNotAvailableException{
+    var event = verifyIfExists(eventId);
+    var place = placeService.verifyIfExists(placeId);
+    verifyIfScheduleIsAvailable(event, place);
+    event.getPlaces().add(place);
+    eventRepository.save(event);
+    return MessageResponse.builder()
+        .message("Updated Event with ID " + event.getId() + " with Place with ID " + place.getId())
+        .build();
+  }
   /*
    * GET OPERATIONS
    */
@@ -140,8 +152,8 @@ public class EventService {
     return eventRepository.findById(id).orElseThrow(() -> new EventNotFoundException(id));
   }
 
-  private void verifyIfScheduleIsAvailable(Event eventToSave) throws EventScheduleNotAvailableException {
-    List<Event> savedEvents = eventRepository.findEventsBySchedule(eventToSave);
+  private void verifyIfScheduleIsAvailable(Event event, Place place) throws EventScheduleNotAvailableException {
+    List<Event> savedEvents = eventRepository.findEventsBySchedule(event, place);
     if (!savedEvents.isEmpty())
       throw new EventScheduleNotAvailableException(savedEvents.get(0));
   }
@@ -163,5 +175,8 @@ public class EventService {
         .message(message + id)
         .build();
   }
+
+
+
 
 }

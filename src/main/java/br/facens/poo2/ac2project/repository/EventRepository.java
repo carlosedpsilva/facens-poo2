@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import br.facens.poo2.ac2project.entity.Event;
+import br.facens.poo2.ac2project.entity.Place;
 
 @Repository
 public interface EventRepository extends JpaRepository<Event, Long> {
@@ -22,14 +23,15 @@ public interface EventRepository extends JpaRepository<Event, Long> {
       )
   public Page<Event> pageAll(Pageable pageRequest, @Param("req") Event event);
 
-  @Query("SELECT e FROM Event e WHERE "
-      + "( e.name = :#{#req.name} AND e.place = :#{#req.place} ) "
-      + "AND (( :#{#req.startDate} <  e.startDate  AND :#{#req.endDate} > e.startDate ) "
-      + "OR   ( :#{#req.startDate} >= e.startDate  AND :#{#req.startDate} < e.endDate ) "
-      + "OR   ( :#{#req.startDate} =  e.startDate  AND :#{#req.startDate} = e.endDate   "
-          + "AND (( :#{#req.startTime} <  e.startTime AND :#{#req.endTime} > e.startTime )   "
-          + "OR   ( :#{#req.startTime} >= e.startTime AND :#{#req.startTime} < e.endTime )   "
-          + "OR   ( :#{#req.startTime} =  e.startTime AND :#{#req.startTime} = e.endTime ))))")
-  public List<Event> findEventsBySchedule(@Param("req") Event event);
+  @Query("SELECT e FROM Event e "
+      + "INNER JOIN e.places p "
+      + "WHERE p.id = :#{#reqPlace.id} "
+      + "AND (( :#{#reqEvent.startDate} <  e.startDate  AND :#{#reqEvent.endDate} > e.startDate ) "
+      + "OR   ( :#{#reqEvent.startDate} >= e.startDate  AND :#{#reqEvent.startDate} < e.endDate ) "
+      + "OR   ( :#{#reqEvent.startDate} =  e.startDate  AND :#{#reqEvent.startDate} = e.endDate   "
+          + "AND (( :#{#reqEvent.startTime} <  e.startTime AND :#{#reqEvent.endTime} > e.startTime )   "
+          + "OR   ( :#{#reqEvent.startTime} >= e.startTime AND :#{#reqEvent.startTime} < e.endTime )   "
+          + "OR   ( :#{#reqEvent.startTime} =  e.startTime AND :#{#reqEvent.startTime} = e.endTime ))))")
+  public List<Event> findEventsBySchedule(@Param("reqEvent") Event event, @Param("reqPlace") Place place);
 
 }

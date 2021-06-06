@@ -90,7 +90,7 @@ public class PlaceService {
    * METHODS
    */
 
-  private Place verifyIfExists(Long id) throws PlaceNotFoundException {
+  public Place verifyIfExists(Long id) throws PlaceNotFoundException {
     return placeRepository.findById(id).orElseThrow(() -> new PlaceNotFoundException(id));
   }
 

@@ -29,6 +29,7 @@ import br.facens.poo2.ac2project.exception.EventNotFoundException;
 import br.facens.poo2.ac2project.exception.EventScheduleNotAvailableException;
 import br.facens.poo2.ac2project.exception.IllegalDateTimeFormatException;
 import br.facens.poo2.ac2project.exception.IllegalScheduleException;
+import br.facens.poo2.ac2project.exception.PlaceNotFoundException;
 import br.facens.poo2.ac2project.service.EventService;
 import io.swagger.annotations.Api;
 import lombok.AllArgsConstructor;
@@ -84,4 +85,11 @@ public class EventController {
       throws EventNotFoundException, EmptyRequestException {
     return eventService.updateById(id, eventUpdateRequest);
   }
+
+  @PostMapping("/{eventId}/places/{placeId}")
+  @ResponseStatus(HttpStatus.CREATED)
+  public MessageResponse associatePlaceById(@PathVariable Long eventId, @PathVariable Long placeId) throws EventNotFoundException, PlaceNotFoundException, EventScheduleNotAvailableException{
+    return eventService.associatePlaceById(eventId, placeId);
+  }
+  
 }
