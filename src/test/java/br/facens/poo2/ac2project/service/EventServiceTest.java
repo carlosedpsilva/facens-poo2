@@ -139,7 +139,7 @@ public class EventServiceTest {
     when(eventRepository.pageAll(any(Pageable.class), any(Event.class))).thenReturn(expectedPagedEvents);
 
     // then
-    Page<EventPageableResponse> pagedEventsResponse = eventService.findAll(pageRequest, "", "", "", "");
+    Page<EventPageableResponse> pagedEventsResponse = eventService.findAll(pageRequest, "", "", "");
 
     assertEquals(expectedPagedEventsResponse, pagedEventsResponse);
   }
@@ -155,7 +155,7 @@ public class EventServiceTest {
     when(eventRepository.pageAll(any(Pageable.class), any(Event.class))).thenReturn(expectedPagedEvents);
 
     // then
-    Page<EventPageableResponse> pagedEvents = eventService.findAll(pageRequest, "", "", "", "");
+    Page<EventPageableResponse> pagedEvents = eventService.findAll(pageRequest, "", "", "");
     assertTrue(pagedEvents.getNumberOfElements() == 0);
   }
 
@@ -223,12 +223,7 @@ public class EventServiceTest {
     // given
     var expectedValidId = 1L;
     Event expectedSavedEvent = createFakeEntity();
-    EventUpdateRequest invalidEventUpdateRequest = EventUpdateRequest.builder()
-        .name("")
-        .description("")
-        .place("")
-        .emailContact("")
-        .build();
+    EventUpdateRequest invalidEventUpdateRequest = new EventUpdateRequest();
 
     // when
     when(eventRepository.findById(expectedValidId)).thenReturn(Optional.of(expectedSavedEvent));

@@ -65,7 +65,7 @@ public class EventService {
    * POST OPERATION
    */
 
-  public MessageResponse save(EventInsertRequest eventInsertRequest) throws IllegalScheduleException, IllegalDateTimeFormatException, EventScheduleNotAvailableException, AdminNotFoundException {
+  public MessageResponse save(EventInsertRequest eventInsertRequest) throws IllegalScheduleException, IllegalDateTimeFormatException, AdminNotFoundException {
     try {
       var adminId = eventInsertRequest.getAdminId();
       adminRepository.findById(adminId).orElseThrow(() -> new AdminNotFoundException(adminId));
@@ -117,7 +117,7 @@ public class EventService {
    */
 
   public Page<EventPageableResponse> findAll(Pageable pageRequest,
-      String name, String description, String place, String startDate) {
+      String name, String description, String startDate) {
     LocalDate startDateFilter = null;
     if (!startDate.isBlank())
       try {
@@ -126,7 +126,6 @@ public class EventService {
 
     var entityFilter = Event.builder()
         .name(name.isBlank() ? null : name)
-        .place(place.isBlank() ? null : place) // TODO: Change use of string field 'place' to Place entity
         .description(description.isBlank() ? null : description)
         .startDate(startDateFilter)
         .build();
@@ -159,7 +158,6 @@ public class EventService {
 
     if (eventUpdateRequest.getName() == null
         && eventUpdateRequest.getDescription() == null
-        && eventUpdateRequest.getPlace() == null
         && eventUpdateRequest.getEmailContact() == null)
           throw new EmptyRequestException();
 
@@ -170,11 +168,6 @@ public class EventService {
     eventToUpdate.setDescription(eventUpdateRequest.getDescription() == null
         ? eventToUpdate.getDescription()
         : eventUpdateRequest.getDescription());
-
-    // TODO: Change use of string field 'place' to Place entity
-    eventToUpdate.setPlace(eventUpdateRequest.getPlace() == null
-        ? eventToUpdate.getPlace()
-        : eventUpdateRequest.getPlace());
 
     eventToUpdate.setEmailContact(eventUpdateRequest.getEmailContact() == null
         ? eventToUpdate.getEmailContact()

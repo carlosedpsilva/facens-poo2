@@ -18,7 +18,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
   @Query("SELECT e FROM Event e WHERE "
       + "((e.startDate >= :#{#req.startDate}) OR CAST(CAST(:#{#req.startDate} AS string) AS date) IS NULL) "
       + "AND (LOWER(e.name)        LIKE LOWER(CONCAT('%',        CAST(:#{#req.name} AS string), '%')) OR :#{#req.name}        IS NULL) "
-      + "AND (LOWER(e.place)       LIKE LOWER(CONCAT('%',       CAST(:#{#req.place} AS string), '%')) OR :#{#req.place}       IS NULL) "
       + "AND (LOWER(e.description) LIKE LOWER(CONCAT('%', CAST(:#{#req.description} AS string), '%')) OR :#{#req.description} IS NULL) "
       )
   public Page<Event> pageAll(Pageable pageRequest, @Param("req") Event event);

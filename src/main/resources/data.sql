@@ -15,7 +15,7 @@ VALUES
   ('(99)999999999', 2),
   ('(99)999999999', 3);
 
---TB_ATTEND
+--TB_ATTENDEE
 Insert INTO tb_attendee (balance, base_user_id)
 VALUES
   (500.0, 4),
@@ -30,8 +30,8 @@ VALUES
     ('ThirdPlace', 'Address C');
 
 --TB_EVENT
-INSERT INTO tb_event (admin_base_user_id, name, description, place, start_date, end_date, start_time, end_time, email_contact, amount_free_tickets, amount_payed_tickets, price_ticket)
+INSERT INTO tb_event (admin_base_user_id, name, description, start_date, end_date, start_time, end_time, email_contact, amount_free_tickets, amount_payed_tickets, price_ticket)
 VALUES
-  (1, 'Event A', '', 'SomePlace', '2022-03-11', '2022-03-15', '11:00', '15:00', 'example@email.com', 0, 10000, 200),
-  (2, 'Event B', '', 'AnotherPlace', '2022-03-10', '2022-03-12', '11:00', '15:00', 'example@email.com', 0, 5000, 300),
-  (3, 'Event C', '', 'ThirdPlace', '2022-03-14', '2022-03-16', '11:00', '15:00', 'example@email.com', 0, 7000, 500);
+  (1, 'Event A', '', '2022-03-11', '2022-03-15', '11:00', '15:00', 'example@email.com', 0, 10000, 200),
+  (2, 'Event B', '', '2022-03-10', '2022-03-12', '11:00', '15:00', 'example@email.com', 0, 5000, 300),
+  (3, 'Event C', '', '2022-03-14', '2022-03-16', '11:00', '15:00', 'example@email.com', 0, 7000, 500);

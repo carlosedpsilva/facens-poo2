@@ -53,9 +53,6 @@ public class Event implements Serializable {
   private Long id;
 
   @Column(nullable = false)
-  private String place;
-
-  @Column(nullable = false)
   private String name;
 
   @Column(nullable = true)

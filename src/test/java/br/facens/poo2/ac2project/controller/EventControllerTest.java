@@ -139,9 +139,9 @@ public class EventControllerTest {
     Page<EventPageableResponse> expectedPagedEventsResponse = new PageImpl<>(pageableEventsResponse, pageRequest, pageableEventsResponse.size());
 
     // when
-    when(eventService.findAll(any(Pageable.class), eq(""), eq(""), eq(""), eq(""))).thenReturn(expectedPagedEventsResponse);
+    when(eventService.findAll(any(Pageable.class), eq(""), eq(""), eq(""))).thenReturn(expectedPagedEventsResponse);
 
-    Page<EventPageableResponse> pagedEventsResponse = eventService.findAll(pageRequest, "", "", "", "");
+    Page<EventPageableResponse> pagedEventsResponse = eventService.findAll(pageRequest, "", "", "");
 
     // then
     assertEquals(1, pagedEventsResponse.getNumberOfElements());

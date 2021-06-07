@@ -33,11 +33,9 @@ import br.facens.poo2.ac2project.exception.IllegalScheduleException;
 import br.facens.poo2.ac2project.exception.PlaceNotFoundException;
 import br.facens.poo2.ac2project.exception.TicketNotAvailableException;
 import br.facens.poo2.ac2project.service.EventService;
-import io.swagger.annotations.Api;
 import lombok.AllArgsConstructor;
 
 @RestController
-@Api(value = "Event Scheduler", description = "API for managing Events")
 @RequestMapping("/api/v1/events")
 @AllArgsConstructor(onConstructor = @__(@Autowired))
 public class EventController {
@@ -62,11 +60,10 @@ public class EventController {
       @RequestParam(value =       "orderBy", defaultValue =  "id")   String orderBy,
       @RequestParam(value =          "name", defaultValue =    "")   String name,
       @RequestParam(value =   "description", defaultValue =    "")   String description,
-      @RequestParam(value =         "place", defaultValue =    "")   String place,
       @RequestParam(value =     "startDate", defaultValue =    "")   String startDate
   ) {
     PageRequest pageRequest = PageRequest.of(0, 8, Direction.valueOf(direction), orderBy);
-    return eventService.findAll(pageRequest, name, description, place, startDate);
+    return eventService.findAll(pageRequest, name, description, startDate);
   }
 
   @GetMapping("/{id}")

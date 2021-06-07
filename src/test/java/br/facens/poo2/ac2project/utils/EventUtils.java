@@ -18,7 +18,6 @@ public class EventUtils {
   private static Long EVENT_ID = 1L;
   private static String NAME = "Fake name";
   private static String DESCRIPTION = "Fake description";
-  private static String PLACE = "Fake place";
   private static LocalDate ENTITY_START_DATE = LocalDate.of(2022, 03, 11);
   private static LocalDate ENTITY_END_DATE = LocalDate.of(2022, 03, 15);
   private static LocalTime ENTITY_START_TIME = LocalTime.of(11, 00);
@@ -34,7 +33,6 @@ public class EventUtils {
         .id(EVENT_ID)
         .name(NAME)
         .description(DESCRIPTION)
-        .place(PLACE) // TODO: Change use of string field 'place' to Place entity
         .startDate(ENTITY_START_DATE)
         .endDate(ENTITY_END_DATE)
         .startTime(ENTITY_START_TIME)
@@ -51,7 +49,6 @@ public class EventUtils {
     return EventInsertRequest.builder()
         .name(NAME)
         .description(DESCRIPTION)
-        .place(PLACE)
         .startDate(STRING_START_DATE)
         .endDate(STRING_END_DATE)
         .startTime(STRING_START_TIME)
@@ -64,7 +61,6 @@ public class EventUtils {
     return EventUpdateRequest.builder()
         .name(NAME)
         .description(DESCRIPTION)
-        .place(PLACE)
         .emailContact(EMAIL)
         .build();
   }
@@ -78,7 +74,6 @@ public class EventUtils {
         .id(EVENT_ID)
         .name(NAME)
         .description(DESCRIPTION)
-        .place(PLACE)
         .startDate(STRING_START_DATE)
         .endDate(STRING_END_DATE)
         .startTime(STRING_START_TIME)
@@ -92,7 +87,6 @@ public class EventUtils {
         .id(EVENT_ID)
         .name(NAME)
         .description(DESCRIPTION)
-        .place(PLACE)
         .startDate(STRING_START_DATE)
         .startTime(STRING_START_TIME)
         .build();

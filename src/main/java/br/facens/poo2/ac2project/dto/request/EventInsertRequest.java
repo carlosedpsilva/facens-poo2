@@ -27,10 +27,6 @@ public class EventInsertRequest {
   @Size(min = 0, max = 500, message = "Event description must contain less than 500 characters")
   private String description;
 
-  @NotEmpty(message = "Event place cannot be empty")
-  @Size(min = 2, max = 100, message = "Event place must be between 2 and 100 characters")
-  private String place;
-
   @NotEmpty(message = "Event start date cannot be empty")
   private String startDate;
 
