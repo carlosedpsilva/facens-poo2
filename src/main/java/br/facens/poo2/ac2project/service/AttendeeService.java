@@ -82,7 +82,7 @@ public class AttendeeService {
    * METHODS
    */
 
-  private Attendee verifyIfExists(long id) throws AttendeeNotFoundException {
+  Attendee verifyIfExists(long id) throws AttendeeNotFoundException {
     return attendeeRepository.findById(id).orElseThrow(() -> new AttendeeNotFoundException(id));
   }
 

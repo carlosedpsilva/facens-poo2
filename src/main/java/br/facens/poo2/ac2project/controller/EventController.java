@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.facens.poo2.ac2project.dto.request.EventInsertRequest;
 import br.facens.poo2.ac2project.dto.request.EventUpdateRequest;
+import br.facens.poo2.ac2project.dto.request.TicketInsertRequest;
 import br.facens.poo2.ac2project.dto.response.EventFindResponse;
 import br.facens.poo2.ac2project.dto.response.EventPageableResponse;
 import br.facens.poo2.ac2project.dto.response.MessageResponse;
@@ -30,6 +31,7 @@ import br.facens.poo2.ac2project.exception.EventScheduleNotAvailableException;
 import br.facens.poo2.ac2project.exception.IllegalDateTimeFormatException;
 import br.facens.poo2.ac2project.exception.IllegalScheduleException;
 import br.facens.poo2.ac2project.exception.PlaceNotFoundException;
+import br.facens.poo2.ac2project.exception.TicketNotAvailableException;
 import br.facens.poo2.ac2project.service.EventService;
 import io.swagger.annotations.Api;
 import lombok.AllArgsConstructor;
@@ -91,5 +93,10 @@ public class EventController {
   public MessageResponse associatePlaceById(@PathVariable Long eventId, @PathVariable Long placeId) throws EventNotFoundException, PlaceNotFoundException, EventScheduleNotAvailableException{
     return eventService.associatePlaceById(eventId, placeId);
   }
-  
+
+  @PostMapping("/{eventId}/tickets")
+  public MessageResponse associateTicketById(@PathVariable Long eventId, @RequestBody @Valid TicketInsertRequest ticketInsertRequest) throws EventNotFoundException, TicketNotAvailableException {
+    return eventService.saveTicket(eventId, ticketInsertRequest);
+  }
+
 }

@@ -1,5 +1,6 @@
 package br.facens.poo2.ac2project.service;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -8,16 +9,22 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import br.facens.poo2.ac2project.dto.mapper.EventMapper;
+import br.facens.poo2.ac2project.dto.mapper.TicketMapper;
 import br.facens.poo2.ac2project.dto.request.EventInsertRequest;
 import br.facens.poo2.ac2project.dto.request.EventUpdateRequest;
+import br.facens.poo2.ac2project.dto.request.TicketInsertRequest;
 import br.facens.poo2.ac2project.dto.response.EventFindResponse;
 import br.facens.poo2.ac2project.dto.response.EventPageableResponse;
 import br.facens.poo2.ac2project.dto.response.MessageResponse;
+import br.facens.poo2.ac2project.entity.Attendee;
 import br.facens.poo2.ac2project.entity.Event;
 import br.facens.poo2.ac2project.entity.Place;
+import br.facens.poo2.ac2project.enums.TicketType;
 import br.facens.poo2.ac2project.exception.AdminNotFoundException;
 import br.facens.poo2.ac2project.exception.EmptyRequestException;
 import br.facens.poo2.ac2project.exception.EventNotFoundException;
@@ -25,8 +32,10 @@ import br.facens.poo2.ac2project.exception.EventScheduleNotAvailableException;
 import br.facens.poo2.ac2project.exception.IllegalDateTimeFormatException;
 import br.facens.poo2.ac2project.exception.IllegalScheduleException;
 import br.facens.poo2.ac2project.exception.PlaceNotFoundException;
+import br.facens.poo2.ac2project.exception.TicketNotAvailableException;
 import br.facens.poo2.ac2project.repository.AdminRepository;
 import br.facens.poo2.ac2project.repository.EventRepository;
+import br.facens.poo2.ac2project.repository.TicketRepository;
 import lombok.AllArgsConstructor;
 
 @Service
@@ -39,11 +48,17 @@ public class EventService {
 
   private EventRepository eventRepository;
 
+  private TicketRepository ticketRepository;
+
   private AdminRepository adminRepository;
 
   private EventMapper eventMapper;
 
+  private TicketMapper ticketMapper;
+
   private PlaceService placeService;
+
+  private AttendeeService attendeeService;
 
   /*
    * POST OPERATION
@@ -62,6 +77,29 @@ public class EventService {
       throw new IllegalDateTimeFormatException(e);
     }
   }
+
+  public MessageResponse saveTicket(Long eventId, TicketInsertRequest ticketInsertRequest) throws EventNotFoundException, TicketNotAvailableException {
+    var attendeeToUpdate = attendeeService.verifyIfExists(ticketInsertRequest.getAttendeeId());
+    var eventToAssociate = verifyIfExists(eventId);
+    var ticketToSave = ticketMapper.toModel(ticketInsertRequest);
+    var isPaidTicket = ticketToSave.getType().equals(TicketType.PAYED);
+
+    verifyAndDecrementTicketCount(eventToAssociate, isPaidTicket);
+    verifyAndDecrementAttendeeBalance(attendeeToUpdate, eventToAssociate.getPriceTicket());
+
+    ticketToSave.setDate(Instant.now());
+    ticketToSave.setPrice(eventToAssociate.getPriceTicket());
+
+    var savedTicket = ticketRepository.save(ticketToSave);
+    eventToAssociate.getTickets().add(savedTicket);
+    eventRepository.save(eventToAssociate);
+
+    return MessageResponse.builder()
+        .message("Saved " + savedTicket.getType() + " Ticket with ID " + savedTicket.getId()
+            + " associated with Event with ID " + eventToAssociate.getId())
+        .build();
+  }
+
   public MessageResponse associatePlaceById(Long eventId, Long placeId) throws EventNotFoundException, PlaceNotFoundException, EventScheduleNotAvailableException{
     var event = verifyIfExists(eventId);
     var place = placeService.verifyIfExists(placeId);
@@ -69,9 +107,10 @@ public class EventService {
     event.getPlaces().add(place);
     eventRepository.save(event);
     return MessageResponse.builder()
-        .message("Updated Event with ID " + event.getId() + " with Place with ID " + place.getId())
+        .message("Associated Event with ID " + event.getId() + " with Place with ID " + place.getId())
         .build();
   }
+
   /*
    * GET OPERATIONS
    */
@@ -168,6 +207,26 @@ public class EventService {
     if (event.getStartDate().isEqual(event.getEndDate())
         && event.getStartTime().isAfter(event.getEndTime()))
       throw new IllegalScheduleException(invalidScheduleMessage);
+  }
+
+  private void verifyAndDecrementTicketCount(Event event, boolean isPaidTicket) throws TicketNotAvailableException {
+    long ticketCount;
+    if (isPaidTicket) {
+      if ((ticketCount = event.getAmountPayedTickets() - 1) < 0)
+        throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED, "Paid ticket not available");
+      event.setAmountPayedTickets(ticketCount);
+    } else {
+      if ((ticketCount = event.getAmountFreeTickets() - 1) < 0)
+        throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED, "Free ticket not available");
+      event.setAmountFreeTickets(ticketCount);
+    }
+  }
+
+  private void verifyAndDecrementAttendeeBalance(Attendee attendee, Double priceTicket) {
+    double balance;
+    if ((balance = attendee.getBalance() - priceTicket) < 0)
+      throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED, "Insufficient funds");
+    attendee.setBalance(balance);
   }
 
   private MessageResponse createMessageResponse(Long id, String message) {
