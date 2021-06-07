@@ -2,6 +2,7 @@ package br.facens.poo2.ac2project.service;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
@@ -194,19 +195,19 @@ public class EventService {
   private void verifyIfScheduleIsAvailable(Event event, Place place) throws EventScheduleNotAvailableException {
     List<Event> savedEvents = eventRepository.findEventsBySchedule(event, place);
     if (!savedEvents.isEmpty())
-      throw new EventScheduleNotAvailableException(savedEvents.get(0));
+      throw new EventScheduleNotAvailableException(savedEvents.get(0), place);
   }
 
   private void verifyIfIsValidScheduleDate(Event event) throws IllegalScheduleException {
-    var invalidScheduleMessage = "Could not register event."
-        + " Specified start date cannot be after end date.";
+    var startDateTime = LocalDateTime.of(event.getStartDate(), event.getStartTime());
+    var endDateTime = LocalDateTime.of(event.getEndDate(), event.getEndTime());
+    var present = LocalDateTime.now();
 
-    if (event.getStartDate().isAfter(event.getEndDate()))
-      throw new IllegalScheduleException(invalidScheduleMessage);
+    if (startDateTime.isBefore(present) || endDateTime.isBefore(present))
+      throw new IllegalScheduleException("The Event must be scheduled in the future.");
 
-    if (event.getStartDate().isEqual(event.getEndDate())
-        && event.getStartTime().isAfter(event.getEndTime()))
-      throw new IllegalScheduleException(invalidScheduleMessage);
+    if (startDateTime.isAfter(endDateTime))
+      throw new IllegalScheduleException("Start date-time must be before end date-time.");
   }
 
   private void verifyAndDecrementTicketCount(Event event, boolean isPaidTicket) throws TicketNotAvailableException {
