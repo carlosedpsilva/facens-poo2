@@ -83,7 +83,7 @@ public class EventService {
     var attendeeToUpdate = attendeeService.verifyIfExists(ticketInsertRequest.getAttendeeId());
     var eventToAssociate = verifyIfExists(eventId);
     var ticketToSave = ticketMapper.toModel(ticketInsertRequest);
-    var isPaidTicket = ticketToSave.getType().equals(TicketType.PAYED);
+    var isPaidTicket = ticketToSave.getType().equals(TicketType.PAID);
 
     verifyAndDecrementTicketCount(eventToAssociate, isPaidTicket);
     verifyAndDecrementAttendeeBalance(attendeeToUpdate, eventToAssociate.getPriceTicket());
@@ -206,9 +206,9 @@ public class EventService {
   private void verifyAndDecrementTicketCount(Event event, boolean isPaidTicket) throws TicketNotAvailableException {
     long ticketCount;
     if (isPaidTicket) {
-      if ((ticketCount = event.getAmountPayedTickets() - 1) < 0)
+      if ((ticketCount = event.getAmountPaidTickets() - 1) < 0)
         throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED, "Paid ticket not available");
-      event.setAmountPayedTickets(ticketCount);
+      event.setAmountPaidTickets(ticketCount);
     } else {
       if ((ticketCount = event.getAmountFreeTickets() - 1) < 0)
         throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED, "Free ticket not available");

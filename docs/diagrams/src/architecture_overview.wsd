@@ -26,7 +26,7 @@ class Event {
   endTime: LocalTime
   emailContact: String
   amountFreeTickets: Long
-  amountPayedTickets: Long
+  amountPaidTickets: Long
   priceTicket: Double
 }
 

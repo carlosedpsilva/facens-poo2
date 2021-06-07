@@ -19,7 +19,7 @@ public class TicketInsertRequest {
   @Digits(integer = 19, fraction = 0, message = "Invalid Attendee ID")
   private Long attendeeId;
 
-  @Pattern(regexp = "^(?:FREE|PAYED)$", message = "Ticket type must be either FREE OR PAID")
+  @Pattern(regexp = "^(?:FREE|PAID)$", message = "Ticket type must be either FREE OR PAID")
   private String type;
 
 }

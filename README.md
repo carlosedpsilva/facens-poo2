@@ -61,7 +61,7 @@ Swagger: https://facens-poo2.herokuapp.com/swagger-ui/
 {
   "adminId": 1,
   "amountFreeTickets": 0,
-  "amountPayedTickets": 0,
+  "amountPaidTickets": 0,
   "name": "SomeName",
   "description": "",
   "place": "SomePlace",

@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(HttpStatus.OK)
 public class TicketNotAvailableException extends ProcessValidationException {
 
-  public TicketNotAvailableException(boolean isPayedTicket) {
-    super(isPayedTicket ? "Payed" : "Free" + "tickets not available.");
+  public TicketNotAvailableException(boolean isPaidTicket) {
+    super("There are no " + (isPaidTicket ? "PAID" : "FREE") + " tickets available.");
   }
 
   public HttpStatus status() {

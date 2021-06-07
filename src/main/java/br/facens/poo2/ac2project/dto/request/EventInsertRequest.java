@@ -45,8 +45,8 @@ public class EventInsertRequest {
   @PositiveOrZero(message = "Amount of free tickets must be positive or zero")
   private Long amountFreeTickets;
 
-  @PositiveOrZero(message = "Amount of payed tickets must be positive or zero")
-  private Long amountPayedTickets;
+  @PositiveOrZero(message = "Amount of paid tickets must be positive or zero")
+  private Long amountPaidTickets;
 
   @PositiveOrZero(message = "Ticket price must be positive or zero")
   private Double priceTicket;

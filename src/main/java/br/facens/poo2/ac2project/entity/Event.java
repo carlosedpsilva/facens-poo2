@@ -77,7 +77,7 @@ public class Event implements Serializable {
   private Long amountFreeTickets;
 
   @Column(nullable = false)
-  private Long amountPayedTickets;
+  private Long amountPaidTickets;
 
   @Column(nullable = false)
     private Double priceTicket;
