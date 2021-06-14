@@ -18,6 +18,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Formula;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -70,16 +72,24 @@ public class Event implements Serializable {
   @Column(nullable = false)
   private LocalTime endTime;
 
-  @Column(nullable = true)
-  private String emailContact;
+  @Column(nullable = false)
+  private String email;
 
   @Column(nullable = false)
-  private Long amountFreeTickets;
+  private Long amountFreeTicketsAvailable;
 
   @Column(nullable = false)
-  private Long amountPaidTickets;
+  private Long amountPaidTicketsAvailable;
 
   @Column(nullable = false)
-    private Double priceTicket;
+  @Formula("(SELECT COUNT(t.id) FROM TB_EVENT e INNER JOIN TB_TICKET t ON e.id = t.event_id WHERE t.type = 'FREE')")
+  private Long amountFreeTicketsSold;
+
+  @Column(nullable = false)
+  @Formula("(SELECT COUNT(t.id) FROM TB_EVENT e INNER JOIN TB_TICKET t ON e.id = t.event_id WHERE t.type = 'PAID')")
+  private Long amountPaidTicketsSold;
+
+  @Column(nullable = false)
+  private Double ticketPrice;
 
 }

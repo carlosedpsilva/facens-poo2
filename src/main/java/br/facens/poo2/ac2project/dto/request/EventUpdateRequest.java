@@ -14,13 +14,18 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class EventUpdateRequest {
 
-  @Size(min = 0, max = 200, message = "Event name must be between 2 and 200 characters")
+  /*
+   * Event schedule may not be updated, user must delete existing Event and/or
+   * create another one
+   */
+
+  @Size(min = 2, max = 200, message = "Event name may be between 2 and 200 characters")
   private String name;
 
   @Size(min = 0, max = 500, message = "Event description must contain less than 500 characters")
   private String description;
 
-  @Email(message = "Email must be valid")
-  private String emailContact;
+  @Email(message = "Event e-mail must be valid")
+  private String email;
 
 }

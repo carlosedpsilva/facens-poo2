@@ -1,7 +1,5 @@
 @startuml architecture_overview
 
-scale 2
-
 class BaseUser {
   id: Long
   name: String
@@ -24,9 +22,11 @@ class Event {
   endDate: LocalDate
   startTime: LocalTime
   endTime: LocalTime
-  emailContact: String
-  amountFreeTickets: Long
-  amountPaidTickets: Long
+  email: String
+  amountFreeTicketsAvailable: Long
+  amountPaidTicketsAvailable: Long
+  amountFreeTicketsSold: Long
+  amountPaidTicketsSold: Long
   priceTicket: Double
 }
 
@@ -43,12 +43,11 @@ class Place {
   address: String
 }
 
-BaseUser <|-- Admin
-BaseUser <|-- Attendee
-
-Admin "0..1" -- "0..*" Event
-Attendee o- "0..*" Ticket
-Event o- "0..*" Ticket
-Event "0..*" -- "0..*" Place
+BaseUser        <|--          Admin
+BaseUser        <|--          Attendee
+   Admin "0..1"   --   "0..*" Event
+   Place "0..*"    -   "0..*" Event
+   Event          o-   "0..*" Ticket
+Attendee          o-   "0..*" Ticket
 
 @enduml

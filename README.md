@@ -81,7 +81,7 @@ Swagger: https://facens-poo2.herokuapp.com/swagger-ui/
   "name": "NewName",
   "description": "",
   "place": "",
-  "emailContact": ""
+  "email": ""
 }
 ```
 

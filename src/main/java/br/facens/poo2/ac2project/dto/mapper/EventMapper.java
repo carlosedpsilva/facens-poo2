@@ -28,12 +28,16 @@ public interface EventMapper {
    * Responses
    */
 
+  @Mapping(target = "eventId", source = "event.id")
+  @Mapping(target = "adminId", source = "event.admin.id")
   @Mapping(target = "startDate", source = "startDate", dateFormat = "dd/MM/yyyy")
   @Mapping(target = "endDate", source = "endDate", dateFormat = "dd/MM/yyyy")
   @Mapping(target = "startTime", source = "startTime", dateFormat = "HH:mm")
   @Mapping(target = "endTime", source = "endTime", dateFormat = "HH:mm")
   EventFindResponse toEventFindResponse(Event event);
 
+  @Mapping(target = "eventId", source = "event.id")
+  @Mapping(target = "adminId", source = "event.admin.id")
   @Mapping(target = "startDate", source = "startDate", dateFormat = "dd/MM/yyyy")
   @Mapping(target = "startTime", source = "startTime", dateFormat = "HH:mm")
   EventPageableResponse toEventPageableResponse(Event event);

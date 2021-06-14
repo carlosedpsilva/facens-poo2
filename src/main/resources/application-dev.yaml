@@ -2,10 +2,10 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/poo2-ac2
     username: postgres
-    password: 1234567
+    password: postgres
 
   jpa:
-    hibernate.ddl-auto: create 
+    hibernate.ddl-auto: create
     show-sql: true
     properties:
       '[hibernate.format_sql]': true

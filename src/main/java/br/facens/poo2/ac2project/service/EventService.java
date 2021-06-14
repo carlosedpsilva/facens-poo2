@@ -34,7 +34,6 @@ import br.facens.poo2.ac2project.exception.IllegalDateTimeFormatException;
 import br.facens.poo2.ac2project.exception.IllegalScheduleException;
 import br.facens.poo2.ac2project.exception.PlaceNotFoundException;
 import br.facens.poo2.ac2project.exception.TicketNotAvailableException;
-import br.facens.poo2.ac2project.repository.AdminRepository;
 import br.facens.poo2.ac2project.repository.EventRepository;
 import br.facens.poo2.ac2project.repository.TicketRepository;
 import lombok.AllArgsConstructor;
@@ -48,18 +47,14 @@ public class EventService {
   private static final String UPDATED_MESSAGE = "Updated Event with ID ";
 
   private EventRepository eventRepository;
-
   private TicketRepository ticketRepository;
 
-  private AdminRepository adminRepository;
+  private AdminService adminService;
+  private PlaceService placeService;
+  private AttendeeService attendeeService;
 
   private EventMapper eventMapper;
-
   private TicketMapper ticketMapper;
-
-  private PlaceService placeService;
-
-  private AttendeeService attendeeService;
 
   /*
    * POST OPERATION
@@ -68,7 +63,8 @@ public class EventService {
   public MessageResponse save(EventInsertRequest eventInsertRequest) throws IllegalScheduleException, IllegalDateTimeFormatException, AdminNotFoundException {
     try {
       var adminId = eventInsertRequest.getAdminId();
-      adminRepository.findById(adminId).orElseThrow(() -> new AdminNotFoundException(adminId));
+      adminService.verifyIfExists(adminId);
+
       var eventToSave = eventMapper.toModel(eventInsertRequest);
       verifyIfIsValidScheduleDate(eventToSave);
 
@@ -86,30 +82,31 @@ public class EventService {
     var isPaidTicket = ticketToSave.getType().equals(TicketType.PAID);
 
     verifyAndDecrementTicketCount(eventToAssociate, isPaidTicket);
-    verifyAndDecrementAttendeeBalance(attendeeToUpdate, eventToAssociate.getPriceTicket());
+    verifyAndDecrementAttendeeBalance(attendeeToUpdate, eventToAssociate.getTicketPrice());
 
     ticketToSave.setDate(Instant.now());
-    ticketToSave.setPrice(eventToAssociate.getPriceTicket());
+    ticketToSave.setPrice(eventToAssociate.getTicketPrice());
 
     var savedTicket = ticketRepository.save(ticketToSave);
+    attendeeToUpdate.getTickets().add(savedTicket);
     eventToAssociate.getTickets().add(savedTicket);
     eventRepository.save(eventToAssociate);
 
     return MessageResponse.builder()
-        .message("Saved " + savedTicket.getType() + " Ticket with ID " + savedTicket.getId()
-            + " associated with Event with ID " + eventToAssociate.getId())
-        .build();
+        .message("Saved '" + savedTicket.getType() + "' Ticket with ID " + savedTicket.getId()
+            + " associated with Event with ID " + eventToAssociate.getId()).build();
   }
 
   public MessageResponse associatePlaceById(Long eventId, Long placeId) throws EventNotFoundException, PlaceNotFoundException, EventScheduleNotAvailableException{
     var event = verifyIfExists(eventId);
     var place = placeService.verifyIfExists(placeId);
     verifyIfScheduleIsAvailable(event, place);
+
     event.getPlaces().add(place);
     eventRepository.save(event);
+
     return MessageResponse.builder()
-        .message("Associated Event with ID " + event.getId() + " with Place with ID " + place.getId())
-        .build();
+        .message("Associated Event with ID " + event.getId() + " with Place with ID " + place.getId()).build();
   }
 
   /*
@@ -156,22 +153,25 @@ public class EventService {
   public MessageResponse updateById(Long id, EventUpdateRequest eventUpdateRequest) throws EventNotFoundException, EmptyRequestException {
     var eventToUpdate = verifyIfExists(id);
 
-    if (eventUpdateRequest.getName() == null
+    if (isBlankOrNull(eventUpdateRequest.getName())
         && eventUpdateRequest.getDescription() == null
-        && eventUpdateRequest.getEmailContact() == null)
+        && eventUpdateRequest.getEmail() == null)
           throw new EmptyRequestException();
 
-    eventToUpdate.setName(eventUpdateRequest.getName() == null
+    eventToUpdate.setName(
+        isBlankOrNull(eventUpdateRequest.getName())
         ? eventToUpdate.getName()
         : eventUpdateRequest.getName());
 
-    eventToUpdate.setDescription(eventUpdateRequest.getDescription() == null
+    eventToUpdate.setDescription(
+        isBlankOrNull(eventUpdateRequest.getDescription())
         ? eventToUpdate.getDescription()
         : eventUpdateRequest.getDescription());
 
-    eventToUpdate.setEmailContact(eventUpdateRequest.getEmailContact() == null
-        ? eventToUpdate.getEmailContact()
-        : eventUpdateRequest.getEmailContact());
+    eventToUpdate.setEmail(
+        isBlankOrNull(eventUpdateRequest.getEmail())
+        ? eventToUpdate.getEmail()
+        : eventUpdateRequest.getEmail());
 
     eventRepository.save(eventToUpdate);
     return createMessageResponse(eventToUpdate.getId(), UPDATED_MESSAGE);
@@ -206,13 +206,13 @@ public class EventService {
   private void verifyAndDecrementTicketCount(Event event, boolean isPaidTicket) throws TicketNotAvailableException {
     long ticketCount;
     if (isPaidTicket) {
-      if ((ticketCount = event.getAmountPaidTickets() - 1) < 0)
+      if ((ticketCount = event.getAmountPaidTicketsAvailable() - 1) < 0)
         throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED, "Paid ticket not available");
-      event.setAmountPaidTickets(ticketCount);
+      event.setAmountPaidTicketsAvailable(ticketCount);
     } else {
-      if ((ticketCount = event.getAmountFreeTickets() - 1) < 0)
+      if ((ticketCount = event.getAmountFreeTicketsAvailable() - 1) < 0)
         throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED, "Free ticket not available");
-      event.setAmountFreeTickets(ticketCount);
+      event.setAmountFreeTicketsAvailable(ticketCount);
     }
   }
 
@@ -229,7 +229,8 @@ public class EventService {
         .build();
   }
 
-
-
+  private boolean isBlankOrNull(String value) {
+    return value == null || value.isBlank();
+  }
 
 }

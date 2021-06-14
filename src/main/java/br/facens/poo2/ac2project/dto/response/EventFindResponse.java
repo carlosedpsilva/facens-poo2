@@ -11,7 +11,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class EventFindResponse {
 
-  private Long id;
+  private Long eventId;
+  private Long adminId;
   private String name;
   private String description;
   private String startDate;
@@ -19,5 +20,10 @@ public class EventFindResponse {
   private String startTime;
   private String endTime;
   private String email;
+  private Long amountFreeTicketsAvailable;
+  private Long amountPaidTicketsAvailable;
+  private Long amountFreeTicketsSold;
+  private Long amountPaidTicketsSold;
+  private Double ticketPrice;
 
 }

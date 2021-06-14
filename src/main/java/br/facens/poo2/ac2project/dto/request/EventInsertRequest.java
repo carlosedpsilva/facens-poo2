@@ -1,7 +1,9 @@
 package br.facens.poo2.ac2project.dto.request;
 
+import javax.validation.constraints.Digits;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
@@ -17,38 +19,43 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class EventInsertRequest {
 
-  @Positive(message = "Invalid admin Id.")
+  @Positive(message = "Invalid Admin ID")
+  @Digits(integer = 19, fraction = 0, message = "Invalid Admin ID")
   private Long adminId;
 
-  @NotEmpty(message = "Event name cannot be empty")
-  @Size(min = 2, max = 200, message = "Event name must be between 2 and 200 characters")
+  @NotBlank(message = "Event name may not be blank")
+  @Size(min = 2, max = 200, message = "Event name may be between 2 and 200 characters")
   private String name;
 
   @Size(min = 0, max = 500, message = "Event description must contain less than 500 characters")
   private String description;
 
-  @NotEmpty(message = "Event start date cannot be empty")
+  @NotBlank(message = "Event start date may not be blank")
   private String startDate;
 
-  @NotEmpty(message = "Event end date cannot be empty")
+  @NotBlank(message = "Event end date may not be blank")
   private String endDate;
 
-  @NotEmpty(message = "Event start time cannot be empty")
+  @NotBlank(message = "Event start time may not be blank")
   private String startTime;
 
-  @NotEmpty(message = "Event end time cannot be empty")
+  @NotBlank(message = "Event end time may not be blank")
   private String endTime;
 
-  @Email(message = "Email must be valid")
-  private String emailContact;
+  @NotBlank(message = "Event e-mail may not be blank")
+  @Email(message = "Event e-mail must be valid")
+  private String email;
 
-  @PositiveOrZero(message = "Amount of free tickets must be positive or zero")
+  @NotNull(message = "Event amount of free tickets may not be blank")
+  @PositiveOrZero(message = "Amount of free tickets may be positive or zero")
   private Long amountFreeTickets;
 
-  @PositiveOrZero(message = "Amount of paid tickets must be positive or zero")
+  @NotNull(message = "Event amount of paid tickets may not be blank")
+  @PositiveOrZero(message = "Amount of paid tickets may be positive or zero")
   private Long amountPaidTickets;
 
-  @PositiveOrZero(message = "Ticket price must be positive or zero")
-  private Double priceTicket;
+  @NotNull(message = "Event paid tickets price may not be blank")
+  @PositiveOrZero(message = "Ticket price may be positive or zero")
+  private Double ticketPrice;
 
 }

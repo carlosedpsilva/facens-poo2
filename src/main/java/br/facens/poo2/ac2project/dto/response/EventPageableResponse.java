@@ -11,7 +11,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class EventPageableResponse {
 
-  private Long id;
+  private Long eventId;
+  private Long adminId;
   private String name;
   private String description;
   private String startDate;

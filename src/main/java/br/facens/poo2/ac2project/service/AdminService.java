@@ -84,7 +84,7 @@ public class AdminService {
    * METHODS
    */
 
-  private Admin verifyIfExists(Long id) throws AdminNotFoundException {
+  public Admin verifyIfExists(Long id) throws AdminNotFoundException {
     return adminRepository.findById(id).orElseThrow(() -> new AdminNotFoundException(id));
   }
 

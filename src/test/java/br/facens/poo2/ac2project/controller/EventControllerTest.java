@@ -44,7 +44,6 @@ import br.facens.poo2.ac2project.dto.response.EventPageableResponse;
 import br.facens.poo2.ac2project.dto.response.MessageResponse;
 import br.facens.poo2.ac2project.exception.EmptyRequestException;
 import br.facens.poo2.ac2project.exception.EventNotFoundException;
-import br.facens.poo2.ac2project.exception.EventScheduleNotAvailableException;
 import br.facens.poo2.ac2project.exception.IllegalScheduleException;
 import br.facens.poo2.ac2project.service.EventService;
 
@@ -94,23 +93,6 @@ public class EventControllerTest {
   }
 
   @Test // post given valid insert request - but schedule is already registered
-  void testWhenPOSTIsCalledWithAnAlreadyScheduledInsertRequestThenReturnConflictStatus() throws Exception {
-    // given
-    EventInsertRequest invalidInsertRequest = createFakeInsertRequest();
-
-    // when
-    when(eventService.save(invalidInsertRequest)).thenThrow(EventScheduleNotAvailableException.class);
-
-    // then
-    assertThrows(EventScheduleNotAvailableException.class, () -> eventService.save(invalidInsertRequest));
-
-    mockMvc.perform(post(EVENT_API_URL_PATH)
-        .contentType(MediaType.APPLICATION_JSON)
-        .content(asJsonString(invalidInsertRequest)))
-        .andExpect(status().isConflict());
-  }
-
-  @Test // post given valid insert request - but schedule is already registered
   void testWhenPOSTIsCalledWithInvalidOrMissingFieldsThenReturnBadRequestStatus() throws Exception {
     // given
     EventInsertRequest invalidInsertRequest = createFakeInsertRequest();
@@ -150,7 +132,7 @@ public class EventControllerTest {
     mockMvc.perform(get(EVENT_API_URL_PATH)
         .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.content[0].id", is(1)));
+        .andExpect(jsonPath("$.content[0].eventId", is(1)));
   }
 
   @Test // get registered event with id
@@ -166,7 +148,7 @@ public class EventControllerTest {
     mockMvc.perform(get(EVENT_API_URL_PATH + "/" + expectedValidId)
         .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.id", is(1)));
+        .andExpect(jsonPath("$.eventId", is(1)));
   }
 
   @Test // get registered event with invalid id
