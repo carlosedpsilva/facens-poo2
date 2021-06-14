@@ -27,7 +27,7 @@ import lombok.experimental.SuperBuilder;
 public class Attendee extends BaseUser {
 
   @OneToMany
-  @JoinColumn(name = "ATTENDEE_BASE_USER_ID")
+  @JoinColumn(name = "ATTENDEE_ID")
   private final List<Ticket> tickets = new ArrayList<>();
 
   @Column(nullable = true)

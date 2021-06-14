@@ -36,7 +36,7 @@ public class Event implements Serializable {
   private static final long serialVersionUID = 1L;
 
   @ManyToOne
-  @JoinColumn(name="ADMIN_BASE_USER_ID")
+  @JoinColumn(name="ADMIN_ID")
   private Admin admin;
 
   @OneToMany
