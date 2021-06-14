@@ -146,6 +146,22 @@ public class EventService {
     return createMessageResponse(id, DELETED_MESSAGE);
   }
 
+  public MessageResponse deassociatePlaceById(Long eventId, Long placeId) {
+    var event = verifyIfExists(eventId);
+    var place = placeService.verifyIfExists(placeId);
+
+    var places = event.getPlaces();
+    if (!places.contains(place))
+      throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED, "Event with ID " + event.getId()
+          + " is not associated with Place with ID " + place.getId());
+
+    event.getPlaces().remove(place);
+    eventRepository.save(event);
+
+    return MessageResponse.builder()
+        .message("Deassociated Event with ID " + event.getId() + " with Place with ID " + place.getId()).build();
+  }
+
   /*
    * PUT OPERATION
   */
@@ -207,11 +223,11 @@ public class EventService {
     long ticketCount;
     if (isPaidTicket) {
       if ((ticketCount = event.getAmountPaidTicketsAvailable() - 1) < 0)
-        throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED, "Paid ticket not available");
+        throw new TicketNotAvailableException(isPaidTicket);
       event.setAmountPaidTicketsAvailable(ticketCount);
     } else {
       if ((ticketCount = event.getAmountFreeTicketsAvailable() - 1) < 0)
-        throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED, "Free ticket not available");
+        throw new TicketNotAvailableException(isPaidTicket);
       event.setAmountFreeTicketsAvailable(ticketCount);
     }
   }

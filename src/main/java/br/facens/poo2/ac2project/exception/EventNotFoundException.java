@@ -6,8 +6,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(HttpStatus.NOT_FOUND)
 public class EventNotFoundException extends ProcessValidationException {
 
-  private static final long serialVersionUID = 1L;
-
   public EventNotFoundException(Long id) {
     super("Event not found with ID " + id);
   }

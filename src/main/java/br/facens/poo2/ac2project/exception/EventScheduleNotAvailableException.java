@@ -9,7 +9,7 @@ import br.facens.poo2.ac2project.entity.Event;
 import br.facens.poo2.ac2project.entity.Place;
 
 @ResponseStatus(HttpStatus.CONFLICT)
-public class EventScheduleNotAvailableException extends Exception {
+public class EventScheduleNotAvailableException extends ProcessValidationException {
 
   private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 

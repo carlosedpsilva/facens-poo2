@@ -91,7 +91,14 @@ public class EventController {
     return eventService.associatePlaceById(eventId, placeId);
   }
 
+  @DeleteMapping("/{eventId}/places/{placeId}")
+  @ResponseStatus(HttpStatus.OK)
+  public MessageResponse deassociatePlaceById(@PathVariable Long eventId, @PathVariable Long placeId) throws EventNotFoundException, PlaceNotFoundException, EventScheduleNotAvailableException{
+    return eventService.deassociatePlaceById(eventId, placeId);
+  }
+
   @PostMapping("/{eventId}/tickets")
+  @ResponseStatus(HttpStatus.CREATED)
   public MessageResponse associateTicketById(@PathVariable Long eventId, @RequestBody @Valid TicketInsertRequest ticketInsertRequest) throws EventNotFoundException, TicketNotAvailableException {
     return eventService.saveTicket(eventId, ticketInsertRequest);
   }
