@@ -24,6 +24,7 @@ import br.facens.poo2.ac2project.exception.IllegalScheduleException;
 import br.facens.poo2.ac2project.exception.PlaceNotFoundException;
 import br.facens.poo2.ac2project.exception.ProcessValidationException;
 import br.facens.poo2.ac2project.exception.TicketNotAvailableException;
+import br.facens.poo2.ac2project.exception.TicketNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -44,7 +45,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     /* Attendee */ AttendeeNotFoundException.class,
     /* Event    */ EventNotFoundException.class, EventScheduleNotAvailableException.class, IllegalScheduleException.class,
     /* Place    */ PlaceNotFoundException.class,
-    /* Ticket   */ TicketNotAvailableException.class,
+    /* Ticket   */ TicketNotFoundException.class, TicketNotAvailableException.class,
   })
   public ResponseEntity<Object> processValidationError(ProcessValidationException e) {
     var apiError = new ApiError(e.status().value(), e.status(), e.getLocalizedMessage(), e.getClass().getSimpleName());

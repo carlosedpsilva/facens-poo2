@@ -99,8 +99,14 @@ public class EventController {
 
   @PostMapping("/{eventId}/tickets")
   @ResponseStatus(HttpStatus.CREATED)
-  public MessageResponse associateTicketById(@PathVariable Long eventId, @RequestBody @Valid TicketInsertRequest ticketInsertRequest) throws EventNotFoundException, TicketNotAvailableException {
+  public MessageResponse saveTicketById(@PathVariable Long eventId, @RequestBody @Valid TicketInsertRequest ticketInsertRequest) throws EventNotFoundException, TicketNotAvailableException {
     return eventService.saveTicket(eventId, ticketInsertRequest);
+  }
+
+  @DeleteMapping("/{eventId}/tickets/{ticketId}")
+  @ResponseStatus(HttpStatus.OK)
+  public MessageResponse deleteTicketById(@PathVariable Long eventId, @PathVariable Long ticketId) throws EventNotFoundException, TicketNotAvailableException {
+    return eventService.deleteTicketById(eventId, ticketId);
   }
 
 }

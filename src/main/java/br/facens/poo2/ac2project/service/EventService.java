@@ -25,6 +25,7 @@ import br.facens.poo2.ac2project.dto.response.MessageResponse;
 import br.facens.poo2.ac2project.entity.Attendee;
 import br.facens.poo2.ac2project.entity.Event;
 import br.facens.poo2.ac2project.entity.Place;
+import br.facens.poo2.ac2project.entity.Ticket;
 import br.facens.poo2.ac2project.enums.TicketType;
 import br.facens.poo2.ac2project.exception.AdminNotFoundException;
 import br.facens.poo2.ac2project.exception.EmptyRequestException;
@@ -34,6 +35,8 @@ import br.facens.poo2.ac2project.exception.IllegalDateTimeFormatException;
 import br.facens.poo2.ac2project.exception.IllegalScheduleException;
 import br.facens.poo2.ac2project.exception.PlaceNotFoundException;
 import br.facens.poo2.ac2project.exception.TicketNotAvailableException;
+import br.facens.poo2.ac2project.exception.TicketNotFoundException;
+import br.facens.poo2.ac2project.repository.AttendeeRepository;
 import br.facens.poo2.ac2project.repository.EventRepository;
 import br.facens.poo2.ac2project.repository.TicketRepository;
 import lombok.AllArgsConstructor;
@@ -48,6 +51,7 @@ public class EventService {
 
   private EventRepository eventRepository;
   private TicketRepository ticketRepository;
+  private AttendeeRepository attendeeRepository;
 
   private AdminService adminService;
   private PlaceService placeService;
@@ -92,9 +96,9 @@ public class EventService {
     eventToAssociate.getTickets().add(savedTicket);
     eventRepository.save(eventToAssociate);
 
-    return MessageResponse.builder()
-        .message("Saved '" + savedTicket.getType() + "' Ticket with ID " + savedTicket.getId()
-            + " associated with Event with ID " + eventToAssociate.getId()).build();
+    return MessageResponse.builder().message(String.format(
+      "Saved %s Ticket with ID %d associated with Attendee with ID %d and Event with ID %d",
+      savedTicket.getType(), savedTicket.getId(), attendeeToUpdate.getId(), eventToAssociate.getId())).build();
   }
 
   public MessageResponse associatePlaceById(Long eventId, Long placeId) throws EventNotFoundException, PlaceNotFoundException, EventScheduleNotAvailableException{
@@ -162,6 +166,23 @@ public class EventService {
         .message("Deassociated Event with ID " + event.getId() + " with Place with ID " + place.getId()).build();
   }
 
+  public MessageResponse deleteTicketById(Long eventId, Long ticketId) {
+    var eventToUpdate = verifyIfExists(eventId);
+    var ticketToDelete = verifyIfTicketExists(ticketId);
+
+    var attendeeToUpdate = attendeeRepository.findByTicketId(ticketId)
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.PRECONDITION_FAILED));
+
+    var isPaidTicket = ticketToDelete.getType().equals(TicketType.PAID);
+    attendeeToUpdate.setBalance(attendeeToUpdate.getBalance() + ticketToDelete.getPrice());
+    verifyAndIncrementTicketCount(eventToUpdate, isPaidTicket);
+
+    ticketRepository.deleteById(ticketId);
+    return MessageResponse.builder().message(String.format(
+      "Deleted %s Ticket with ID %d associated with Attendee with ID %d and Event with ID %d",
+      ticketToDelete.getType(), ticketToDelete.getId(), attendeeToUpdate.getId(), eventToUpdate.getId())).build();
+  }
+
   /*
    * PUT OPERATION
   */
@@ -197,8 +218,12 @@ public class EventService {
    * METHODS
    */
 
-  private Event verifyIfExists(Long id) throws EventNotFoundException {
+  public Event verifyIfExists(Long id) throws EventNotFoundException {
     return eventRepository.findById(id).orElseThrow(() -> new EventNotFoundException(id));
+  }
+
+  public Ticket verifyIfTicketExists(Long id) throws EventNotFoundException {
+    return ticketRepository.findById(id).orElseThrow(() -> new TicketNotFoundException(id));
   }
 
   private void verifyIfScheduleIsAvailable(Event event, Place place) throws EventScheduleNotAvailableException {
@@ -231,6 +256,18 @@ public class EventService {
       event.setAmountFreeTicketsAvailable(ticketCount);
     }
   }
+
+  private void verifyAndIncrementTicketCount(Event event, boolean isPaidTicket) throws TicketNotAvailableException {
+    long ticketCount;
+    if (isPaidTicket) {
+      ticketCount = event.getAmountPaidTicketsAvailable() + 1;
+      event.setAmountPaidTicketsAvailable(ticketCount);
+    } else {
+      ticketCount = event.getAmountFreeTicketsAvailable() + 1;
+      event.setAmountFreeTicketsAvailable(ticketCount);
+    }
+  }
+
 
   private void verifyAndDecrementAttendeeBalance(Attendee attendee, Double priceTicket) {
     double balance;

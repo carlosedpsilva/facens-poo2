@@ -1,5 +1,7 @@
 package br.facens.poo2.ac2project.repository;
 
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,5 +19,10 @@ public interface AttendeeRepository extends JpaRepository<Attendee, Long> {
       + "AND (LOWER(e.name)  LIKE LOWER(CONCAT('%',  CAST(:#{#req.name} AS string), '%')) OR :#{#req.name}  IS NULL) "
       + "AND (LOWER(e.email) LIKE LOWER(CONCAT('%', CAST(:#{#req.email} AS string), '%')) OR :#{#req.email} IS NULL) ")
   Page<Attendee> pageAll(Pageable pageRequest, @Param("req") Attendee entitysSearchFilter);
+
+  @Query("SELECT e FROM Attendee e "
+      + "INNER JOIN e.tickets t "
+      + "WHERE t.id = :ticketId")
+  Optional<Attendee> findByTicketId(Long ticketId);
 
 }
