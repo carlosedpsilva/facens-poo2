@@ -2,8 +2,8 @@ package br.facens.poo2.ac2project.dto.mapper;
 
 import org.mapstruct.Mapper;
 
-import br.facens.poo2.ac2project.dto.request.AdminInsertRequest;
-import br.facens.poo2.ac2project.dto.request.AdminUpdateRequest;
+import br.facens.poo2.ac2project.dto.request.insert.AdminInsertRequest;
+import br.facens.poo2.ac2project.dto.request.update.AdminUpdateRequest;
 import br.facens.poo2.ac2project.dto.response.AdminResponse;
 import br.facens.poo2.ac2project.entity.Admin;
 
@@ -11,7 +11,7 @@ import br.facens.poo2.ac2project.entity.Admin;
 public interface AdminMapper {
 
   /*
-   * Requests
+   * Request
    */
 
   Admin toModel(AdminInsertRequest adminInsertRequest);
@@ -19,7 +19,7 @@ public interface AdminMapper {
   Admin toModel(AdminUpdateRequest adminUpdateRequest);
 
   /*
-   * Responses
+   * Response
    */
 
   AdminResponse toAdminResponse(Admin admin);

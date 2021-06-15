@@ -25,10 +25,10 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 public class Admin extends BaseUser {
 
+  @Column(nullable = false)
+  private String phoneNumber;
+
   @OneToMany(mappedBy = "admin")
   private final List<Event> events = new ArrayList<>();
-
-  @Column(nullable = true)
-  private String phoneNumber;
 
 }

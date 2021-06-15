@@ -27,18 +27,17 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import br.facens.poo2.ac2project.dto.mapper.EventMapper;
-import br.facens.poo2.ac2project.dto.request.EventInsertRequest;
-import br.facens.poo2.ac2project.dto.request.EventUpdateRequest;
-import br.facens.poo2.ac2project.dto.response.EventFindResponse;
+import br.facens.poo2.ac2project.dto.request.insert.EventInsertRequest;
+import br.facens.poo2.ac2project.dto.request.update.EventUpdateRequest;
 import br.facens.poo2.ac2project.dto.response.EventPageableResponse;
 import br.facens.poo2.ac2project.dto.response.MessageResponse;
 import br.facens.poo2.ac2project.entity.Event;
-import br.facens.poo2.ac2project.exception.AdminNotFoundException;
-import br.facens.poo2.ac2project.exception.EmptyRequestException;
-import br.facens.poo2.ac2project.exception.EventNotFoundException;
-import br.facens.poo2.ac2project.exception.EventScheduleNotAvailableException;
-import br.facens.poo2.ac2project.exception.IllegalDateTimeFormatException;
-import br.facens.poo2.ac2project.exception.IllegalScheduleException;
+import br.facens.poo2.ac2project.exception.admin.AdminNotFoundException;
+import br.facens.poo2.ac2project.exception.event.EventNotFoundException;
+import br.facens.poo2.ac2project.exception.event.EventScheduleNotAvailableException;
+import br.facens.poo2.ac2project.exception.event.IllegalScheduleException;
+import br.facens.poo2.ac2project.exception.generic.EmptyRequestException;
+import br.facens.poo2.ac2project.exception.generic.IllegalDateTimeFormatException;
 import br.facens.poo2.ac2project.repository.EventRepository;
 import br.facens.poo2.ac2project.repository.TicketRepository;
 import br.facens.poo2.ac2project.utils.EventUtils;
@@ -150,7 +149,7 @@ public class EventServiceTest {
     // when
     when(eventRepository.findById(expectedValidId)).thenReturn(Optional.of(expectedSavedEvent));
     // then
-    EventFindResponse savedEventResponse = eventService.findById(expectedValidId);
+    var savedEventResponse = eventService.findById(expectedValidId);
     assertEquals(expectedSavedEventResponse, savedEventResponse);
   }
 

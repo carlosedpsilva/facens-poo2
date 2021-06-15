@@ -12,21 +12,18 @@ import static br.facens.poo2.ac2project.util.SchedulerUtils.Operation.SAVED;
 import java.time.Instant;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import br.facens.poo2.ac2project.dto.mapper.TicketMapper;
-import br.facens.poo2.ac2project.dto.request.TicketInsertRequest;
+import br.facens.poo2.ac2project.dto.request.insert.TicketInsertRequest;
 import br.facens.poo2.ac2project.dto.response.MessageResponse;
-import br.facens.poo2.ac2project.entity.Attendee;
 import br.facens.poo2.ac2project.entity.Event;
 import br.facens.poo2.ac2project.entity.Ticket;
 import br.facens.poo2.ac2project.enums.TicketType;
-import br.facens.poo2.ac2project.exception.AttendeeNotFoundException;
-import br.facens.poo2.ac2project.exception.EventNotFoundException;
-import br.facens.poo2.ac2project.exception.TicketNotAvailableException;
-import br.facens.poo2.ac2project.exception.TicketNotFoundException;
+import br.facens.poo2.ac2project.exception.attendee.AttendeeNotFoundException;
+import br.facens.poo2.ac2project.exception.event.EventNotFoundException;
+import br.facens.poo2.ac2project.exception.ticket.TicketNotAvailableException;
+import br.facens.poo2.ac2project.exception.ticket.TicketNotFoundException;
 import br.facens.poo2.ac2project.repository.AttendeeRepository;
 import br.facens.poo2.ac2project.repository.TicketRepository;
 import br.facens.poo2.ac2project.service.meta.SchedulerService;
@@ -55,7 +52,7 @@ public class TicketService implements SchedulerService<Ticket> {
     var isPaidTicket = ticketToSave.getType().equals(TicketType.PAID);
 
     verifyAndDecrementTicketCount(eventToAssociate, isPaidTicket);
-    verifyAndDecrementAttendeeBalance(attendeeToUpdate, eventToAssociate.getTicketPrice());
+    // verifyAndDecrementAttendeeBalance(attendeeToUpdate, eventToAssociate.getTicketPrice());
 
     ticketToSave.setDate(Instant.now());
     ticketToSave.setPrice(eventToAssociate.getTicketPrice());
@@ -120,11 +117,11 @@ public class TicketService implements SchedulerService<Ticket> {
     else event.setAmountFreeTicketsAvailable(event.getAmountFreeTicketsAvailable() + 1);
   }
 
-  private void verifyAndDecrementAttendeeBalance(Attendee attendee, Double priceTicket) {
-    double balance;
-    if ((balance = attendee.getBalance() - priceTicket) < 0)
-      throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED, "Insufficient funds");
-    attendee.setBalance(balance);
-  }
+  // private void verifyAndDecrementAttendeeBalance(Attendee attendee, Double priceTicket) {
+  //   double balance;
+  //   if ((balance = attendee.getBalance() - priceTicket) < 0)
+  //     throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED, "Insufficient funds");
+  //   attendee.setBalance(balance);
+  // }
 
 }

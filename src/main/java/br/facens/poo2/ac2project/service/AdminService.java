@@ -13,12 +13,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import br.facens.poo2.ac2project.dto.mapper.AdminMapper;
-import br.facens.poo2.ac2project.dto.request.AdminInsertRequest;
-import br.facens.poo2.ac2project.dto.request.AdminUpdateRequest;
+import br.facens.poo2.ac2project.dto.request.insert.AdminInsertRequest;
+import br.facens.poo2.ac2project.dto.request.update.AdminUpdateRequest;
 import br.facens.poo2.ac2project.dto.response.AdminResponse;
 import br.facens.poo2.ac2project.dto.response.MessageResponse;
 import br.facens.poo2.ac2project.entity.Admin;
-import br.facens.poo2.ac2project.exception.AdminNotFoundException;
+import br.facens.poo2.ac2project.exception.admin.AdminNotFoundException;
+import br.facens.poo2.ac2project.exception.generic.EmailAlreadyInUseException;
+import br.facens.poo2.ac2project.exception.generic.EmptyRequestException;
 import br.facens.poo2.ac2project.repository.AdminRepository;
 import br.facens.poo2.ac2project.service.meta.SchedulerService;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +38,7 @@ public class AdminService implements SchedulerService<Admin> {
    */
 
   public MessageResponse save(AdminInsertRequest adminInsertRequest) {
+    if (adminRepository.findByEmail(adminInsertRequest.getEmail()).isPresent()) throw new EmailAlreadyInUseException();
     var adminToSave = adminMapper.toModel(adminInsertRequest);
     var savedAdmin = adminRepository.save(adminToSave);
     return createMessageResponse(BASIC_MESSAGE, SAVED, ADMIN, savedAdmin.getId());
@@ -79,7 +82,21 @@ public class AdminService implements SchedulerService<Admin> {
   public MessageResponse updateById(long id, AdminUpdateRequest adminUpdateRequest)
       throws AdminNotFoundException {
     var adminToUpdate = verifyIfExists(id);
-    adminToUpdate.setPhoneNumber(adminUpdateRequest.getPhoneNumber());
+
+    if (adminUpdateRequest.getEmail().isBlank()
+        && adminUpdateRequest.getPhoneNumber().isBlank())
+      throw new EmptyRequestException();
+
+    adminToUpdate.setEmail(
+        adminUpdateRequest.getEmail().isBlank()
+        ? adminToUpdate.getEmail()
+        : adminUpdateRequest.getEmail());
+
+    adminToUpdate.setPhoneNumber(
+        adminUpdateRequest.getPhoneNumber().isBlank()
+        ? adminToUpdate.getPhoneNumber()
+        : adminUpdateRequest.getPhoneNumber());
+
     adminRepository.save(adminToUpdate);
     return createMessageResponse(BASIC_MESSAGE, UPDATED, ADMIN, id);
   }

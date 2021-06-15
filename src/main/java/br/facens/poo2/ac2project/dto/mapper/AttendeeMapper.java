@@ -2,8 +2,8 @@ package br.facens.poo2.ac2project.dto.mapper;
 
 import org.mapstruct.Mapper;
 
-import br.facens.poo2.ac2project.dto.request.AttendeeInsertRequest;
-import br.facens.poo2.ac2project.dto.request.AttendeeUpdateRequest;
+import br.facens.poo2.ac2project.dto.request.insert.AttendeeInsertRequest;
+import br.facens.poo2.ac2project.dto.request.update.AttendeeUpdateRequest;
 import br.facens.poo2.ac2project.dto.response.AttendeeResponse;
 import br.facens.poo2.ac2project.entity.Attendee;
 
@@ -11,7 +11,7 @@ import br.facens.poo2.ac2project.entity.Attendee;
 public interface AttendeeMapper {
 
   /*
-   * Requests
+   * Request
    */
 
   Attendee toModel(AttendeeInsertRequest attendeeInsertRequest);
@@ -19,7 +19,7 @@ public interface AttendeeMapper {
   Attendee toModel(AttendeeUpdateRequest attendeeUpdateRequest);
 
   /*
-   * Responses
+   * Response
    */
 
   AttendeeResponse toAttendeeFindResponse(Attendee attendee);

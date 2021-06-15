@@ -24,20 +24,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import br.facens.poo2.ac2project.dto.mapper.EventMapper;
-import br.facens.poo2.ac2project.dto.request.EventInsertRequest;
-import br.facens.poo2.ac2project.dto.request.EventUpdateRequest;
-import br.facens.poo2.ac2project.dto.response.EventFindResponse;
+import br.facens.poo2.ac2project.dto.request.insert.EventInsertRequest;
+import br.facens.poo2.ac2project.dto.request.update.EventUpdateRequest;
 import br.facens.poo2.ac2project.dto.response.EventPageableResponse;
+import br.facens.poo2.ac2project.dto.response.EventResponse;
 import br.facens.poo2.ac2project.dto.response.MessageResponse;
 import br.facens.poo2.ac2project.entity.Event;
 import br.facens.poo2.ac2project.entity.Place;
-import br.facens.poo2.ac2project.exception.AdminNotFoundException;
-import br.facens.poo2.ac2project.exception.EmptyRequestException;
-import br.facens.poo2.ac2project.exception.EventNotFoundException;
-import br.facens.poo2.ac2project.exception.EventScheduleNotAvailableException;
-import br.facens.poo2.ac2project.exception.IllegalDateTimeFormatException;
-import br.facens.poo2.ac2project.exception.IllegalScheduleException;
-import br.facens.poo2.ac2project.exception.PlaceNotFoundException;
+import br.facens.poo2.ac2project.exception.admin.AdminNotFoundException;
+import br.facens.poo2.ac2project.exception.event.EventNotFoundException;
+import br.facens.poo2.ac2project.exception.event.EventScheduleNotAvailableException;
+import br.facens.poo2.ac2project.exception.event.IllegalScheduleException;
+import br.facens.poo2.ac2project.exception.generic.EmptyRequestException;
+import br.facens.poo2.ac2project.exception.generic.IllegalDateTimeFormatException;
+import br.facens.poo2.ac2project.exception.place.PlaceNotFoundException;
 import br.facens.poo2.ac2project.repository.EventRepository;
 import br.facens.poo2.ac2project.service.meta.SchedulerService;
 import br.facens.poo2.ac2project.util.SchedulerUtils.Operation;
@@ -107,7 +107,7 @@ public class EventService implements SchedulerService<Event> {
     return pagedEvents.map(eventMapper::toEventPageableResponse);
   }
 
-  public EventFindResponse findById(long id) throws EventNotFoundException {
+  public EventResponse findById(Long id) throws EventNotFoundException {
     var savedEvent = verifyIfExists(id);
     return eventMapper.toEventFindResponse(savedEvent);
   }
@@ -148,7 +148,7 @@ public class EventService implements SchedulerService<Event> {
     if (eventUpdateRequest.getName().isBlank()
         && eventUpdateRequest.getDescription().isBlank()
         && eventUpdateRequest.getEmail().isBlank())
-          throw new EmptyRequestException();
+      throw new EmptyRequestException();
 
     eventToUpdate.setName(
         eventUpdateRequest.getName().isBlank()

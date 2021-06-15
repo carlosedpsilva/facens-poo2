@@ -37,14 +37,14 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
-import br.facens.poo2.ac2project.dto.request.EventInsertRequest;
-import br.facens.poo2.ac2project.dto.request.EventUpdateRequest;
-import br.facens.poo2.ac2project.dto.response.EventFindResponse;
+import br.facens.poo2.ac2project.dto.request.insert.EventInsertRequest;
+import br.facens.poo2.ac2project.dto.request.update.EventUpdateRequest;
+import br.facens.poo2.ac2project.dto.response.EventResponse;
 import br.facens.poo2.ac2project.dto.response.EventPageableResponse;
 import br.facens.poo2.ac2project.dto.response.MessageResponse;
-import br.facens.poo2.ac2project.exception.EmptyRequestException;
-import br.facens.poo2.ac2project.exception.EventNotFoundException;
-import br.facens.poo2.ac2project.exception.IllegalScheduleException;
+import br.facens.poo2.ac2project.exception.event.EventNotFoundException;
+import br.facens.poo2.ac2project.exception.event.IllegalScheduleException;
+import br.facens.poo2.ac2project.exception.generic.EmptyRequestException;
 import br.facens.poo2.ac2project.service.EventService;
 import br.facens.poo2.ac2project.service.TicketService;
 
@@ -140,7 +140,7 @@ public class EventControllerTest {
   void testWhenGETIsCalledWithValidEventIdThenCorrespondingEventWithOkStatus() throws Exception {
     // given
     var expectedValidId = 1L;
-    EventFindResponse expectedEventFindResponse = createFakeFindResponse();
+    EventResponse expectedEventFindResponse = createFakeFindResponse();
 
     // whem
     when(eventService.findById(expectedValidId)).thenReturn(expectedEventFindResponse);

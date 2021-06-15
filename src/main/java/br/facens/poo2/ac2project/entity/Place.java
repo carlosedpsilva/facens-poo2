@@ -29,13 +29,6 @@ public class Place implements Serializable{
 
   private static final long serialVersionUID = 1L;
 
-  @ManyToMany
-  @JoinTable(
-      name="TB_EVENT_PLACE",
-      joinColumns =  @JoinColumn(name="PLACE_ID"),
-      inverseJoinColumns = @JoinColumn(name="EVENT_ID"))
-  private final List<Event> events = new ArrayList<>();
-
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -45,5 +38,12 @@ public class Place implements Serializable{
 
   @Column(nullable = false)
   private String address;
+
+  @ManyToMany
+  @JoinTable(
+      name="TB_EVENT_PLACE",
+      joinColumns =  @JoinColumn(name="PLACE_ID"),
+      inverseJoinColumns = @JoinColumn(name="EVENT_ID"))
+  private final List<Event> events = new ArrayList<>();
 
 }

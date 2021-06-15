@@ -18,20 +18,20 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.facens.poo2.ac2project.dto.request.EventInsertRequest;
-import br.facens.poo2.ac2project.dto.request.EventUpdateRequest;
-import br.facens.poo2.ac2project.dto.request.TicketInsertRequest;
-import br.facens.poo2.ac2project.dto.response.EventFindResponse;
+import br.facens.poo2.ac2project.dto.request.insert.EventInsertRequest;
+import br.facens.poo2.ac2project.dto.request.insert.TicketInsertRequest;
+import br.facens.poo2.ac2project.dto.request.update.EventUpdateRequest;
+import br.facens.poo2.ac2project.dto.response.EventResponse;
 import br.facens.poo2.ac2project.dto.response.EventPageableResponse;
 import br.facens.poo2.ac2project.dto.response.MessageResponse;
-import br.facens.poo2.ac2project.exception.AdminNotFoundException;
-import br.facens.poo2.ac2project.exception.EmptyRequestException;
-import br.facens.poo2.ac2project.exception.EventNotFoundException;
-import br.facens.poo2.ac2project.exception.EventScheduleNotAvailableException;
-import br.facens.poo2.ac2project.exception.IllegalDateTimeFormatException;
-import br.facens.poo2.ac2project.exception.IllegalScheduleException;
-import br.facens.poo2.ac2project.exception.PlaceNotFoundException;
-import br.facens.poo2.ac2project.exception.TicketNotAvailableException;
+import br.facens.poo2.ac2project.exception.admin.AdminNotFoundException;
+import br.facens.poo2.ac2project.exception.event.EventNotFoundException;
+import br.facens.poo2.ac2project.exception.event.EventScheduleNotAvailableException;
+import br.facens.poo2.ac2project.exception.event.IllegalScheduleException;
+import br.facens.poo2.ac2project.exception.generic.EmptyRequestException;
+import br.facens.poo2.ac2project.exception.generic.IllegalDateTimeFormatException;
+import br.facens.poo2.ac2project.exception.place.PlaceNotFoundException;
+import br.facens.poo2.ac2project.exception.ticket.TicketNotAvailableException;
 import br.facens.poo2.ac2project.service.EventService;
 import br.facens.poo2.ac2project.service.TicketService;
 import lombok.AllArgsConstructor;
@@ -69,7 +69,7 @@ public class EventController {
 
   @GetMapping("/{id}")
   @ResponseStatus(HttpStatus.OK)
-  public EventFindResponse findById(@PathVariable Long id) throws EventNotFoundException {
+  public EventResponse findById(@PathVariable Long id) throws EventNotFoundException {
     return eventService.findById(id);
   }
 

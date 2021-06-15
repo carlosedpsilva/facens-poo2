@@ -18,12 +18,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.facens.poo2.ac2project.dto.request.PlaceInsertRequest;
-import br.facens.poo2.ac2project.dto.request.PlaceUpdateRequest;
+import br.facens.poo2.ac2project.dto.request.insert.PlaceInsertRequest;
+import br.facens.poo2.ac2project.dto.request.update.PlaceUpdateRequest;
 import br.facens.poo2.ac2project.dto.response.MessageResponse;
 import br.facens.poo2.ac2project.dto.response.PlaceResponse;
-import br.facens.poo2.ac2project.exception.EmptyRequestException;
-import br.facens.poo2.ac2project.exception.PlaceNotFoundException;
+import br.facens.poo2.ac2project.exception.generic.EmptyRequestException;
+import br.facens.poo2.ac2project.exception.place.PlaceNotFoundException;
 import br.facens.poo2.ac2project.service.PlaceService;
 import lombok.AllArgsConstructor;
 
@@ -38,7 +38,7 @@ public class PlaceController {
     public MessageResponse save(@RequestBody @Valid PlaceInsertRequest placeInsertRequest) {
       return placeService.save(placeInsertRequest);
     }
-  
+
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public Page<PlaceResponse> findAll(
@@ -52,19 +52,19 @@ public class PlaceController {
       PageRequest pageRequest = PageRequest.of(0, 8, Direction.valueOf(direction), orderBy);
       return placeService.findAll(pageRequest, name, address);
     }
-  
+
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public PlaceResponse findById(@PathVariable Long id) throws PlaceNotFoundException {
       return placeService.findById(id);
     }
-  
+
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public MessageResponse deleteById(@PathVariable Long id) throws PlaceNotFoundException {
       return placeService.deleteById(id);
     }
-  
+
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public MessageResponse updateById(@PathVariable Long id, @RequestBody @Valid PlaceUpdateRequest placeUpdateRequest)

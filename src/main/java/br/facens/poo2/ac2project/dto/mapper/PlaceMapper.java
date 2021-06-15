@@ -2,8 +2,8 @@ package br.facens.poo2.ac2project.dto.mapper;
 
 import org.mapstruct.Mapper;
 
-import br.facens.poo2.ac2project.dto.request.PlaceInsertRequest;
-import br.facens.poo2.ac2project.dto.request.PlaceUpdateRequest;
+import br.facens.poo2.ac2project.dto.request.insert.PlaceInsertRequest;
+import br.facens.poo2.ac2project.dto.request.update.PlaceUpdateRequest;
 import br.facens.poo2.ac2project.dto.response.PlaceResponse;
 import br.facens.poo2.ac2project.entity.Place;
 
@@ -11,7 +11,7 @@ import br.facens.poo2.ac2project.entity.Place;
 public interface PlaceMapper {
 
   /*
-   * Requests
+   * Request
    */
 
   Place toModel(PlaceInsertRequest placeInsertRequest);
@@ -19,7 +19,7 @@ public interface PlaceMapper {
   Place toModel(PlaceUpdateRequest placeUpdateRequest);
 
   /*
-   * Responses
+   * Response
    */
 
   PlaceResponse toPlaceResponse(Place place);

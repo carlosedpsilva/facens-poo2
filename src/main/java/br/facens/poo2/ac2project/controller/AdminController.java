@@ -18,12 +18,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.facens.poo2.ac2project.dto.request.AdminInsertRequest;
-import br.facens.poo2.ac2project.dto.request.AdminUpdateRequest;
+import br.facens.poo2.ac2project.dto.request.insert.AdminInsertRequest;
+import br.facens.poo2.ac2project.dto.request.update.AdminUpdateRequest;
 import br.facens.poo2.ac2project.dto.response.AdminResponse;
 import br.facens.poo2.ac2project.dto.response.MessageResponse;
-import br.facens.poo2.ac2project.exception.AdminNotFoundException;
-import br.facens.poo2.ac2project.exception.EmptyRequestException;
+import br.facens.poo2.ac2project.exception.admin.AdminNotFoundException;
+import br.facens.poo2.ac2project.exception.generic.EmptyRequestException;
 import br.facens.poo2.ac2project.service.AdminService;
 import lombok.AllArgsConstructor;
 
@@ -38,7 +38,7 @@ public class AdminController {
     public MessageResponse save(@RequestBody @Valid AdminInsertRequest adminInsertRequest) {
       return adminService.save(adminInsertRequest);
     }
-  
+
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public Page<AdminResponse> findAll(
@@ -53,19 +53,19 @@ public class AdminController {
       PageRequest pageRequest = PageRequest.of(0, 8, Direction.valueOf(direction), orderBy);
       return adminService.findAll(pageRequest, name, email, phoneNumber);
     }
-  
+
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public AdminResponse findById(@PathVariable Long id) throws AdminNotFoundException {
       return adminService.findById(id);
     }
-  
+
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public MessageResponse deleteById(@PathVariable Long id) throws AdminNotFoundException {
       return adminService.deleteById(id);
     }
-  
+
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public MessageResponse updateById(@PathVariable Long id, @RequestBody @Valid AdminUpdateRequest adminUpdateRequest)

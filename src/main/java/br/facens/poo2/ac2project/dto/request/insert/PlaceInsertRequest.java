@@ -1,4 +1,4 @@
-package br.facens.poo2.ac2project.dto.request;
+package br.facens.poo2.ac2project.dto.request.insert;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -12,10 +12,14 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class PlaceUpdateRequest {
+public class PlaceInsertRequest {
 
-  @NotBlank(message = "New Place name may not be blank")
+  @NotBlank(message = "Place name may not be blank.")
   @Size(min = 2, max = 200, message = "Place name must be between 2 and 200 characters")
   private String name;
+
+  @NotBlank(message = "Place address may not be blank.")
+  @Size(min = 2, max = 100, message = "Place address must be between 5 and 200 characters")
+  private String address;
 
 }

@@ -3,9 +3,9 @@ package br.facens.poo2.ac2project.dto.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import br.facens.poo2.ac2project.dto.request.EventInsertRequest;
-import br.facens.poo2.ac2project.dto.request.EventUpdateRequest;
-import br.facens.poo2.ac2project.dto.response.EventFindResponse;
+import br.facens.poo2.ac2project.dto.request.insert.EventInsertRequest;
+import br.facens.poo2.ac2project.dto.request.update.EventUpdateRequest;
+import br.facens.poo2.ac2project.dto.response.EventResponse;
 import br.facens.poo2.ac2project.dto.response.EventPageableResponse;
 import br.facens.poo2.ac2project.entity.Event;
 
@@ -13,19 +13,21 @@ import br.facens.poo2.ac2project.entity.Event;
 public interface EventMapper {
 
   /*
-   * Requests
+   * Request
    */
 
   @Mapping(target = "startDate", source = "startDate", dateFormat = "dd/MM/yyyy")
   @Mapping(target = "endDate", source = "endDate", dateFormat = "dd/MM/yyyy")
   @Mapping(target = "startTime", source = "startTime", dateFormat = "HH:mm")
   @Mapping(target = "endTime", source = "endTime", dateFormat = "HH:mm")
+  @Mapping(target = "amountFreeTicketsAvailable", source = "amountFreeTickets")
+  @Mapping(target = "amountPaidTicketsAvailable", source = "amountPaidTickets")
   Event toModel(EventInsertRequest eventInsertRequest);
 
   Event toModel(EventUpdateRequest eventUpdateRequest);
 
   /*
-   * Responses
+   * Responss
    */
 
   @Mapping(target = "eventId", source = "event.id")
@@ -34,7 +36,7 @@ public interface EventMapper {
   @Mapping(target = "endDate", source = "endDate", dateFormat = "dd/MM/yyyy")
   @Mapping(target = "startTime", source = "startTime", dateFormat = "HH:mm")
   @Mapping(target = "endTime", source = "endTime", dateFormat = "HH:mm")
-  EventFindResponse toEventFindResponse(Event event);
+  EventResponse toEventFindResponse(Event event);
 
   @Mapping(target = "eventId", source = "event.id")
   @Mapping(target = "adminId", source = "event.admin.id")

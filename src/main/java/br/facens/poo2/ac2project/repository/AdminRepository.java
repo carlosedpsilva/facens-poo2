@@ -1,5 +1,7 @@
 package br.facens.poo2.ac2project.repository;
 
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,5 +19,7 @@ public interface AdminRepository extends JpaRepository<Admin, Long> {
       + "AND (LOWER(e.email)       LIKE LOWER(CONCAT('%',       CAST(:#{#req.email} AS string), '%')) OR :#{#req.email}       IS NULL) "
       + "AND (LOWER(e.phoneNumber) LIKE LOWER(CONCAT('%', CAST(:#{#req.phoneNumber} AS string), '%')) OR :#{#req.phoneNumber} IS NULL) ")
   Page<Admin> pageAll(Pageable pageRequest, @Param("req") Admin entitySearchFilter);
+
+  Optional<Admin> findByEmail(String email);
 
 }

@@ -25,4 +25,6 @@ public interface AttendeeRepository extends JpaRepository<Attendee, Long> {
       + "WHERE t.id = :ticketId")
   Optional<Attendee> findByTicketId(Long ticketId);
 
+  Optional<Attendee> findByEmail(String email);
+
 }

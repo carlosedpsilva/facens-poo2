@@ -7,9 +7,9 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-import br.facens.poo2.ac2project.dto.request.EventInsertRequest;
-import br.facens.poo2.ac2project.dto.request.EventUpdateRequest;
-import br.facens.poo2.ac2project.dto.response.EventFindResponse;
+import br.facens.poo2.ac2project.dto.request.insert.EventInsertRequest;
+import br.facens.poo2.ac2project.dto.request.update.EventUpdateRequest;
+import br.facens.poo2.ac2project.dto.response.EventResponse;
 import br.facens.poo2.ac2project.dto.response.EventPageableResponse;
 import br.facens.poo2.ac2project.entity.Event;
 
@@ -87,8 +87,8 @@ public class EventUtils {
    * Response
    */
 
-  public static EventFindResponse createFakeFindResponse() {
-    return EventFindResponse.builder()
+  public static EventResponse createFakeFindResponse() {
+    return EventResponse.builder()
         .eventId(EVENT_ID)
         .adminId(ADMIN_ID)
         .name(NAME)

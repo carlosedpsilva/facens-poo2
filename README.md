@@ -19,9 +19,9 @@ Swagger: https://facens-poo2.herokuapp.com/swagger-ui/
 
 ```json
 {
-  "email": "example@email.com",
-  "name": "name_example",
-  "phoneNumber": "99999999999"
+  "name": "Person G",
+  "email": "example7@email.com",
+  "phoneNumber": "(99) 99999-9999"
 }
 ```
 
@@ -29,7 +29,8 @@ Swagger: https://facens-poo2.herokuapp.com/swagger-ui/
 
 ```json
 {
-  "phoneNumber": "string"
+  "email": "anotherexample1@email.com",
+  "phoneNumber": "(99) 99999-9999"
 }
 ```
 
@@ -39,9 +40,8 @@ Swagger: https://facens-poo2.herokuapp.com/swagger-ui/
 
 ```json
 {
-  "balance": 0,
-  "email": "example@email.com",
-  "name": "name_example"
+  "name": "Person H",
+  "email": "example8@email.com"
 }
 ```
 
@@ -49,7 +49,7 @@ Swagger: https://facens-poo2.herokuapp.com/swagger-ui/
 
 ```json
 {
-  "balance": 1000
+  "email": "anotherexample2@email.com"
 }
 ```
 
@@ -60,17 +60,16 @@ Swagger: https://facens-poo2.herokuapp.com/swagger-ui/
 ```json
 {
   "adminId": 1,
-  "amountFreeTickets": 0,
-  "amountPaidTickets": 0,
-  "name": "SomeName",
-  "description": "",
-  "place": "SomePlace",
-  "startDate": "11/03/2022",
-  "endDate": "15/03/2022",
+  "name": "Event D",
+  "description": "OptionalDescription",
+  "startDate": "11/03/2021",
+  "endDate": "15/03/2021",
   "startTime": "11:00",
   "endTime": "15:00",
   "email": "example@email.com",
-  "priceTicket": 0
+  "amountFreeTickets": 3,
+  "amountPayedTickets": 10,
+  "priceTicket": 200
 }
 ```
 
@@ -78,10 +77,9 @@ Swagger: https://facens-poo2.herokuapp.com/swagger-ui/
 
 ```json
 {
-  "name": "NewName",
-  "description": "",
-  "place": "",
-  "email": ""
+  "name": "", // blank fields are not updated
+  "description": "NewOptinalDescription",
+  "email": "anotherexample@email.com"
 }
 ```
 
@@ -91,16 +89,28 @@ Swagger: https://facens-poo2.herokuapp.com/swagger-ui/
 
 ```json
 {
-  "address": "SomeAddress",
-  "name": "SomeName"
+  "name": "SomeAnotherPlace",
+  "address": "Address D"
 }
 ```
 
 ### Place Update Request
 ```json
 {
-  "name": "AnotherName"
+  "address": "Another Address"
 }
+```
+
+
+## Ticket
+
+### Ticket Insert Request
+```json
+{
+  "type": "PAID", // or "FREE"
+  "attendeeId": "1"
+}
+
 ```
 
 # Class Diagram

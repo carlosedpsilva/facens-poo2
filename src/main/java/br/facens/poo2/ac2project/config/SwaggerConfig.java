@@ -16,7 +16,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @Configuration
 @EnableSwagger2
 public class SwaggerConfig {
-  
+
   private static final String BASE_PACKAGE = "br.facens.poo2.ac2project.controller";
   private static final String API_TITLE = "POO2/AC2 - Event Scheduler";
   private static final String API_DESCRIPTION = "Event Scheduler REST API";
@@ -25,7 +25,7 @@ public class SwaggerConfig {
   private static final String CONTACT_EMAIL = "kadu.cerq@gmail.com";
 
   @Bean
-  public Docket api() { 
+  public Docket api() {
     return new Docket(DocumentationType.SWAGGER_2)
         .select()
         .apis(basePackage(BASE_PACKAGE))

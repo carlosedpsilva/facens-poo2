@@ -1,7 +1,7 @@
 package br.facens.poo2.ac2project.utils;
 
-import br.facens.poo2.ac2project.dto.request.AdminInsertRequest;
-import br.facens.poo2.ac2project.dto.request.AdminUpdateRequest;
+import br.facens.poo2.ac2project.dto.request.insert.AdminInsertRequest;
+import br.facens.poo2.ac2project.dto.request.update.AdminUpdateRequest;
 import br.facens.poo2.ac2project.dto.response.AdminResponse;
 import br.facens.poo2.ac2project.entity.Admin;
 
@@ -35,6 +35,7 @@ public class AdminUtils {
 
   public static AdminUpdateRequest createFakeUpdateRequest() {
     return AdminUpdateRequest.builder()
+        .email(EMAIL)
         .phoneNumber(PHONE_NUMBER)
         .build();
   }

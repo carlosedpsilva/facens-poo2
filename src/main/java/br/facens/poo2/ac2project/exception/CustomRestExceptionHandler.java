@@ -1,4 +1,6 @@
-package br.facens.poo2.ac2project.exception.handler;
+package br.facens.poo2.ac2project.exception;
+
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,30 +8,32 @@ import java.util.HashMap;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import br.facens.poo2.ac2project.exception.AdminNotFoundException;
-import br.facens.poo2.ac2project.exception.AttendeeNotFoundException;
-import br.facens.poo2.ac2project.exception.EmptyRequestException;
-import br.facens.poo2.ac2project.exception.EventNotFoundException;
-import br.facens.poo2.ac2project.exception.EventScheduleNotAvailableException;
-import br.facens.poo2.ac2project.exception.IllegalDateTimeFormatException;
-import br.facens.poo2.ac2project.exception.IllegalScheduleException;
-import br.facens.poo2.ac2project.exception.PlaceNotFoundException;
-import br.facens.poo2.ac2project.exception.ProcessValidationException;
-import br.facens.poo2.ac2project.exception.TicketNotAvailableException;
-import br.facens.poo2.ac2project.exception.TicketNotFoundException;
+import br.facens.poo2.ac2project.exception.admin.AdminNotFoundException;
+import br.facens.poo2.ac2project.exception.attendee.AttendeeNotFoundException;
+import br.facens.poo2.ac2project.exception.event.EventNotFoundException;
+import br.facens.poo2.ac2project.exception.event.EventScheduleNotAvailableException;
+import br.facens.poo2.ac2project.exception.event.IllegalScheduleException;
+import br.facens.poo2.ac2project.exception.generic.EmailAlreadyInUseException;
+import br.facens.poo2.ac2project.exception.generic.EmptyRequestException;
+import br.facens.poo2.ac2project.exception.generic.IllegalDateTimeFormatException;
+import br.facens.poo2.ac2project.exception.place.PlaceNotFoundException;
+import br.facens.poo2.ac2project.exception.ticket.TicketNotAvailableException;
+import br.facens.poo2.ac2project.exception.ticket.TicketNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @RestControllerAdvice
-public class RestExceptionHandler extends ResponseEntityExceptionHandler {
+public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
 
   @Override
   protected ResponseEntity<Object> handleNoHandlerFoundException(NoHandlerFoundException e, HttpHeaders headers,
@@ -40,16 +44,23 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
   }
 
   @ExceptionHandler(value = {
-    /* Generic  */ EmptyRequestException.class, IllegalDateTimeFormatException.class,
+    /* Generic  */ EmptyRequestException.class, EmailAlreadyInUseException.class, IllegalDateTimeFormatException.class,
     /* Admin    */ AdminNotFoundException.class,
     /* Attendee */ AttendeeNotFoundException.class,
     /* Event    */ EventNotFoundException.class, EventScheduleNotAvailableException.class, IllegalScheduleException.class,
     /* Place    */ PlaceNotFoundException.class,
     /* Ticket   */ TicketNotFoundException.class, TicketNotAvailableException.class,
   })
-  public ResponseEntity<Object> processValidationError(ProcessValidationException e) {
-    var apiError = new ApiError(e.status().value(), e.status(), e.getLocalizedMessage(), e.getClass().getSimpleName());
-    return new ResponseEntity<>(apiError, new HttpHeaders(), e.status());
+  public ResponseEntity<Object> handleProcessValidation(ResponseStatusException e) {
+    var apiError = new ApiError(e.getStatus().value(), e.getStatus(), e.getReason(), e.getClass().getSimpleName());
+    return new ResponseEntity<>(apiError, new HttpHeaders(), e.getStatus());
+  }
+
+  @Override
+  protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers,
+      HttpStatus status, WebRequest request) {
+    var apiError = new ApiError(BAD_REQUEST.value(), BAD_REQUEST, ex.getCause().getLocalizedMessage(), ex.getClass().getSimpleName());
+    return new ResponseEntity<>(apiError, new HttpHeaders(), BAD_REQUEST);
   }
 
   @Override
@@ -94,6 +105,7 @@ final class InvalidRequestBodyError {
   private HashMap<String, ArrayList<RequestFieldError>> errors;
 
 }
+
 @Getter
 @AllArgsConstructor
 final class RequestFieldError {

@@ -26,11 +26,11 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 public class Attendee extends BaseUser {
 
+  @Column(nullable = false)
+  private double balance;
+
   @OneToMany
   @JoinColumn(name = "ATTENDEE_ID")
   private final List<Ticket> tickets = new ArrayList<>();
-
-  @Column(nullable = true)
-  private double balance;
 
 }

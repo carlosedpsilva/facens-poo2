@@ -35,21 +35,6 @@ public class Event implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
-  @ManyToOne
-  @JoinColumn(name="ADMIN_ID")
-  private Admin admin;
-
-  @OneToMany
-  @JoinColumn(name="EVENT_ID")
-  private final List<Ticket> tickets = new ArrayList<>();
-
-  @ManyToMany
-  @JoinTable(
-      name="TB_EVENT_PLACE",
-      joinColumns =  @JoinColumn(name="EVENT_ID"),
-      inverseJoinColumns = @JoinColumn(name="PLACE_ID"))
-  private final List<Place> places = new ArrayList<>();
-
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -81,15 +66,30 @@ public class Event implements Serializable {
   @Column(nullable = false)
   private Long amountPaidTicketsAvailable;
 
-  @Column(nullable = false)
   @Formula("(SELECT COUNT(t.id) FROM TB_EVENT e INNER JOIN TB_TICKET t ON e.id = t.event_id WHERE t.type = 'FREE')")
+  @Column(nullable = false)
   private Long amountFreeTicketsSold;
 
-  @Column(nullable = false)
   @Formula("(SELECT COUNT(t.id) FROM TB_EVENT e INNER JOIN TB_TICKET t ON e.id = t.event_id WHERE t.type = 'PAID')")
+  @Column(nullable = false)
   private Long amountPaidTicketsSold;
 
   @Column(nullable = false)
   private Double ticketPrice;
+
+  @ManyToOne
+  @JoinColumn(name="ADMIN_ID")
+  private Admin admin;
+
+  @OneToMany
+  @JoinColumn(name="EVENT_ID")
+  private final List<Ticket> tickets = new ArrayList<>();
+
+  @ManyToMany
+  @JoinTable(
+      name="TB_EVENT_PLACE",
+      joinColumns =  @JoinColumn(name="EVENT_ID"),
+      inverseJoinColumns = @JoinColumn(name="PLACE_ID"))
+  private final List<Place> places = new ArrayList<>();
 
 }

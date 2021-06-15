@@ -3,9 +3,9 @@ package br.facens.poo2.ac2project.controller;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import br.facens.poo2.ac2project.dto.request.EventInsertRequest;
-import br.facens.poo2.ac2project.dto.request.EventUpdateRequest;
-import br.facens.poo2.ac2project.dto.response.EventFindResponse;
+import br.facens.poo2.ac2project.dto.request.insert.EventInsertRequest;
+import br.facens.poo2.ac2project.dto.request.update.EventUpdateRequest;
+import br.facens.poo2.ac2project.dto.response.EventResponse;
 import br.facens.poo2.ac2project.dto.response.EventPageableResponse;
 import br.facens.poo2.ac2project.dto.response.MessageResponse;
 import io.swagger.annotations.Api;
@@ -44,7 +44,7 @@ public interface EventControllerDocs {
       @ApiResponse(code = 200, message = "Successfully found event in the system"),
       @ApiResponse(code = 404, message = "Event with given id not found")
   })
-  EventFindResponse findById(Long id);
+  EventResponse findById(Long id);
 
   @ApiOperation(value = "Delete a scheduled event by a given id")
   @ApiResponses(value = {

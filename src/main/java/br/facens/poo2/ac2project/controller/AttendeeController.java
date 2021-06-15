@@ -18,11 +18,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.facens.poo2.ac2project.dto.request.AttendeeInsertRequest;
-import br.facens.poo2.ac2project.dto.request.AttendeeUpdateRequest;
+import br.facens.poo2.ac2project.dto.request.insert.AttendeeInsertRequest;
+import br.facens.poo2.ac2project.dto.request.update.AttendeeUpdateRequest;
 import br.facens.poo2.ac2project.dto.response.AttendeeResponse;
 import br.facens.poo2.ac2project.dto.response.MessageResponse;
-import br.facens.poo2.ac2project.exception.AttendeeNotFoundException;
+import br.facens.poo2.ac2project.exception.attendee.AttendeeNotFoundException;
 import br.facens.poo2.ac2project.service.AttendeeService;
 import lombok.AllArgsConstructor;
 

@@ -1,6 +1,6 @@
-package br.facens.poo2.ac2project.dto.request;
+package br.facens.poo2.ac2project.dto.request.update;
 
-import javax.validation.constraints.PositiveOrZero;
+import javax.validation.constraints.Email;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,8 +12,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AttendeeUpdateRequest {
-  
-  @PositiveOrZero(message = "Balance cannot be negative")
-  private Double balance;
+
+  @Email(message = "Must be a valid e-mail.")
+  private String email;
 
 }

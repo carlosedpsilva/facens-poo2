@@ -13,12 +13,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import br.facens.poo2.ac2project.dto.mapper.AttendeeMapper;
-import br.facens.poo2.ac2project.dto.request.AttendeeInsertRequest;
-import br.facens.poo2.ac2project.dto.request.AttendeeUpdateRequest;
+import br.facens.poo2.ac2project.dto.request.insert.AttendeeInsertRequest;
+import br.facens.poo2.ac2project.dto.request.update.AttendeeUpdateRequest;
 import br.facens.poo2.ac2project.dto.response.AttendeeResponse;
 import br.facens.poo2.ac2project.dto.response.MessageResponse;
 import br.facens.poo2.ac2project.entity.Attendee;
-import br.facens.poo2.ac2project.exception.AttendeeNotFoundException;
+import br.facens.poo2.ac2project.exception.attendee.AttendeeNotFoundException;
+import br.facens.poo2.ac2project.exception.generic.EmailAlreadyInUseException;
+import br.facens.poo2.ac2project.exception.generic.EmptyRequestException;
 import br.facens.poo2.ac2project.repository.AttendeeRepository;
 import br.facens.poo2.ac2project.service.meta.SchedulerService;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +30,7 @@ import lombok.RequiredArgsConstructor;
 public class AttendeeService implements SchedulerService<Attendee> {
 
   private final AttendeeRepository attendeeRepository;
+
   private final AttendeeMapper attendeeMapper;
 
   /*
@@ -35,6 +38,7 @@ public class AttendeeService implements SchedulerService<Attendee> {
    */
 
   public MessageResponse save(AttendeeInsertRequest attendeeInsertRequest) {
+    if (attendeeRepository.findByEmail(attendeeInsertRequest.getEmail()).isPresent()) throw new EmailAlreadyInUseException();
     var attendeeToSave = attendeeMapper.toModel(attendeeInsertRequest);
     var savedAttendee = attendeeRepository.save(attendeeToSave);
     return createMessageResponse(BASIC_MESSAGE, SAVED, ATTENDEE, savedAttendee.getId());
@@ -77,7 +81,10 @@ public class AttendeeService implements SchedulerService<Attendee> {
 
   public MessageResponse updateById(long id, AttendeeUpdateRequest attendeeUpdateRequest) throws AttendeeNotFoundException {
     var attendeeToUpdate = verifyIfExists(id);
-    attendeeToUpdate.setBalance(attendeeToUpdate.getBalance() + attendeeUpdateRequest.getBalance());
+
+    if (attendeeUpdateRequest.getEmail().isBlank()) throw new EmptyRequestException();
+    attendeeToUpdate.setEmail(attendeeUpdateRequest.getEmail());
+
     attendeeRepository.save(attendeeToUpdate);
     return createMessageResponse(BASIC_MESSAGE, UPDATED, ATTENDEE, id);
   }
