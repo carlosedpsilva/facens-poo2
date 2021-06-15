@@ -1,5 +1,12 @@
 package br.facens.poo2.ac2project.service;
 
+import static br.facens.poo2.ac2project.util.SchedulerUtils.BASIC_MESSAGE;
+import static br.facens.poo2.ac2project.util.SchedulerUtils.createMessageResponse;
+import static br.facens.poo2.ac2project.util.SchedulerUtils.Entity.ATTENDEE;
+import static br.facens.poo2.ac2project.util.SchedulerUtils.Operation.DELETED;
+import static br.facens.poo2.ac2project.util.SchedulerUtils.Operation.SAVED;
+import static br.facens.poo2.ac2project.util.SchedulerUtils.Operation.UPDATED;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,18 +20,15 @@ import br.facens.poo2.ac2project.dto.response.MessageResponse;
 import br.facens.poo2.ac2project.entity.Attendee;
 import br.facens.poo2.ac2project.exception.AttendeeNotFoundException;
 import br.facens.poo2.ac2project.repository.AttendeeRepository;
-import lombok.AllArgsConstructor;
+import br.facens.poo2.ac2project.service.meta.SchedulerService;
+import lombok.RequiredArgsConstructor;
 
 @Service
-@AllArgsConstructor(onConstructor = @__(@Autowired))
-public class AttendeeService {
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+public class AttendeeService implements SchedulerService<Attendee> {
 
-  private static final String SAVED_MESSAGE = "Saved Attendee with ID ";
-  private static final String DELETED_MESSAGE = "Deleted Attendee with ID ";
-  private static final String UPDATED_MESSAGE = "Updated Attendee with ID ";
-
-  private AttendeeRepository attendeeRepository;
-  private AttendeeMapper attendeeMapper;
+  private final AttendeeRepository attendeeRepository;
+  private final AttendeeMapper attendeeMapper;
 
   /*
    * POST OPERATION
@@ -33,11 +37,11 @@ public class AttendeeService {
   public MessageResponse save(AttendeeInsertRequest attendeeInsertRequest) {
     var attendeeToSave = attendeeMapper.toModel(attendeeInsertRequest);
     var savedAttendee = attendeeRepository.save(attendeeToSave);
-    return createMessageResponse(savedAttendee.getId(), SAVED_MESSAGE);
+    return createMessageResponse(BASIC_MESSAGE, SAVED, ATTENDEE, savedAttendee.getId());
   }
 
   /*
-   * GET OPERATIONS
+   * GET OPERATION
    */
 
   public Page<AttendeeResponse> findAll(Pageable pageRequest,
@@ -52,7 +56,7 @@ public class AttendeeService {
     return pagedEvents.map(attendeeMapper::toAttendeeFindResponse);
   }
 
-  public AttendeeResponse findById(Long id) throws AttendeeNotFoundException {
+  public AttendeeResponse findById(long id) throws AttendeeNotFoundException {
     Attendee savedAttendee = verifyIfExists(id);
     return attendeeMapper.toAttendeeFindResponse(savedAttendee);
   }
@@ -64,32 +68,27 @@ public class AttendeeService {
   public MessageResponse deleteById(long id) throws AttendeeNotFoundException {
     verifyIfExists(id);
     attendeeRepository.deleteById(id);
-    return createMessageResponse(id, DELETED_MESSAGE);
+    return createMessageResponse(BASIC_MESSAGE, DELETED, ATTENDEE, id);
   }
 
   /*
-   * UPDATE OPERATION
+   * PUT OPERATION
    */
 
-  public MessageResponse updateById(Long id, AttendeeUpdateRequest attendeeUpdateRequest) throws AttendeeNotFoundException {
+  public MessageResponse updateById(long id, AttendeeUpdateRequest attendeeUpdateRequest) throws AttendeeNotFoundException {
     var attendeeToUpdate = verifyIfExists(id);
-    attendeeToUpdate.setBalance(attendeeUpdateRequest.getBalance());
+    attendeeToUpdate.setBalance(attendeeToUpdate.getBalance() + attendeeUpdateRequest.getBalance());
     attendeeRepository.save(attendeeToUpdate);
-    return createMessageResponse(attendeeToUpdate.getId(), UPDATED_MESSAGE);
+    return createMessageResponse(BASIC_MESSAGE, UPDATED, ATTENDEE, id);
   }
 
   /*
-   * METHODS
+   * OTHER
    */
 
-  Attendee verifyIfExists(long id) throws AttendeeNotFoundException {
+  @Override
+  public Attendee verifyIfExists(long id) throws AttendeeNotFoundException {
     return attendeeRepository.findById(id).orElseThrow(() -> new AttendeeNotFoundException(id));
-  }
-
-  private MessageResponse createMessageResponse(long id, String message) {
-    return MessageResponse.builder()
-        .message(message + id)
-        .build();
   }
 
 }

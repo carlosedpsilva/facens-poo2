@@ -1,5 +1,12 @@
 package br.facens.poo2.ac2project.service;
 
+import static br.facens.poo2.ac2project.util.SchedulerUtils.BASIC_MESSAGE;
+import static br.facens.poo2.ac2project.util.SchedulerUtils.createMessageResponse;
+import static br.facens.poo2.ac2project.util.SchedulerUtils.Entity.ADMIN;
+import static br.facens.poo2.ac2project.util.SchedulerUtils.Operation.DELETED;
+import static br.facens.poo2.ac2project.util.SchedulerUtils.Operation.SAVED;
+import static br.facens.poo2.ac2project.util.SchedulerUtils.Operation.UPDATED;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,19 +20,16 @@ import br.facens.poo2.ac2project.dto.response.MessageResponse;
 import br.facens.poo2.ac2project.entity.Admin;
 import br.facens.poo2.ac2project.exception.AdminNotFoundException;
 import br.facens.poo2.ac2project.repository.AdminRepository;
-import lombok.AllArgsConstructor;
+import br.facens.poo2.ac2project.service.meta.SchedulerService;
+import lombok.RequiredArgsConstructor;
 
 @Service
-@AllArgsConstructor(onConstructor = @__(@Autowired))
-public class AdminService {
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+public class AdminService implements SchedulerService<Admin> {
 
-  private static final String SAVED_MESSAGE = "Saved Admin with ID ";
-  private static final String DELETED_MESSAGE = "Deleted Admin with ID ";
-  private static final String UPDATED_MESSAGE = "Updated Admin with ID ";
+  private final AdminRepository adminRepository;
 
-  private AdminRepository adminRepository;
-
-  private AdminMapper adminMapper;
+  private final AdminMapper adminMapper;
 
   /*
    * POST OPERATION
@@ -34,7 +38,7 @@ public class AdminService {
   public MessageResponse save(AdminInsertRequest adminInsertRequest) {
     var adminToSave = adminMapper.toModel(adminInsertRequest);
     var savedAdmin = adminRepository.save(adminToSave);
-    return createMessageResponse(savedAdmin.getId(), SAVED_MESSAGE);
+    return createMessageResponse(BASIC_MESSAGE, SAVED, ADMIN, savedAdmin.getId());
   }
 
   /*
@@ -53,7 +57,7 @@ public class AdminService {
     return pagedAdmins.map(adminMapper::toAdminResponse);
   }
 
-  public AdminResponse findById(Long id) throws AdminNotFoundException {
+  public AdminResponse findById(long id) throws AdminNotFoundException {
     Admin savedAdmin = verifyIfExists(id);
     return adminMapper.toAdminResponse(savedAdmin);
   }
@@ -62,36 +66,31 @@ public class AdminService {
    * DELETE OPERATION
    */
 
-  public MessageResponse deleteById(Long id) throws AdminNotFoundException {
+  public MessageResponse deleteById(long id) throws AdminNotFoundException {
     verifyIfExists(id);
     adminRepository.deleteById(id);
-    return createMessageResponse(id, DELETED_MESSAGE);
+    return createMessageResponse(BASIC_MESSAGE, DELETED, ADMIN, id);
   }
 
   /*
    * PUT OPERATION
    */
 
-  public MessageResponse updateById(Long id, AdminUpdateRequest adminUpdateRequest)
+  public MessageResponse updateById(long id, AdminUpdateRequest adminUpdateRequest)
       throws AdminNotFoundException {
     var adminToUpdate = verifyIfExists(id);
     adminToUpdate.setPhoneNumber(adminUpdateRequest.getPhoneNumber());
     adminRepository.save(adminToUpdate);
-    return createMessageResponse(adminToUpdate.getId(), UPDATED_MESSAGE);
+    return createMessageResponse(BASIC_MESSAGE, UPDATED, ADMIN, id);
   }
 
   /*
-   * METHODS
+   * OTHER
    */
 
-  public Admin verifyIfExists(Long id) throws AdminNotFoundException {
+  @Override
+  public Admin verifyIfExists(long id) throws AdminNotFoundException {
     return adminRepository.findById(id).orElseThrow(() -> new AdminNotFoundException(id));
-  }
-
-  private MessageResponse createMessageResponse(Long id, String message) {
-  return MessageResponse.builder()
-      .message(message + id)
-      .build();
   }
 
 }

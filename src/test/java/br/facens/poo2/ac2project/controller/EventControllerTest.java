@@ -46,6 +46,7 @@ import br.facens.poo2.ac2project.exception.EmptyRequestException;
 import br.facens.poo2.ac2project.exception.EventNotFoundException;
 import br.facens.poo2.ac2project.exception.IllegalScheduleException;
 import br.facens.poo2.ac2project.service.EventService;
+import br.facens.poo2.ac2project.service.TicketService;
 
 @ExtendWith(MockitoExtension.class)
 public class EventControllerTest {
@@ -59,12 +60,12 @@ public class EventControllerTest {
 
   private EventController eventController;
 
-  @Mock
-  private EventService eventService;
+  @Mock private EventService eventService;
+  @Mock private TicketService ticketService;
 
   @BeforeEach
   void setUp() {
-    eventController = new EventController(eventService);
+    eventController = new EventController(eventService, ticketService);
     mockMvc = MockMvcBuilders.standaloneSetup(eventController)
         .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
         .setViewResolvers((viewName, locale) -> new MappingJackson2JsonView())

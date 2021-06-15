@@ -7,7 +7,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class AttendeeNotFoundException extends ProcessValidationException {
 
   public AttendeeNotFoundException(long id) {
-    super("Attendee not found with ID " + id);
+    this(id, false);
+  }
+
+  public AttendeeNotFoundException(long id, boolean isAssociation) {
+    super("No Attendee found " + (isAssociation ? "associated Ticket" : "") + " with ID " + id);
   }
 
   public HttpStatus status() {

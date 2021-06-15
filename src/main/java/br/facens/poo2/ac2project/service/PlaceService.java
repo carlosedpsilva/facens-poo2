@@ -1,5 +1,12 @@
 package br.facens.poo2.ac2project.service;
 
+import static br.facens.poo2.ac2project.util.SchedulerUtils.BASIC_MESSAGE;
+import static br.facens.poo2.ac2project.util.SchedulerUtils.createMessageResponse;
+import static br.facens.poo2.ac2project.util.SchedulerUtils.Entity.PLACE;
+import static br.facens.poo2.ac2project.util.SchedulerUtils.Operation.DELETED;
+import static br.facens.poo2.ac2project.util.SchedulerUtils.Operation.SAVED;
+import static br.facens.poo2.ac2project.util.SchedulerUtils.Operation.UPDATED;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,19 +21,16 @@ import br.facens.poo2.ac2project.entity.Place;
 import br.facens.poo2.ac2project.exception.EmptyRequestException;
 import br.facens.poo2.ac2project.exception.PlaceNotFoundException;
 import br.facens.poo2.ac2project.repository.PlaceRepository;
-import lombok.AllArgsConstructor;
+import br.facens.poo2.ac2project.service.meta.SchedulerService;
+import lombok.RequiredArgsConstructor;
 
 @Service
-@AllArgsConstructor(onConstructor = @__(@Autowired))
-public class PlaceService {
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+public class PlaceService implements SchedulerService<Place> {
 
-  private static final String SAVED_MESSAGE = "Saved Place with ID ";
-  private static final String DELETED_MESSAGE = "Deleted Place with ID ";
-  private static final String UPDATED_MESSAGE = "Updated Place with ID ";
+  private final PlaceRepository placeRepository;
 
-  private PlaceRepository placeRepository;
-
-  private PlaceMapper placeMapper;
+  private final PlaceMapper placeMapper;
 
   /*
    * POST OPERATION
@@ -35,26 +39,25 @@ public class PlaceService {
   public MessageResponse save(PlaceInsertRequest placeInsertRequest) {
     var placeToSave = placeMapper.toModel(placeInsertRequest);
     var savedPlace = placeRepository.save(placeToSave);
-    return createMessageResponse(savedPlace.getId(), SAVED_MESSAGE);
+    return createMessageResponse(BASIC_MESSAGE, SAVED, PLACE, savedPlace.getId());
   }
 
   /*
-   * GET OPERATIONS
+   * GET OPERATION
    */
 
-  public Page<PlaceResponse> findAll(Pageable pageRequest,
-      String name, String address) {
-    Place entityFilter = Place.builder()
+  public Page<PlaceResponse> findAll(Pageable pageRequest, String name, String address) {
+    var entityFilter = Place.builder()
         .name( name.isBlank() ? null : name )
         .address( address.isBlank() ? null : address )
         .build();
 
-    Page<Place> pagedPlaces = placeRepository.pageAll(pageRequest, entityFilter);
+    var pagedPlaces = placeRepository.pageAll(pageRequest, entityFilter);
     return pagedPlaces.map(placeMapper::toPlaceResponse);
   }
 
   public PlaceResponse findById(Long id) throws PlaceNotFoundException {
-    Place savedPlace = verifyIfExists(id);
+    var savedPlace = verifyIfExists(id);
     return placeMapper.toPlaceResponse(savedPlace);
   }
 
@@ -65,7 +68,7 @@ public class PlaceService {
   public MessageResponse deleteById(Long id) throws PlaceNotFoundException {
     verifyIfExists(id);
     placeRepository.deleteById(id);
-    return createMessageResponse(id, DELETED_MESSAGE);
+    return createMessageResponse(BASIC_MESSAGE, DELETED, PLACE, id);
   }
 
   /*
@@ -83,21 +86,16 @@ public class PlaceService {
         : placeUpdateRequest.getName());
 
     placeRepository.save(placeToUpdate);
-    return createMessageResponse(placeToUpdate.getId(), UPDATED_MESSAGE);
+    return createMessageResponse(BASIC_MESSAGE, UPDATED, PLACE, placeToUpdate.getId());
   }
 
   /*
-   * METHODS
+   * OTHER
    */
 
-  public Place verifyIfExists(Long id) throws PlaceNotFoundException {
+  @Override
+  public Place verifyIfExists(long id) throws PlaceNotFoundException {
     return placeRepository.findById(id).orElseThrow(() -> new PlaceNotFoundException(id));
-  }
-
-  private MessageResponse createMessageResponse(Long id, String message) {
-    return MessageResponse.builder()
-        .message(message + id)
-        .build();
   }
 
 }

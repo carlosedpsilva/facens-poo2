@@ -33,6 +33,7 @@ import br.facens.poo2.ac2project.exception.IllegalScheduleException;
 import br.facens.poo2.ac2project.exception.PlaceNotFoundException;
 import br.facens.poo2.ac2project.exception.TicketNotAvailableException;
 import br.facens.poo2.ac2project.service.EventService;
+import br.facens.poo2.ac2project.service.TicketService;
 import lombok.AllArgsConstructor;
 
 @RestController
@@ -41,7 +42,7 @@ import lombok.AllArgsConstructor;
 public class EventController {
 
   private EventService eventService;
-
+  private TicketService ticketService;
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
@@ -100,13 +101,13 @@ public class EventController {
   @PostMapping("/{eventId}/tickets")
   @ResponseStatus(HttpStatus.CREATED)
   public MessageResponse saveTicketById(@PathVariable Long eventId, @RequestBody @Valid TicketInsertRequest ticketInsertRequest) throws EventNotFoundException, TicketNotAvailableException {
-    return eventService.saveTicket(eventId, ticketInsertRequest);
+    return ticketService.save(eventId, ticketInsertRequest);
   }
 
   @DeleteMapping("/{eventId}/tickets/{ticketId}")
   @ResponseStatus(HttpStatus.OK)
   public MessageResponse deleteTicketById(@PathVariable Long eventId, @PathVariable Long ticketId) throws EventNotFoundException, TicketNotAvailableException {
-    return eventService.deleteTicketById(eventId, ticketId);
+    return ticketService.deleteById(eventId, ticketId);
   }
 
 }
