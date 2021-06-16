@@ -1,13 +1,16 @@
 package br.facens.poo2.ac2project.service;
 
+import static br.facens.poo2.ac2project.util.SchedulerUtils.ASSOCIATED_OPEATION_MESSAGE;
 import static br.facens.poo2.ac2project.util.SchedulerUtils.ASSOCIATION_MESSAGE;
 import static br.facens.poo2.ac2project.util.SchedulerUtils.BASIC_MESSAGE;
 import static br.facens.poo2.ac2project.util.SchedulerUtils.createMessageResponse;
+import static br.facens.poo2.ac2project.util.SchedulerUtils.Entity.ADMIN;
 import static br.facens.poo2.ac2project.util.SchedulerUtils.Entity.EVENT;
 import static br.facens.poo2.ac2project.util.SchedulerUtils.Entity.PLACE;
 import static br.facens.poo2.ac2project.util.SchedulerUtils.Operation.ASSOCIATED;
 import static br.facens.poo2.ac2project.util.SchedulerUtils.Operation.DEASSOCIATED;
 import static br.facens.poo2.ac2project.util.SchedulerUtils.Operation.DELETED;
+import static br.facens.poo2.ac2project.util.SchedulerUtils.Operation.SAVED;
 import static br.facens.poo2.ac2project.util.SchedulerUtils.Operation.UPDATED;
 
 import java.time.LocalDate;
@@ -40,7 +43,6 @@ import br.facens.poo2.ac2project.exception.generic.IllegalDateTimeFormatExceptio
 import br.facens.poo2.ac2project.exception.place.PlaceNotFoundException;
 import br.facens.poo2.ac2project.repository.EventRepository;
 import br.facens.poo2.ac2project.service.meta.SchedulerService;
-import br.facens.poo2.ac2project.util.SchedulerUtils.Operation;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -68,7 +70,8 @@ public class EventService implements SchedulerService<Event> {
 
       eventToSave.setAdmin(adminToAssociate);
       var savedEvent = eventRepository.save(eventToSave);
-      return createMessageResponse(BASIC_MESSAGE, Operation.SAVED, EVENT, savedEvent.getId());
+      return createMessageResponse(ASSOCIATED_OPEATION_MESSAGE, SAVED, EVENT, savedEvent.getId(),
+          ASSOCIATED, ADMIN, adminToAssociate.getId());
     } catch (DateTimeParseException e) {
       throw new IllegalDateTimeFormatException(e);
     }
@@ -118,9 +121,11 @@ public class EventService implements SchedulerService<Event> {
    */
 
   public MessageResponse deleteById(long id) throws EventNotFoundException {
-    verifyIfExists(id);
+    var eventToDelete = verifyIfExists(id);
+    var associatedAdmin = eventToDelete.getAdmin();
     eventRepository.deleteById(id);
-    return createMessageResponse(BASIC_MESSAGE, DELETED, EVENT, id);
+    return createMessageResponse(ASSOCIATED_OPEATION_MESSAGE, DELETED, EVENT, eventToDelete.getId(),
+        ASSOCIATED, ADMIN, associatedAdmin.getId());
   }
 
   public MessageResponse deassociatePlaceById(long eventId, long placeId) {
@@ -136,7 +141,7 @@ public class EventService implements SchedulerService<Event> {
     eventRepository.save(eventToUpdate);
 
     return createMessageResponse(ASSOCIATION_MESSAGE, DEASSOCIATED,
-        EVENT, eventToUpdate.getId(), "", PLACE, placeToDeassociate.getId());
+        EVENT, eventToUpdate.getId(), PLACE, placeToDeassociate.getId());
   }
 
   /*

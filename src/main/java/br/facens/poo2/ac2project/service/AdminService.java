@@ -19,9 +19,11 @@ import br.facens.poo2.ac2project.dto.response.AdminResponse;
 import br.facens.poo2.ac2project.dto.response.MessageResponse;
 import br.facens.poo2.ac2project.entity.Admin;
 import br.facens.poo2.ac2project.exception.admin.AdminNotFoundException;
+import br.facens.poo2.ac2project.exception.admin.EventAssociatedException;
 import br.facens.poo2.ac2project.exception.generic.EmailAlreadyInUseException;
 import br.facens.poo2.ac2project.exception.generic.EmptyRequestException;
 import br.facens.poo2.ac2project.repository.AdminRepository;
+import br.facens.poo2.ac2project.repository.EventRepository;
 import br.facens.poo2.ac2project.service.meta.SchedulerService;
 import lombok.RequiredArgsConstructor;
 
@@ -30,6 +32,7 @@ import lombok.RequiredArgsConstructor;
 public class AdminService implements SchedulerService<Admin> {
 
   private final AdminRepository adminRepository;
+  private final EventRepository eventRepository;
 
   private final AdminMapper adminMapper;
 
@@ -71,6 +74,7 @@ public class AdminService implements SchedulerService<Admin> {
 
   public MessageResponse deleteById(long id) throws AdminNotFoundException {
     verifyIfExists(id);
+    if (!eventRepository.findByAdminId(id).isEmpty()) throw new EventAssociatedException(id);
     adminRepository.deleteById(id);
     return createMessageResponse(BASIC_MESSAGE, DELETED, ADMIN, id);
   }

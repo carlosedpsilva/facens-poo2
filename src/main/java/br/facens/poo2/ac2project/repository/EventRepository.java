@@ -18,8 +18,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
   @Query("SELECT e FROM Event e WHERE "
       + "((e.startDate >= :#{#req.startDate}) OR CAST(CAST(:#{#req.startDate} AS string) AS date) IS NULL) "
       + "AND (LOWER(e.name)        LIKE LOWER(CONCAT('%',        CAST(:#{#req.name} AS string), '%')) OR :#{#req.name}        IS NULL) "
-      + "AND (LOWER(e.description) LIKE LOWER(CONCAT('%', CAST(:#{#req.description} AS string), '%')) OR :#{#req.description} IS NULL) "
-      )
+      + "AND (LOWER(e.description) LIKE LOWER(CONCAT('%', CAST(:#{#req.description} AS string), '%')) OR :#{#req.description} IS NULL) ")
   public Page<Event> pageAll(Pageable pageRequest, @Param("req") Event event);
 
   @Query("SELECT e FROM Event e "
@@ -32,5 +31,10 @@ public interface EventRepository extends JpaRepository<Event, Long> {
           + "OR   ( :#{#reqEvent.startTime} >= e.startTime AND :#{#reqEvent.startTime} < e.endTime )   "
           + "OR   ( :#{#reqEvent.startTime} =  e.startTime AND :#{#reqEvent.startTime} = e.endTime ))))")
   public List<Event> findEventsBySchedule(@Param("reqEvent") Event event, @Param("reqPlace") Place place);
+
+  @Query("SELECT e FROM Event e "
+      + "INNER JOIN e.admin a "
+      + "WHERE a.id = :req")
+  public List<Event> findByAdminId(@Param("req") long adminId);
 
 }

@@ -19,6 +19,7 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import br.facens.poo2.ac2project.exception.admin.AdminNotFoundException;
+import br.facens.poo2.ac2project.exception.admin.EventAssociatedException;
 import br.facens.poo2.ac2project.exception.attendee.AttendeeNotFoundException;
 import br.facens.poo2.ac2project.exception.event.EventNotFoundException;
 import br.facens.poo2.ac2project.exception.event.EventScheduleNotAvailableException;
@@ -45,7 +46,7 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
 
   @ExceptionHandler(value = {
     /* Generic  */ EmptyRequestException.class, EmailAlreadyInUseException.class, IllegalDateTimeFormatException.class,
-    /* Admin    */ AdminNotFoundException.class,
+    /* Admin    */ AdminNotFoundException.class, EventAssociatedException.class,
     /* Attendee */ AttendeeNotFoundException.class,
     /* Event    */ EventNotFoundException.class, EventScheduleNotAvailableException.class, IllegalScheduleException.class,
     /* Place    */ PlaceNotFoundException.class,
