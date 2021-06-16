@@ -68,8 +68,8 @@ public class AttendeeController {
 
   @PutMapping("/{id}")
   @ResponseStatus(HttpStatus.OK)
-  public MessageResponse updateById(@PathVariable Long id, @RequestBody @Valid AttendeeUpdateRequest attendeeUpdateRequest)
-      throws AttendeeNotFoundException {
+  public MessageResponse updateById(@PathVariable Long id,
+      @RequestBody @Valid AttendeeUpdateRequest attendeeUpdateRequest) throws AttendeeNotFoundException {
     return attendeeService.updateById(id, attendeeUpdateRequest);
   }
 

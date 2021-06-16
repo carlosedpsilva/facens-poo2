@@ -12,11 +12,14 @@ import static br.facens.poo2.ac2project.util.SchedulerUtils.Operation.SAVED;
 import java.time.Instant;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import br.facens.poo2.ac2project.dto.mapper.TicketMapper;
 import br.facens.poo2.ac2project.dto.request.insert.TicketInsertRequest;
 import br.facens.poo2.ac2project.dto.response.MessageResponse;
+import br.facens.poo2.ac2project.dto.response.TicketPageableResponse;
+import br.facens.poo2.ac2project.dto.response.TicketResponse;
 import br.facens.poo2.ac2project.entity.Event;
 import br.facens.poo2.ac2project.entity.Ticket;
 import br.facens.poo2.ac2project.enums.TicketType;
@@ -52,7 +55,6 @@ public class TicketService implements SchedulerService<Ticket> {
     var isPaidTicket = ticketToSave.getType().equals(TicketType.PAID);
 
     verifyAndDecrementTicketCount(eventToAssociate, isPaidTicket);
-    // verifyAndDecrementAttendeeBalance(attendeeToUpdate, eventToAssociate.getTicketPrice());
 
     ticketToSave.setDate(Instant.now());
     ticketToSave.setPrice(eventToAssociate.getTicketPrice());
@@ -69,6 +71,31 @@ public class TicketService implements SchedulerService<Ticket> {
   /*
    * GET OPERATION
    */
+
+  public TicketPageableResponse findByEventId(Pageable pageRequest, long eventId, String type, String price) {
+    var savedEvent = eventService.verifyIfExists(eventId);
+
+    var typeFilter = type.matches("^(?:FREE|PAID)$") ? TicketType.valueOf(type) : null;
+    var priceFilter = 0.0;
+
+    try { priceFilter = Double.valueOf(price); } catch (NumberFormatException e) { /* ignored */ }
+    var pagedTickets = ticketRepository.pageAllByEventId(pageRequest, eventId, typeFilter, priceFilter);
+
+    return TicketPageableResponse.builder()
+        .eventId(savedEvent.getId())
+        .amountFreeTicketsAvailable(savedEvent.getAmountFreeTicketsAvailable())
+        .amountPaidTicketsAvailable(savedEvent.getAmountPaidTicketsAvailable())
+        .amountFreeTicketsSold(savedEvent.getAmountFreeTicketsSold())
+        .amountPaidTicketsSold(savedEvent.getAmountPaidTicketsSold())
+        .tickets(pagedTickets.map(ticketMapper::toTicketPageComponentResponse))
+        .build();
+  }
+
+  public TicketResponse findById(Long eventId, Long ticketId) {
+    eventService.verifyIfExists(eventId);
+    var ticketComponentInfo = ticketRepository.findById(eventId, ticketId);
+    return ticketMapper.toTicketResponse(ticketComponentInfo);
+  }
 
   /*
    * DELETE OPERATION
@@ -116,12 +143,5 @@ public class TicketService implements SchedulerService<Ticket> {
     if (isPaidTicket) event.setAmountPaidTicketsAvailable(event.getAmountPaidTicketsAvailable() + 1);
     else event.setAmountFreeTicketsAvailable(event.getAmountFreeTicketsAvailable() + 1);
   }
-
-  // private void verifyAndDecrementAttendeeBalance(Attendee attendee, Double priceTicket) {
-  //   double balance;
-  //   if ((balance = attendee.getBalance() - priceTicket) < 0)
-  //     throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED, "Insufficient funds");
-  //   attendee.setBalance(balance);
-  // }
 
 }

@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/poo2-ac2
+    url: jdbc:postgresql://localhost:5432/facens-poo2
     username: postgres
     password: postgres
 

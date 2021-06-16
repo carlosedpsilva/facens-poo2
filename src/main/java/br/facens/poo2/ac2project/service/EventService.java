@@ -61,11 +61,12 @@ public class EventService implements SchedulerService<Event> {
   public MessageResponse save(EventInsertRequest eventInsertRequest) throws IllegalScheduleException, IllegalDateTimeFormatException, AdminNotFoundException {
     try {
       var adminId = eventInsertRequest.getAdminId();
-      adminService.verifyIfExists(adminId);
+      var adminToAssociate = adminService.verifyIfExists(adminId);
 
       var eventToSave = eventMapper.toModel(eventInsertRequest);
       verifyIfIsValidScheduleDate(eventToSave);
 
+      eventToSave.setAdmin(adminToAssociate);
       var savedEvent = eventRepository.save(eventToSave);
       return createMessageResponse(BASIC_MESSAGE, Operation.SAVED, EVENT, savedEvent.getId());
     } catch (DateTimeParseException e) {
