@@ -10,7 +10,7 @@ public class AttendeeNotFoundException extends ResponseStatusException {
   }
 
   public AttendeeNotFoundException(long id, boolean isAssociation) {
-    super(HttpStatus.NOT_FOUND, String.format("No Attendee found %s with ID %d.", (isAssociation ? "associated Ticket" : ""), id));
+    super(HttpStatus.NOT_FOUND, String.format("No Attendee found %swith ID %d.", (isAssociation ? "associated Ticket " : ""), id));
   }
 
 }

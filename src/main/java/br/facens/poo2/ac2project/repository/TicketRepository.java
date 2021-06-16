@@ -19,14 +19,12 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
       + "t.id AS ticketId,       "
       + "a.id AS attendeeId,     "
       + "a.name AS attendeeName, "
-      + "t.type AS type,         "
-      + "t.price AS price        "
+      + "t.type AS type          "
       + "FROM Attendee a, Event e INNER JOIN e.tickets t INNER JOIN a.tickets t2 ON t.id = t2.id "
       + "WHERE e.id = :eventId "
-      + "AND (t.type   = :type  OR :type  IS NULL) "
-      + "AND (t.price >= :price OR :price IS NULL) ")
+      + "AND (t.type   = :type  OR :type  IS NULL)")
 	Page<TicketPageComponentInfo> pageAllByEventId(Pageable pageRequest, @Param("eventId") long eventId,
-      @Param("type") TicketType type, @Param("price") Double price);
+      @Param("type") TicketType type);
 
   @Query("SELECT "
       + "t.id    AS ticketId,     "

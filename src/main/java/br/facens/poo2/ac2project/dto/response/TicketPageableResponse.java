@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 public class TicketPageableResponse {
 
   private Long eventId;
+  private Double ticketPrice;
   private Long amountFreeTicketsAvailable;
   private Long amountPaidTicketsAvailable;
   private Long amountFreeTicketsSold;

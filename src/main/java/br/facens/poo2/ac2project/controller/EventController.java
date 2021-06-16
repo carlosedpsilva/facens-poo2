@@ -116,11 +116,10 @@ public class EventController {
       @RequestParam(value = "linesPerPage", defaultValue =   "8")  Integer linesPerPage,
       @RequestParam(value =    "direction", defaultValue = "ASC")   String direction,
       @RequestParam(value =      "orderBy", defaultValue =  "id")   String orderBy,
-      @RequestParam(value =         "type", defaultValue =    "")   String type,
-      @RequestParam(value =        "price", defaultValue =   "0")   String price
+      @RequestParam(value =         "type", defaultValue =    "")   String type
   ) {
     var pageRequest = PageRequest.of(0, 8, Direction.valueOf(direction), orderBy);
-    return ticketService.findByEventId(pageRequest, eventId, type, price);
+    return ticketService.findByEventId(pageRequest, eventId, type);
   }
 
   @GetMapping("/{eventId}/tickets/{ticketId}")

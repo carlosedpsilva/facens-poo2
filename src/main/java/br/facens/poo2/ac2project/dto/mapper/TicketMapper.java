@@ -1,5 +1,7 @@
 package br.facens.poo2.ac2project.dto.mapper;
 
+import java.time.LocalDateTime;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -23,8 +25,8 @@ public interface TicketMapper {
    * Response
    */
 
-  @Mapping(target = "date", source = "date", dateFormat = "dd/MM/yyyy")
-  TicketResponse toTicketResponse(TicketComponentInfo ticketComponentInfo);
+  @Mapping(target = "date", source = "date", dateFormat = "dd/MM/yyyy HH:mm:ss")
+  TicketResponse toTicketResponse(TicketComponentInfo ticketComponentInfo, LocalDateTime date);
 
   TicketPageComponentResponse toTicketPageComponentResponse(TicketPageComponentInfo ticketPageComponentInfo);
 

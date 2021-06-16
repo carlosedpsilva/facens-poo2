@@ -15,6 +15,5 @@ public class TicketPageComponentResponse {
   private Long attendeeId;
   private String attendeeName;
   private String type;
-  private Double price;
 
 }

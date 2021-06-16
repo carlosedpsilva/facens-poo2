@@ -101,7 +101,6 @@ Swagger: https://facens-poo2.herokuapp.com/swagger-ui/
 }
 ```
 
-
 ## Ticket
 
 ### Ticket Insert Request
@@ -115,4 +114,4 @@ Swagger: https://facens-poo2.herokuapp.com/swagger-ui/
 
 # Class Diagram
 
-<img alt="Class Diagram Image" src="docs/diagrams/out/architecture_overview/architecture_overview.png" width="300" height="100%">
+<img alt="Class Diagram Image" src="docs/diagrams/out/architecture_overview/architecture_overview.png">

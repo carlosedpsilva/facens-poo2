@@ -10,6 +10,4 @@ public interface TicketPageComponentInfo {
 
   String getType();
 
-  Double getPrice();
-
 }

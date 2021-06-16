@@ -10,6 +10,8 @@ import static br.facens.poo2.ac2project.util.SchedulerUtils.Operation.DELETED;
 import static br.facens.poo2.ac2project.util.SchedulerUtils.Operation.SAVED;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -49,8 +51,8 @@ public class TicketService implements SchedulerService<Ticket> {
    */
 
   public MessageResponse save(Long eventId, TicketInsertRequest ticketInsertRequest) throws EventNotFoundException, TicketNotAvailableException {
-    var attendeeToUpdate = attendeeService.verifyIfExists(ticketInsertRequest.getAttendeeId());
     var eventToAssociate = eventService.verifyIfExists(eventId);
+    var attendeeToUpdate = attendeeService.verifyIfExists(ticketInsertRequest.getAttendeeId());
     var ticketToSave = ticketMapper.toModel(ticketInsertRequest);
     var isPaidTicket = ticketToSave.getType().equals(TicketType.PAID);
 
@@ -72,17 +74,14 @@ public class TicketService implements SchedulerService<Ticket> {
    * GET OPERATION
    */
 
-  public TicketPageableResponse findByEventId(Pageable pageRequest, long eventId, String type, String price) {
+  public TicketPageableResponse findByEventId(Pageable pageRequest, long eventId, String type) {
     var savedEvent = eventService.verifyIfExists(eventId);
-
     var typeFilter = type.matches("^(?:FREE|PAID)$") ? TicketType.valueOf(type) : null;
-    var priceFilter = 0.0;
-
-    try { priceFilter = Double.valueOf(price); } catch (NumberFormatException e) { /* ignored */ }
-    var pagedTickets = ticketRepository.pageAllByEventId(pageRequest, eventId, typeFilter, priceFilter);
+    var pagedTickets = ticketRepository.pageAllByEventId(pageRequest, eventId, typeFilter);
 
     return TicketPageableResponse.builder()
         .eventId(savedEvent.getId())
+        .ticketPrice(savedEvent.getTicketPrice())
         .amountFreeTicketsAvailable(savedEvent.getAmountFreeTicketsAvailable())
         .amountPaidTicketsAvailable(savedEvent.getAmountPaidTicketsAvailable())
         .amountFreeTicketsSold(savedEvent.getAmountFreeTicketsSold())
@@ -94,7 +93,7 @@ public class TicketService implements SchedulerService<Ticket> {
   public TicketResponse findById(Long eventId, Long ticketId) {
     eventService.verifyIfExists(eventId);
     var ticketComponentInfo = ticketRepository.findById(eventId, ticketId);
-    return ticketMapper.toTicketResponse(ticketComponentInfo);
+    return ticketMapper.toTicketResponse(ticketComponentInfo, LocalDateTime.ofInstant(ticketComponentInfo.getDate(), ZoneId.of("America/Sao_Paulo")));
   }
 
   /*
