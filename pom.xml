@@ -10,10 +10,10 @@
 	</parent>
 
 	<groupId>br.facens.poo2</groupId>
-	<artifactId>ac2-project</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>ac2-project</name>
-	<description>Demo project for Spring Boot</description>
+	<artifactId>event-shceduler</artifactId>
+	<version>1.0.0</version>
+	<name>event-scheduler</name>
+	<description>Event Scheduler REST API</description>
 
 	<properties>
 		<java.version>15</java.version>
